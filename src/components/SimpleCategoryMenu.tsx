@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {ChevronDown, ChevronUp, X} from 'lucide-react';
 
 const SimpleCategoryMenu = ({categories, brands, popularSearches}: {
-    categories: any, brands: any, popularSearches: any
+    categories: string[], brands: string[], popularSearches: string[]
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -40,7 +40,7 @@ const SimpleCategoryMenu = ({categories, brands, popularSearches}: {
                         <div className="grid grid-cols-3 gap-4 text-sm">
                             <div>
                                 <h3 className="text-purple-400 font-semibold mb-2">Danh mục</h3>
-                                {categories.map((category: any, index: any) => (
+                                {categories.map((category: string, index: number) => (
                                     <Link
                                         key={index}
                                         href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}

@@ -2,9 +2,9 @@ import React, {ReactNode} from 'react';
 import {Star, ShoppingCart, Shield} from 'lucide-react';
 
 interface InfoCardProps {
-    icon: any;
-    value?: any;
-    label: any;
+    icon: ReactNode;
+    value?: string;
+    label: string;
 }
 
 export default function item() {
