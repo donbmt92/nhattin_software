@@ -1,5 +1,11 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {Star, ShoppingCart, Shield} from 'lucide-react';
+
+interface InfoCardProps {
+    icon: any;
+    value?: any;
+    label: any;
+}
 
 export default function item() {
     return (
@@ -163,7 +169,7 @@ export default function item() {
 }
 
 // Reusable InfoCard Component
-const InfoCard = ({icon, value, label}) => (
+const InfoCard: React.FC<InfoCardProps> = ({icon, value, label}) => (
     <div className="flex items-center bg-white/10 rounded-lg px-3 py-2">
         {icon}
         {value && <span className="font-bold ml-1 pr-1"> {value}</span>}
@@ -172,7 +178,9 @@ const InfoCard = ({icon, value, label}) => (
 );
 
 // Reusable RatingCard Component
-const RatingCard = ({rating}) => (
+const RatingCard = ({rating}: {
+    rating: any
+}) => (
     <div className="flex items-center mt-4">
         <span className="mr-2">Rating</span>
         <div className="flex">
@@ -185,7 +193,9 @@ const RatingCard = ({rating}) => (
 );
 
 // Reusable ActionButton Component
-const ActionButton = ({color, icon, label}) => (
+const ActionButton = ({color, icon, label}: {
+    color: any, icon: any, label: any
+}) => (
     <button className={`flex-1 ${color} text-white px-6 py-3 rounded font-bold flex items-center justify-center`}>
         {icon}
         {label}
