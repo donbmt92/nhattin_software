@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import React, {ReactElement, ReactNode} from 'react';
 import {Star, ShoppingCart, Shield} from 'lucide-react';
 
 interface InfoCardProps {
@@ -179,7 +179,7 @@ const InfoCard: React.FC<InfoCardProps> = ({icon, value, label}) => (
 
 // Reusable RatingCard Component
 const RatingCard = ({rating}: {
-    rating: any
+    rating: number
 }) => (
     <div className="flex items-center mt-4">
         <span className="mr-2">Rating</span>
@@ -194,7 +194,7 @@ const RatingCard = ({rating}: {
 
 // Reusable ActionButton Component
 const ActionButton = ({color, icon, label}: {
-    color: any, icon: any, label: any
+    color: string, icon: ReactElement, label: string
 }) => (
     <button className={`flex-1 ${color} text-white px-6 py-3 rounded font-bold flex items-center justify-center`}>
         {icon}
