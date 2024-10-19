@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Clover } from 'lucide-react';
+import {  Clover } from 'lucide-react';
 
 export default function PromoTrustCards() {
     return (

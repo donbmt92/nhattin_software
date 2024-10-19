@@ -2,7 +2,6 @@ import ImageSlider from "@/components/ImageSlider";
 import ListItem from "@/components/ListItem";
 import EGiftCards from "@/components/EGiftCards";
 import PromoTrustCards from "@/components/PromoTrustCards";
-import Footer from "@/components/Footer";
 import CategoryIcons from "@/components/CategoryIcons";
 
 export default function Home() {

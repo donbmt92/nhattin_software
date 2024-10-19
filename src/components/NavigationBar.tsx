@@ -1,6 +1,6 @@
 import React from 'react';
 import {Search, ShoppingCart} from 'lucide-react';
-import {FaGoogle, FaMicrosoft, FaSpotify, FaGamepad, FaShieldAlt, FaBrain} from 'react-icons/fa';
+import {FaGoogle, FaMicrosoft, FaSpotify,  FaShieldAlt, FaBrain} from 'react-icons/fa';
 import Link from "next/link";
 import SimpleCategoryMenu from "@/components/SimpleCategoryMenu";
 
