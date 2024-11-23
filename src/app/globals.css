@@ -1,4 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+:root {
+    --clr-bg: #ffffff;
+    --clr-bg-1: #CFEEF2;
+    --clr-bg-2: #9DBEF1;
+    --clr-bg-3: #7DA8EC;
+    --clr-bg-4: #5C92E7;
+    --clr-bg-5: #4A77BE;
+
+    --clr-txt-1: #0B1A46;
+    --clr-txt-2: #1565C0;
+    --clr-txt-3: #ffffff;
+    --clr-txt-4: #9C1919;
+    ;
+
+  }
+
 
