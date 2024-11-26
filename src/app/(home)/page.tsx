@@ -7,6 +7,7 @@ import Poster from "./Poster/page";
 import ListProductNews from "./ListProductNews/page";
 import GiftCards from "./GiftCard/page";
 import Figures from "./Figures/page";
+import LinkContact from "../components/LinkContact/page";
 
 
 export default function Home() {
@@ -20,6 +21,7 @@ export default function Home() {
             <ListProductNews />
             <GiftCards />
             <Figures/>
+            <LinkContact/>
         </>
     );
 }
