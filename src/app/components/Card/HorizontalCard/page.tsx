@@ -7,13 +7,13 @@ interface HeaderSectionsProps {
 export default function HorizontalCard({ comments }: HeaderSectionsProps) {
   return (
     <div className="flex">
-      {comments.map((comment, index) => (
-        <div key={index} className="flex items-center justify-start text-left z-1" style={{ border: '1px solid var(--clr-txt-2)', backgroundColor: 'var(--clr-bg)', borderRadius: '5px', overflow: 'hidden', }}>
+      {comments.map((comment) => (
+        <div key={comment.title} className="flex items-center justify-start text-left z-1" style={{ border: '1px solid var(--clr-txt-2)', backgroundColor: 'var(--clr-bg)', borderRadius: '5px', overflow: 'hidden', }}>
           <div style={{ flex: '5', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5px', position: 'relative', }}>
             <p style={{ position: 'absolute', top: '5px', left: '5px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)', padding: '3px 10px', borderRadius: '5px', zIndex: 2, fontSize: '10px', }} >
               {comment.tag}
             </p>
-            <img src="images/image1.png" alt="Images" style={{ width: '100%', height: 'auto', borderRadius: '5px', objectFit: 'cover', zIndex: 1 }} />
+            <a href="/product/1"><img src="images/image1.png" alt="Images" style={{ width: '100%', height: 'auto', borderRadius: '5px', objectFit: 'cover', zIndex: 1, cursor: 'pointer' }} /></a>
           </div>
           <div style={{ flex: '7' }}>
             <div style={{ minHeight: '54px', display: 'flex', alignItems: 'center', }}>

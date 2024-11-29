@@ -3,7 +3,7 @@ import StandCard from '../StandCard/page';
 import HorizontalCard from '../HorizontalCard/page';
 
 export default function ListCard3() {
-    const [itemsToShow, setItemsToShow] = useState(8); 
+    const [itemsToShow, setItemsToShow] = useState(8);
     const comments = [
         { title: 'Mua Tài Khoản Nexflix Premium', tag: 'Giải trí', sales: '12342', prices: '399.000' },
         { title: 'Web Development', tag: 'Lorem ipsum', sales: '12342', prices: '399.000' },
@@ -44,9 +44,11 @@ export default function ListCard3() {
     return (
         <div className="relative container mx-auto pb-[20px]">
             <div className="grid grid-cols-1 xl:grid-cols-4 md:grid-cols-3 gap-6 mx-auto">
-            {currentItems.map((comment) => (
-                <HorizontalCard comments={[comment]} />
-            ))}
+                {currentItems.map((comment) => (
+                    <div key={comment.title}>
+                        <HorizontalCard comments={[comment]} />
+                    </div>
+                ))}
             </div>
             <div className="flex justify-center items-center">
                 {itemsToShow < totalItems && (

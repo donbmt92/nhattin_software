@@ -7,7 +7,7 @@ interface InfoCardProps {
     label: string;
 }
 
-export default function item() {
+export default function Items() {
     return (
         <div className="w-full h-full">
             <section

@@ -42,8 +42,8 @@ export default function ListCard2() {
         <div className="relative container mx-auto pb-[20px] overflow-hidden">
             {/* Vùng hiển thị các card */}
             <div className="grid grid-cols-4 grid-rows-2 gap-4">
-                {getDisplayedComments().map((comment, index) => (
-                    <div key={index} className="flex-shrink-0">
+                {getDisplayedComments().map((comment) => (
+                    <div key={comment.title}  className="flex-shrink-0">
                         <HorizontalCard comments={[comment]} />
                     </div>
                 ))}
