@@ -1,60 +1,112 @@
-import {FaFacebook, FaTelegram,  FaInstagram, FaTiktok, FaTwitter, FaEnvelope} from 'react-icons/fa';
+import Link from 'next/link'
+import Image from 'next/image'
+import {Facebook, Instagram, Youtube} from 'lucide-react'
+const SocialLink = ({href, icon, children}) => (
+    <Link href={href} className="hover:opacity-80">
+        {icon}
+        <span className="sr-only">{children}</span>
+    </Link>
+)
 
+const FooterLink = ({href, className, children}) => (
+    <Link href={href} className={`inline-flex justify-center items-center px-6 py-2 ${className}`}>
+        {children}
+    </Link>
+)
+
+const FooterLinks = ({links}) => (
+    <ul className="space-y-2">
+        {links.map((link) => (
+            <li key={link.href}>
+                <Link href={link.href} className="hover:underline">
+                    {link.label}
+                </Link>
+            </li>
+        ))}
+    </ul>
+)
 const Footer = () => {
     return (
-        <footer className="bg-blue-500 text-white p-8">
-            <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <h2 className="text-2xl font-bold text-orange-500">Nhất Tín Software</h2>
-                    <p className="mt-2">Cửa hàng tài khoản giá rẻ.</p>
-                    <p className="mt-2">CTY TNHH 1 THÀNH VIÊN NHẤT TÍN</p>
-                    <p>MST: 3002252174</p>
-                    <p>Địa chỉ: </p>
-                    <div className="flex space-x-4 mt-4">
-                        {/*<FaZalo size={24}/>*/}
-                        <FaFacebook size={24}/>
-                        <FaTelegram size={24}/>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 className="text-xl font-semibold mb-2">Liên kết</h3>
-                    <ul className="space-y-2">
-                        <li>Giới thiệu</li>
-                        <li>Liên hệ</li>
-                        <li>Bảo hành và hoàn tiền</li>
-                        <li>Hướng dẫn mua hàng</li>
-                        <li>Bài viết & tin tức</li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 className="text-xl font-semibold mb-2">Dịch vụ</h3>
-                    <ul className="space-y-2">
-                        <li>Mua Spotify Premium</li>
-                        <li>Mua tài khoản Netflix</li>
-                        <li>Mua Canva Pro vĩnh viễn</li>
-                        <li>Mua Adobe bản quyền</li>
-                        <li>Mua YouTube Premium</li>
-                    </ul>
-                    <div className="flex space-x-4 mt-4">
-                        <button className="border border-white py-2 px-4 rounded-md">Trở thành nhà cung cấp</button>
-                        <button className="border border-white py-2 px-4 rounded-md">Trở thành cộng tác viên</button>
-                    </div>
+        <footer className="bg-[#4B84F7] text-white">
+            <div className="bg-white text-[#4B84F7]">
+                <div className="flex justify-end  container mx-auto px-4 py-8">
+                    <SocialLink href="#" icon={<Facebook className="w-6 h-6"/>}>Facebook</SocialLink>
+                    <SocialLink href="#"
+                                icon={<Image src="/tiktok.svg" alt="TikTok" width={24}
+                                             height={24}/>}>TikTok</SocialLink>
+                    <SocialLink href="#" icon={<Instagram className="w-6 h-6"/>}>Instagram</SocialLink>
+                    <SocialLink href="#" icon={<Youtube className="w-6 h-6"/>}>Youtube</SocialLink>
                 </div>
             </div>
+            <div className="container mx-auto px-4 py-8"  style={{ backgroundImage: "url('image/footer-bg.svg')" }}>
+                {/* Main Footer Content */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                    {/* Company Info */}
+                    <div className="flex items-center gap-2">
+                        <Link href="/">
+                            <Image src="/logo.svg" alt="DreakTech Logo" width={48} height={48} className="w-12 h-12"/>
+                        </Link>
+                        <span className="text-xl font-bold">DreakTech</span>
+                    </div>
 
-            <div className="border-t border-gray-700 mt-8 pt-4 text-center text-sm">
-                <div className="flex justify-center space-x-4 mb-4">
-                    <FaInstagram size={24}/>
-                    <FaTiktok size={24}/>
-                    <FaTwitter size={24}/>
-                    <FaEnvelope size={24}/>
+                    {/* Services Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <FooterLink href="/tro-thanh-nha-cung-cap"
+                                    className="border-2 border-white rounded-md hover:bg-white hover:text-[#4B84F7] transition-colors">
+                            TRỞ THÀNH <br/> NHÀ CUNG CẤP
+                        </FooterLink>
+                        <FooterLink href="/tro-thanh-cong-tac-vien"
+                                    className="border-2 border-white rounded-md hover:bg-white hover:text-[#4B84F7] transition-colors">
+                            TRỞ THÀNH <br/> CỘNG TÁC VIÊN
+                        </FooterLink>
+                    </div>
                 </div>
-                <p>Copyright © Gamikey. All Rights Reserved. Powered by Gamikey.com</p>
+
+                {/* Quick Links and Services */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                    {/* Quick Links */}
+                    <div>
+                        <p className="mt-2 text-sm">Cửa hàng tài khoản giá rẻ.</p>
+                        <p className="mt-4 text-sm">CTY TNHH SLUTON TECHNOLOGY</p>
+                        <p className="text-sm">MST: 12345678</p>
+                        <p className="text-sm">Địa chỉ: 123 Đông Khởi, Tân An, BMT, Đắk Lắk</p>
+                    </div>
+                    <div>
+                        <FooterLinks
+                            links={[
+                                {href: '/gioi-thieu', label: 'Giới thiệu'},
+                                {href: '/lien-he', label: 'Liên Hệ'},
+                                {href: '/bao-hanh', label: 'Bảo hành và hoàn tiền'},
+                                {href: '/huong-dan', label: 'Hướng dẫn mua hàng'},
+                                {href: '/tin-tuc', label: 'Bài viết & tin tức'},
+                            ]}
+                        />
+                    </div>
+
+                    {/* Services */}
+                    <div>
+                        <FooterLinks
+                            links={[
+                                {href: '/dich-vu/facebook', label: 'Chăm sóc Facebook, Website'},
+                                {href: '/dich-vu/quang-cao', label: 'Dịch vụ quảng cáo'},
+                                {href: '/dich-vu/marketing', label: 'Phòng Marketing thuê ngoài'},
+                                {href: '/dich-vu/kenh-ban-hang', label: 'Quản trị kênh bán hàng'},
+                                {href: '/dich-vu/thiet-ke', label: 'Thiết kế ấn phẩm, xây dựng website, phần mềm'},
+                                {href: '/dich-vu/truyen-thong', label: 'Truyền thông, PR báo chí'},
+                            ]}
+                        />
+                    </div>
+                </div>
+
+                {/* Copyright */}
+                <div className="mt-8 pt-8 border-t border-white/20 text-center">
+                    <p className="text-sm">© 2024 DreakTech. All Rights Reserved.</p>
+                </div>
             </div>
         </footer>
-    );
-};
+    )
+}
 
-export default Footer;
+export default Footer
+
+

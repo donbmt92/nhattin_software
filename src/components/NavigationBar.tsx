@@ -1,84 +1,310 @@
-import React from 'react';
-import {Search, ShoppingCart} from 'lucide-react';
-import {FaGoogle, FaMicrosoft, FaSpotify,  FaShieldAlt, FaBrain} from 'react-icons/fa';
-import Link from "next/link";
-import SimpleCategoryMenu from "@/components/SimpleCategoryMenu";
+'use client'
 
-const categories = [
-    {name: 'Netflix', icon: <FaGoogle className="text-red-500"/>},
-    {name: 'Adobe', icon: <FaGoogle className="text-yellow-500"/>},
-    {name: 'Google', icon: <FaGoogle className="text-blue-500"/>},
-    {name: 'Microsoft', icon: <FaMicrosoft className="text-purple-500"/>},
-    {name: 'Spotify', icon: <FaSpotify className="text-green-500"/>},
-    {name: 'Canva', icon: <FaGoogle className="text-cyan-500"/>},
-    {name: 'AI', icon: <FaBrain className="text-pink-500"/>},
-    {name: 'Bảo mật', icon: <FaShieldAlt className="text-gray-500"/>},
+import Image from 'next/image'
+import Link from 'next/link'
+import {ShoppingCart, Menu, Users, Book, Home} from 'lucide-react'
+import {useState} from 'react'
 
-];
-const cate = ['Giải trí', 'Học tập', 'Làm việc', 'Bảo mật', 'Sức khoẻ', 'Game'];
-const brands = ['Adobe', 'Autodesk', 'Google', 'Netflix', 'Grammarly', 'Disney', 'Discord', 'Apple', 'Microsoft', 'Kaspersky', 'Spotify', 'Tidal', 'HBO'];
-const popularSearches = ['Spotify Premium', 'Netflix Premium', 'Youtube Premium', 'Coursera Plus', 'O’Reilly Learning', 'Linkedin Premium', 'Datacamp Premium', 'Codecademy Pro'];
+const NavigationLinks = [
+    {href: '/', label: 'Trang Chủ', icon: <Home/>},
+    {href: '/products', label: 'Sản Phẩm', icon: <Home/>},
+    {href: '/news', label: 'Thủ Thuật & Tin Tức', icon: <Home/>},
+    {href: '/about', label: 'Về Chúng Tôi', icon: <Home/>}
+]
 
+const BottomNavLinks = [
+    {
+        href: '/partnership',
+        label: 'Hợp Tác',
+        icon: <Users className="h-5 w-5"/>
+    },
+    {
+        href: '/guide',
+        label: 'Hướng dẫn mua hàng',
+        icon: <Book className="h-5 w-5"/>
+    }
+]
 
-const NavigationBar = () => {
+// Category Menu Component
+const CategoryMenu = ({isOpen, onClose}) => {
+    const categories = [
+        "Giải trí",
+        "Học tập",
+        "Làm việc",
+        "Bảo mật",
+        "Sức khỏe",
+        "Game",
+        "Xem phim",
+        "Nghe nhạc",
+        "Thiết kế đồ họa",
+        "Diệt Virus",
+        "Học Tiếng Anh",
+        "Khóa học"
+    ];
+    const brands = [
+        {name: 'Adobe', icon: '🅰️'},
+        {name: 'Apple', icon: '🍎'},
+        {name: 'Autodesk', icon: '🏢'},
+        {name: 'Microsoft', icon: '⊞'},
+        {name: 'Google', icon: 'G'},
+        {name: 'Kaspersky', icon: '🛡️'},
+        {name: 'Netflix', icon: 'N'},
+        {name: 'Spotify', icon: '🎵'},
+        {name: 'Grammarly', icon: '✓'},
+        {name: 'Tidal', icon: '♪'},
+        {name: 'Disney', icon: '🏰'},
+        {name: 'HBO', icon: '📺'},
+        {name: 'Discord', icon: '💬'}
+    ];
+
+    const popularServices = [
+        {name: 'Spotify Premium', icon: '🎵'},
+        {name: 'Netflix Premium', icon: 'N'},
+        {name: 'Youtube Premium', icon: '▶️'},
+        {name: 'Coursera Plus', icon: '📚'},
+        {name: "O'Reilly Learning", icon: '📖'},
+        {name: 'LinkedIn Premium', icon: '💼'},
+        {name: 'Datacamp Premium', icon: '📊'},
+        {name: 'Codecademy Pro', icon: '💻'}
+    ];
+
+    if (!isOpen) return null;
 
     return (
-            <div className="bg-blue-500 text-white p-4">
-                <nav >
-                    <div className="container mx-auto flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <Link href="/" className="text-white font-bold text-2xl">Nhattin</Link>
-                        </div>
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+            <div className="bg-gray-900 rounded-lg p-8 w-[800px] max-w-full text-white">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold">Danh mục</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-300">
 
-                        <div className="flex-grow mx-4">
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Nhập nội dung cần tìm..."
-                                    className="w-full bg-white rounded-full py-2 px-4 text-white focus:outline-none"
-                                />
-                                <Search className="absolute right-3 top-2 text-gray-400"/>
-                            </div>
-                        </div>
+                    </button>
+                </div>
 
-                        <div className="flex items-center space-x-4 text-sm">
-                            <button className="text-white hover:text-orange-500 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21"
-                                     fill="none"
-                                     className="mr-2">
-                                    <path d="M10.835 10.314C12.1585..." fill="#4A53B5"/>
-                                    <path d="M19.2638 16.0589C19.2368..." fill="#4A53B5"/>
-                                </svg>
-                                Đăng nhập
-                            </button>
-                            <button className="text-white hover:text-orange-500 flex items-center">
-                                <ShoppingCart className="w-5 h-5 ml-1"/>
-                                Giỏ hàng
-                            </button>
+                <div className="grid grid-cols-3 gap-8">
+                    {/* Categories Section */}
+                    <div>
+                        <h3 className="text-purple-400 font-semibold mb-4">Danh mục</h3>
+                        <div className="flex flex-wrap -mx-4">
+                            {categories.map((category, index) => (
+                                <Link
+                                    key={index}
+                                    href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}
+                                    className="w-1/2 py-1 px-4 hover:text-orange-400 transition-colors whitespace-nowrap"
+                                    onClick={onClose}
+                                >
+                                    {category}
+                                </Link>
+                            ))}
                         </div>
                     </div>
-                </nav>
-                <div className="container mx-auto mt-4 flex flex-wrap gap-4 justify-start">
-                    {/*<button*/}
-                    {/*    className="bg-white text-blue-500 px-4 py-2 rounded-md flex items-center text-base shadow-sm">*/}
-                    {/*    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 21 22" fill="none">*/}
-                    {/*        <path d="M2.76754 5.27334H18.3675..." fill="blue"/>*/}
-                    {/*    </svg>*/}
-                    {/*    <span className="ml-2">Danh mục</span>*/}
-                    {/*</button>*/}
-                    <SimpleCategoryMenu categories={cate} brands={brands} popularSearches={popularSearches} />
-                    {categories.map((category, index) => (
-                        <button
-                            key={index}
-                            className="bg-blue-500 hover:bg-blue-600 text-white flex items-center space-x-2 px-4 py-2 rounded-md text-base shadow-sm"
+
+                    {/* Brands Section */}
+                    <div>
+                        <h3 className="text-purple-400 font-semibold mb-4">Thương hiệu</h3>
+                        <div className="grid grid-cols-2 gap-2">
+                            {brands.map((brand, index) => (
+                                <Link
+                                    key={index}
+                                    href={`/brand/${brand.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                    className="flex items-center gap-2 py-1 hover:text-orange-400 transition-colors"
+                                    onClick={onClose}
+                                >
+                  <span className="w-6 h-6 flex items-center justify-center bg-gray-800 rounded-sm text-sm">
+                    {brand.icon}
+                  </span>
+                                    <span>{brand.name}</span>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Popular Services Section */}
+                    <div>
+                        <h3 className="text-purple-400 font-semibold mb-4">Tìm kiếm nhiều</h3>
+                        <div className="space-y-2">
+                            {popularServices.map((service, index) => (
+                                <Link
+                                    key={index}
+                                    href={`/service/${service.name.toLowerCase().replace(/\s+/g, '-')}`}
+                                    className="flex items-center gap-2 py-1 hover:text-orange-400 transition-colors"
+                                    onClick={onClose}
+                                >
+                  <span className="w-6 h-6 flex items-center justify-center bg-gray-800 rounded-sm text-sm">
+                    {service.icon}
+                  </span>
+                                    <span>{service.name}</span>
+                                </Link>
+                            ))}
+                        </div>
+                        <Link
+                            href="/services"
+                            className="block mt-4 text-orange-400 hover:underline"
+                            onClick={onClose}
                         >
-                            {category.icon}
-                            <span>{category.name}</span>
-                        </button>
-                ))}
+                            Xem tất cả &rarr;
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="flex gap-2 mt-6 pt-6 border-t border-gray-800">
+                    <button
+                        className="px-4 py-1 text-sm border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition-colors">
+                        UPGRADE
+                    </button>
+                    <button
+                        className="px-4 py-1 text-sm border border-gray-600 text-gray-400 rounded hover:bg-gray-700 transition-colors">
+                        ACCOUNT
+                    </button>
+                    <button
+                        className="px-4 py-1 text-sm border border-gray-600 text-gray-400 rounded hover:bg-gray-700 transition-colors">
+                        KEY ACTIVE
+                    </button>
+                </div>
             </div>
         </div>
     );
 };
 
-export default NavigationBar;
+const NavigationBar = () => {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false)
+
+    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
+    const toggleCategoryMenu = () => setIsCategoryMenuOpen(!isCategoryMenuOpen)
+
+    return (
+        <nav className="flex flex-col">
+            {/* Top Bar */}
+            <div className="bg-[#4B84F7] px-4 py-3">
+                <div className="mx-auto max-w-7xl">
+                    <div className="flex flex-wrap items-center justify-between gap-4 md:gap-8">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center gap-2">
+                            <Image
+                                src="/logo.png"  // Replace with actual logo path
+                                alt="DreakTech"
+                                width={40}
+                                height={40}
+                                className="h-10 w-10"
+                            />
+                            <span className="text-xl font-bold text-white">DreakTech</span>
+                        </Link>
+
+                        {/* Search */}
+                        <div className="w-full flex-1 md:max-w-2xl md:w-auto">
+                            <div className="flex">
+                                <input
+                                    type="text"
+                                    placeholder="Search"
+                                    className="w-full rounded-l-md border-0 px-4 py-2 text-gray-900 placeholder:text-gray-400"
+                                />
+                                <button
+                                    className="rounded-r-md bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Account & Cart */}
+                        <div className="flex items-center gap-4 md:gap-6">
+                            <Link href="/account" className="flex items-center gap-2 text-white hover:text-blue-100">
+                                <Users className="h-6 w-6"/>
+                                <div className="text-sm hidden md:block">
+                                    <div>Login</div>
+                                    <div>Account</div>
+                                </div>
+                            </Link>
+                            <Link href="/cart" className="flex items-center gap-2 text-white hover:text-blue-100">
+                                <ShoppingCart className="h-6 w-6"/>
+                                <div className="text-sm hidden md:block">
+                                    <div>Your cart</div>
+                                    <div>20</div>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Navigation */}
+            <div className="bg-[#4B84F7] px-4 pb-3">
+                <div className="mx-auto max-w-7xl">
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center justify-between">
+                        {NavigationLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className="flex items-center gap-3 text-white hover:text-blue-100 px-4"
+                            >
+                                {link.icon}
+                                {link.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Mobile Navigation Toggle */}
+                    <div className="md:hidden flex items-center justify-between">
+                        <button
+                            onClick={toggleMobileMenu}
+                            className="text-white hover:text-blue-100"
+                        >
+                            <Menu className="h-6 w-6"/>
+                        </button>
+                    </div>
+
+                    {/* Mobile Navigation Dropdown */}
+                    {isMobileMenuOpen && (
+                        <div className="md:hidden absolute left-0 right-0 bg-[#4B84F7] z-50">
+                            {NavigationLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="block px-4 py-2 text-white hover:bg-blue-600"
+                                    onClick={toggleMobileMenu}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Bottom Bar */}
+            <div className="border-t border-gray-200 bg-white px-4 py-2">
+                <div className="mx-auto max-w-7xl">
+                    <div className="flex items-center justify-between">
+                        <button
+                            className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+                            onClick={toggleCategoryMenu}
+                        >
+                            <Menu className="h-5 w-5"/>
+                            Category
+                        </button>
+                        <div className="flex items-center gap-6">
+                            {BottomNavLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+                                >
+                                    {link.icon}
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Category Menu */}
+            <CategoryMenu
+                isOpen={isCategoryMenuOpen}
+                onClose={() => setIsCategoryMenuOpen(false)}
+            />
+        </nav>
+    )
+}
+
+export default NavigationBar
