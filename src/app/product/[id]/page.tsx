@@ -2,11 +2,11 @@
 import React from 'react'
 import ProductDetails from './ProductDetails/page'
 import Policys from './Policy/page';
-import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
 import ListProductSimilar from './ListProductSimilar/page';
 import LinkContact from '@/app/components/LinkContact/page';
 import Descriptions from './Descriptions/page';
+import Headers from '@/app/components/Header/page';
 
 export default function ProductDetailPage() {
     const productData = {
@@ -19,7 +19,7 @@ export default function ProductDetailPage() {
     };
     return (
         <div className="">
-            <NavigationBar />
+            <Headers/>
             <ProductDetails data={productData} />
             <Policys />
             <Descriptions/>
