@@ -1,6 +1,7 @@
 "use client";
 import { faHeart, faMinus, faPlus, faStar } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Link from 'next/link';
 import React, { useState } from 'react'
 
 interface ProductDetailProps {
@@ -236,7 +237,7 @@ export default function ProductDetail({ data }: ProductDetailProps) {
                             &nbsp;
                             <button className=" rounded-md flex px-4"
                                 style={{ padding: '15px 60px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-6)', fontSize: '18px' }}>
-                                Mua ngay
+                               <Link href="/order">Mua ngay</Link> 
                             </button>
                         </div>
                         {/* <div className="flex justify-center items-center mb-2">
