@@ -6,6 +6,7 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import CartPopup from '../Cart/CartPopup';
+import CategoryMenu from './CategoryMenu';
 
 export default function TopHeader() {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -22,15 +23,18 @@ export default function TopHeader() {
             <div className="container mx-auto items-center justify-between grid grid-cols-12">
                 <div className="flex items-center col-span-3 mx-4">
                     <Link href="/" className="text-white font-bold text-2xl flex items-center">
-                        <Image 
-                            src="/images/icon/logo.jpg" 
-                            alt="Logo" 
-                            width={50} 
+                        <Image
+                            src="/images/icon/logo.jpg"
+                            alt="Logo"
+                            width={50}
                             height={50}
                             className="mr-2"
                         />
                         Nhattin
                     </Link>
+                    <div className="ml-4 hidden lg:block">
+                        <CategoryMenu />
+                    </div>
                 </div>
                 <div className="flex-grow mx-4 col-span-1 lg:col-span-5">
                     {/* Mobile View: Icon */}
@@ -91,7 +95,7 @@ export default function TopHeader() {
                             <p className="text-md font-semibold">Nguyễn Quốc Duy</p>
                         </div>
                     </button>
-                    <button 
+                    <button
                         onClick={toggleCart}
                         style={{ display: 'flex', alignItems: 'center', color: 'var(--clr-txt-3)' }}
                     >

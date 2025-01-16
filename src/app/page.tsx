@@ -15,7 +15,6 @@ import Headers from "./components/Header/page";
 export default function Home() {
     return (
         <>
-            <Headers/>
             <Sliders />
             <ListCategories />
             <ListProductTop />

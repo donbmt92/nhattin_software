@@ -50,7 +50,7 @@ export default function OrderDetails() {
     const products = [
         {
             id: 1,
-            name: 'Mua Tài khoản Netflix PremiumMua Tài khoản Netflix Premium sdssdsdsdssdsdsdsd',
+            name: 'Mua Tài khoản Netflix PremiumMua Tài khoản Netflix Premium',
             price: 1000,
             type: 'Giải trí',
             quantity: 1,

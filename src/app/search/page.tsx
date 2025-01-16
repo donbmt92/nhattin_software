@@ -7,7 +7,6 @@ import Headers from "../components/Header/page";
 export default function SearchPage() {
     return (
         <>
-        <Headers/>
             <PromoBanner/>
             <div className="flex w-full h-full mx-auto max-w-7xl pt-3 pb-3">
                 <div className="w-[300px] pr-5">

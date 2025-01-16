@@ -6,13 +6,37 @@ import { ProductType } from '@/types/category'
 
 const PRODUCTS: ProductType[] = [
     {
-        id: '123456',
+        id: '1',
         name: 'Mua Tài khoản Netflix Premium',
-        image: '/placeholder.svg?height=200&width=200',
+        image: '/images/image12.png',
         price: '399.000 đ',
         tag: 'Giá tốt',
         type: 'netflix',
     },
+    {
+        id: '2',
+        name: 'Mua Tài khoản Netflix Premium',
+        image: '/images/image12.png',
+        price: '399.000 đ',
+        tag: 'Giá tốt',
+        type: 'netflix',
+    },
+    {
+        id: '3',
+        name: 'Mua Tài khoản Netflix Premium',
+        image: '/images/image12.png',
+        price: '399.000 đ',
+        tag: 'Giá tốt',
+        type: 'netflix',
+    },
+    {
+        id: '4',
+        name: 'Mua Tài khoản Netflix Premium',
+        image: '/images/image12.png',
+        price: '399.000 đ',
+        tag: 'Giá tốt',
+        type: 'netflix',
+    }
     // ... other products
 ]
 
@@ -23,12 +47,12 @@ const FILTERS = [
     { id: 'bestseller', label: 'Bán chạy', icon: <TrendingUp className="h-4 w-4" /> },
 ]
 
-function FilterSection({ 
-    priceRange, 
-    onClearPrice, 
-    activeFilter, 
-    onFilterChange 
-}: { 
+function FilterSection({
+    priceRange,
+    onClearPrice,
+    activeFilter,
+    onFilterChange
+}: {
     priceRange: string
     onClearPrice: () => void
     activeFilter: string | null
@@ -38,7 +62,7 @@ function FilterSection({
         <div className="items-center gap-3 p-2">
             <div className="flex items-center gap-2">
                 <button className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 hover:bg-gray-50">
-                    <Filter className="h-4 w-4"/>
+                    <Filter className="h-4 w-4" />
                     <span className="text-sm">Lọc</span>
                 </button>
 
@@ -46,7 +70,7 @@ function FilterSection({
                     <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2">
                         <span className="text-sm">Từ {priceRange}</span>
                         <button onClick={onClearPrice} className="rounded-full p-1 hover:bg-gray-200">
-                            <X className="h-3 w-3"/>
+                            <X className="h-3 w-3" />
                         </button>
                     </div>
                 )}
@@ -60,7 +84,7 @@ function FilterSection({
                             key={filter.id}
                             onClick={() => onFilterChange(filter.id)}
                             className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors
-                                ${activeFilter === filter.id 
+                                ${activeFilter === filter.id
                                     ? 'border-blue-500 bg-blue-50 text-blue-600'
                                     : 'border-gray-200 hover:bg-gray-50'
                                 }`}
@@ -75,10 +99,10 @@ function FilterSection({
     )
 }
 
-function ProductList({ 
-    products, 
-    getBackgroundColor 
-}: { 
+function ProductList({
+    products,
+    getBackgroundColor
+}: {
     products: ProductType[]
     getBackgroundColor: (type: ProductType['type']) => string
 }) {
@@ -87,8 +111,8 @@ function ProductList({
             {products.map((product) => (
                 <div key={product.id} className="group relative rounded-lg border border-gray-200 bg-white p-4">
                     <div className={`relative mb-4 aspect-square overflow-hidden rounded-lg ${getBackgroundColor(product.type)}`}>
-                        <img src={product.image} alt={product.name} 
-                            className="h-full w-full object-cover transition-transform group-hover:scale-105"/>
+                        <img src={product.image} alt={product.name}
+                            className="h-full w-full object-cover transition-transform group-hover:scale-105" />
                         <span className="absolute left-2 top-2 rounded bg-red-500 px-2 py-1 text-xs text-white">
                             {product.tag}
                         </span>
@@ -120,15 +144,15 @@ export default function ProductGrid() {
 
     return (
         <div className="mx-auto max-w-7xl p-4">
-            <FilterSection 
+            <FilterSection
                 priceRange={priceRange}
                 onClearPrice={() => setPriceRange('')}
                 activeFilter={activeFilter}
                 onFilterChange={setActiveFilter}
             />
-            <ProductList 
-                products={PRODUCTS} 
-                getBackgroundColor={getBackgroundColor} 
+            <ProductList
+                products={PRODUCTS}
+                getBackgroundColor={getBackgroundColor}
             />
         </div>
     )
