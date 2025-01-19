@@ -21,7 +21,6 @@ export default function ProductDetailPage() {
             <Policys />
             <Descriptions/>
             <ListProductSimilar/>
-            <LinkContact/>
         </div>
     )
 }
