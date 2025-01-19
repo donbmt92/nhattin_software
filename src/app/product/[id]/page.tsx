@@ -3,7 +3,6 @@ import React from 'react'
 import ProductDetails from './ProductDetails/page'
 import Policys from './Policy/page';
 import ListProductSimilar from './ListProductSimilar/page';
-import LinkContact from '@/app/components/LinkContact/LinkContact';
 import Descriptions from './Descriptions/page';
 
 export default function ProductDetailPage() {
