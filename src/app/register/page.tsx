@@ -1,4 +1,5 @@
 "use client";
+import Image from 'next/image';
 import React, { useState } from 'react';
 
 export default function Register() {
@@ -43,13 +44,13 @@ export default function Register() {
             >
                 <div className="grid xl:grid-cols-12">
                     <div className='xl:col-span-6 hidden xl:flex'>
-                        <img src="../images/image13.png" alt="Mô tả hình ảnh" style={{ width: '100%', height: 'auto', borderRadius: '15px', }} />
+                        <Image src="/images/image13.png" alt="Mô tả hình ảnh" style={{ width: '100%', height: 'auto', borderRadius:'15px', }} width={1000} height={100} />
                     </div>
                     <div className='col-span-6 m-[80px] justify-center flex'>
                         <div className="w-full xl:max-w-md">
                             <h1 className="text-[40px] font-bold text-center mb-6">Đăng ký tài khoản</h1>
                             <button className="flex items-center justify-center w-3/5 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 mb-4 mx-auto">
-                                <img src="../images/icon/icon31.png" alt="Google Logo" className="w-5 h-5 mr-2" />
+                                <Image src="/images/icon/icon31.png" alt="Google Logo" className="w-5 h-5 mr-2" width={24} height={24}/>
                                 Đăng ký với Google
                             </button>
 
@@ -63,7 +64,7 @@ export default function Register() {
                                 <div className="grid grid-cols-2 gap-4 mb-6">
                                     <input
                                         type="text"
-                                        placeholder="Họ và tên đệm"
+                                        placeholder="Họ và tên "
                                         className="border border-gray-300 rounded-lg py-2 px-3 w-full"
                                     />
                                     <input
@@ -90,10 +91,12 @@ export default function Register() {
                                         className="absolute inset-y-0 right-3 flex items-center"
                                         onClick={togglePasswordVisibility}
                                     >
-                                        <img
-                                            src={showPassword ? "../images/icon/icon32.png" : "../images/icon/icon33.png"}
+                                        <Image
+                                            src={showPassword ? "/images/icon/icon32.png" : "/images/icon/icon33.png"}
                                             alt="Toggle Visibility"
                                             className="w-5 h-5"
+                                            width={24}
+                                            height={24}
                                         />
                                     </button>
                                 </div>

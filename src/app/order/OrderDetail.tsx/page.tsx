@@ -1,6 +1,7 @@
 "use client";
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 
 export default function OrderDetails() {
@@ -12,14 +13,14 @@ export default function OrderDetails() {
     const [selectedMethod, setSelectedMethod] = useState("momo");
 
     // Hàm xử lý khi nhấn nút trừ
-    const increaseQuantity = (productId: any) => {
+    const increaseQuantity = (productId: number) => {
         setQuantities((prev) => ({
             ...prev,
             [productId]: (prev[productId] || 1) + 1,
         }));
     };
 
-    const decreaseQuantity = (productId: any) => {
+    const decreaseQuantity = (productId: number) => {
         setQuantities((prev) => ({
             ...prev,
             [productId]: Math.max((prev[productId] || 1) - 1, 1),
@@ -104,10 +105,10 @@ export default function OrderDetails() {
                             <div className=" m-2 grid grid-cols-1 md:grid-cols-12">
                                 <div key={product.id} className="col-span-10 flex py-6" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }} >
                                     <div className='justify-center items-center flex mx-3 cursor-pointer'>
-                                        <img src="../images/icon/icon28.png" alt="" style={{ width: '40px', height: '40px', objectFit: 'contain', }} />
+                                        <Image src="/images/icon/icon28.png" alt="" style={{ width: '40px', height: '40px', objectFit: 'contain', }} width={40} height={40} />
                                     </div>
                                     <div className='flex justify-center items-center'>
-                                        <img src={product.imgSrc} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                                        <Image src={product.imgSrc} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} width={100} height={100} />
                                         <div className='mx-3'>
                                             <h2 style={{
                                                 fontSize: '20px',
@@ -218,7 +219,7 @@ export default function OrderDetails() {
                                         className="absolute right-[7px] top-[7px]  cursor-pointer rounded-md"
                                         style={{ color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)' }}
                                     >
-                                        <img src="../images/icon/icon29.png" alt="" style={{ width: '45px', height: '40px' }} />
+                                        <Image src="/images/icon/icon29.png" alt="" style={{ width: '45px', height: '40px' }} width={100} height={100} />
                                     </button>
                                 </div>
                                 <div>
@@ -246,10 +247,11 @@ export default function OrderDetails() {
                                                     >
                                                         <div className="flex items-center">
                                                             <p className="font-medium mr-2">{method.label}</p>
-                                                            <img
+                                                            <Image
                                                                 src={method.logo}
                                                                 alt={method.label}
                                                                 className="w-10 mr-3"
+                                                                width={100} height={100}
                                                             />
                                                         </div>
                                                         <input
@@ -277,7 +279,7 @@ export default function OrderDetails() {
                                             className="w-full py-2 rounded-md mt-4 flex items-center justify-center cursor-pointer"
                                             style={{ backgroundColor: 'var(--clr-bg-7)', color: 'var(--clr-txt-5)', fontWeight: 'bold' }}
                                         >
-                                            Đặt Hàng <img src="../images/icon/icon30.png" alt="" style={{ marginLeft: '10px' }} />
+                                            Đặt Hàng <Image src="/images/icon/icon30.png" alt="" style={{ marginLeft: '10px' }}width={100} height={100} />
                                         </button>
                                     </div>
                                 </div>

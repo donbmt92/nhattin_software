@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React from "react";
 import Slider from "react-slick";
 
@@ -35,13 +36,13 @@ export default function GiftCards() {
     };
 
     const giftCards = [
-        { id: 1, name: "Razer Gold", image: "https://gamikey.com/wp-content/uploads/2024/09/Razer.jpg" },
-        { id: 2, name: "Amazon", image: "https://gamikey.com/wp-content/uploads/2024/09/Amazone.jpg" },
-        { id: 3, name: "iTunes", image: "https://gamikey.com/wp-content/uploads/2024/09/Itune.jpg" },
-        { id: 4, name: "Tinder", image: "https://gamikey.com/wp-content/uploads/2024/09/Tinder.jpg" },
-        { id: 5, name: "Spotify", image: "https://gamikey.com/wp-content/uploads/2024/09/Spotify.jpg" },
-        { id: 6, name: "Netflix", image: "https://gamikey.com/wp-content/uploads/2024/09/Netflix.jpg" },
-        { id: 7, name: "Google Play", image: "https://gamikey.com/wp-content/uploads/2024/09/Google.jpg" },
+        { id: 1, name: "Razer Gold", image: "/images/slider/Razer.jpg" },
+        { id: 2, name: "Amazon", image: "/images/slider/Amazone.jpg" },
+        { id: 3, name: "iTunes", image: "/images/slider/Itune.jpg" },
+        { id: 4, name: "Tinder", image: "/images/slider/Tinder.jpg" },
+        { id: 5, name: "Spotify", image: "/images/slider/Spotify.jpg" },
+        { id: 6, name: "Netflix", image: "/images/slider/Netflix.jpg" },
+        { id: 7, name: "Google Play", image: "/images/slider/Google.jpg" },
     ];
 
     return (
@@ -54,10 +55,12 @@ export default function GiftCards() {
                 {giftCards.map((card) => (
                     <div key={card.id} className="mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                            <img
+                            <Image
                                 src={card.image}
                                 alt={card.name}
                                 className="w-full h-60 object-cover"
+                                width={1000}
+                                height={100}
                             />
                         </div>
                     </div>

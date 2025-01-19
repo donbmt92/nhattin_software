@@ -1,6 +1,7 @@
 "use client";
 import { faHeart, faMinus, faPlus, faStar } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react'
 
@@ -47,7 +48,7 @@ export default function ProductDetail({ data }: ProductDetailProps) {
         <div className="container mx-auto my-6">
             <div className="grid lg:grid-cols-12 md:grid-cols-2 grid-col-1">
                 <div className='flex justify-center items-center md:col-span-5'>
-                    <img src="../images/image2.png" alt="" style={{ borderRadius: "10px", width: "100%" }} />
+                    <Image src="/images/image2.png" alt="" style={{ borderRadius: "10px", width: "100%" }} width={1000} height={100} />
                 </div>
                 <div className="md:col-span-1 mx-6"></div>
                 <div className="md:col-span-6 mx-6">
@@ -230,7 +231,7 @@ export default function ProductDetail({ data }: ProductDetailProps) {
                                     marginRight: '15px',
                                 }}>
                                 <div className="flex justify-center items-center mx-auto">
-                                    <img src="../images/icon/icon18.png" alt="" style={{ width: '25px', height: '25px', textAlign: 'center' }} />
+                                    <Image src="/images/icon/icon18.png" alt="" style={{ width: '25px', height: '25px', textAlign: 'center' }} width={100} height={100} />
                                 </div>
                                 <div> Thêm vào giỏ</div>
                             </button>

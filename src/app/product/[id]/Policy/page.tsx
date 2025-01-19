@@ -1,10 +1,11 @@
+import Image from 'next/image'
 import React from 'react'
 
 export default function Policys() {
     const figures = [
-        { name: "Giao hàng", title: "Gửi tài khoản qua email", img: "../images/icon/icon15.png" },
-        { name: "Thời gian", title: "Gửi ngay lập tức", img: "../images/icon/icon16.png" },
-        { name: "Bảo hành", title: "Trọn gói đăng ký",img: "../images/icon/icon17.png" },
+        { name: "Giao hàng", title: "Gửi tài khoản qua email", img: "/images/icon/icon15.png" },
+        { name: "Thời gian", title: "Gửi ngay lập tức", img: "/images/icon/icon16.png" },
+        { name: "Bảo hành", title: "Trọn gói đăng ký",img: "/images/icon/icon17.png" },
     ]
     return (
         <div className="py-[50px] my-[100px]" style={{ backgroundColor: 'var(--clr-bg-1)' }}>
@@ -13,7 +14,7 @@ export default function Policys() {
                     {figures.map((item, index) => (
                         <div key={index} className="grid grid-cols-3 px-[50px] py-[20px] items-center justify-center">
                              <div className="flex mx-auto justify-center items-center">
-                                <img src={item.img} alt="" />
+                                <Image src={item.img} alt="" width={100} height={100}/>
                             </div>
                             <div className=" col-span-2 w-full justify-start">
                                 <h2 className="text-2xl font-bold mb-2 uppercase" style={{ color: "var(--clr-txt-1)"}}>{item.name}</h2>

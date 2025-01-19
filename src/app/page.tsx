@@ -8,8 +8,6 @@ import ListProductNews from "@/app/components/ListProductNews/page";
 import GiftCards from "@/app/components/GiftCard/page";
 import Figures from "@/app/components/Figures/page";
 import LinkContact from "./components/LinkContact/page";
-import TopHeader from "./components/Header/TopHeader";
-import Headers from "./components/Header/page";
 
 
 export default function Home() {

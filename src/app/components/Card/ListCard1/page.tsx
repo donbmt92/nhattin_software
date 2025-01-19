@@ -7,11 +7,11 @@ export default function ListCard1() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [imagesPerSlide, setImagesPerSlide] = useState(3);
     const comments = [
-        { title: "Mua Tài Khoản Nexflix Premium Mua Tài Khoản Nexflix Premium", tag: "Giải trí", sales: "12342", prices: "399.000", img: "images/image1.png" },
-        { title: "Web Development", tag: "Lorem ipsum ", sales: "12342", prices: "399.000", img: "images/image2.png" },
-        { title: "Mobile App Design", tag: "Lorem ipsum", sales: "12342", prices: "399.000", img: "images/image3.png" },
-        { title: "Mobile App Design", tag: "Lorem ipsum", sales: "12342", prices: "399.000", img: "images/image4.png" },
-        { title: "Mobile App Design", tag: "Lorem ipsum", sales: "12342", prices: "399.000", img: "images/image1.png" },
+        { id:"1", title: "Mua Tài Khoản Nexflix Premium Mua Tài Khoản Nexflix Premium", tag: "Giải trí", sales: "12342", prices: "399.000", image: "/images/image1.png" },
+        { id:"2", title: "Web Development", tag: "Giải trí ", sales: "12342", prices: "399.000", image: "/images/image1.png" },
+        { id:"3", title: "Mobile App Design", tag: "Giải trí", sales: "12342", prices: "299.000", image: "/images/image3.png" },
+        { id:"4", title: "Mobile App Design 2", tag: "Giải trí", sales: "12342", prices: "199.000", image: "/images/image4.png" },
+        { id:"5", title: "Mobile App Design 3", tag: "Giải trí", sales: "12342", prices: "499.000", image: "/images/image1.png" },
     ];
     useEffect(() => {
         const handleResize = () => {

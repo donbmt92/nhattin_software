@@ -1,30 +1,35 @@
-import React, { useState } from 'react';
-import StandCard from '../StandCard/page';
+"use client";
+import React, { useEffect, useState } from 'react';
 import HorizontalCard from '../HorizontalCard/page';
 
 export default function ListCard3() {
     const [itemsToShow, setItemsToShow] = useState(8);
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1280 && window.innerWidth <= 1535) {
+                setItemsToShow(6);
+            } else {
+                setItemsToShow(8); // Các kích thước khác hiển thị 8 mục
+            }
+        };
+
+        handleResize(); // Gọi ngay lần đầu
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
     const comments = [
-        { title: 'Mua Tài Khoản Nexflix Premium', tag: 'Giải trí', sales: '12342', prices: '399.000' },
-        { title: 'Web Development', tag: 'Lorem ipsum', sales: '12342', prices: '399.000' },
-        { title: 'Mobile App Design', tag: 'Lorem ipsum', sales: '12342', prices: '399.000' },
-        { title: 'Graphic Design', tag: 'Design', sales: '12342', prices: '399.000' },
-        { title: 'SEO Optimization', tag: 'Marketing', sales: '12342', prices: '399.000' },
-        { title: 'Digital Marketing', tag: 'Business', sales: '12342', prices: '399.000' },
-        { title: 'UX/UI Design', tag: 'Design', sales: '12342', prices: '399.000' },
-        { title: 'Graphic Design', tag: 'Design', sales: '12342', prices: '399.000' },
-        { title: 'SEO Optimization', tag: 'Marketing', sales: '12342', prices: '399.000' },
-        { title: 'Digital Marketing', tag: 'Business', sales: '12342', prices: '399.000' },
-        { title: 'UX/UI Design', tag: 'Design', sales: '12342', prices: '399.000' },
-        { title: 'Mobile App Design', tag: 'Lorem ipsum', sales: '12342', prices: '399.000' },
-        { title: 'Graphic Design', tag: 'Design', sales: '12342', prices: '399.000' },
-        { title: 'SEO Optimization', tag: 'Marketing', sales: '12342', prices: '399.000' },
-        { title: 'Digital Marketing', tag: 'Business', sales: '12342', prices: '399.000' },
-        { title: 'UX/UI Design', tag: 'Design', sales: '12342', prices: '399.000' },
-        { title: 'Graphic Design', tag: 'Design', sales: '12342', prices: '399.000' },
-        { title: 'SEO Optimization', tag: 'Marketing', sales: '12342', prices: '399.000' },
-        { title: 'Digital Marketing', tag: 'Business', sales: '12342', prices: '399.000' },
-        { title: 'UX/UI Design', tag: 'Design', sales: '12342', prices: '399.000' },
+        { id: "1", title: 'Mua Tài Khoản Nexflix Premium 1', tag: 'Giải trí', sales: '12342', prices: '399.000', image: "/images/image1.png" },
+        { id: "2", title: 'Web Development 2', tag: 'Lorem ipsum', sales: '12342', prices: '399.000', image: "/images/image2.png" },
+        { id: "3", title: 'Mobile App Design 3', tag: 'Lorem ipsum', sales: '12342', prices: '399.000', image: "/images/image3.png" },
+        { id: "4", title: 'Graphic Design 4', tag: 'Design', sales: '12342', prices: '399.000', image: "/images/image4.png" },
+        { id: "5", title: 'SEO Optimization 5', tag: 'Marketing', sales: '12342', prices: '399.000', image: "/images/image2.png" },
+        { id: "6", title: 'Digital Marketing 6', tag: 'Business', sales: '12342', prices: '399.000', image: "/images/image1.png" },
+        { id: "7", title: 'UX/UI Design 7', tag: 'Design', sales: '12342', prices: '399.000', image: "/images/image2.png" },
+        { id: "8", title: 'Graphic Design 8', tag: 'Design', sales: '12342', prices: '399.000', image: "/images/image3.png" },
+        { id: "9", title: 'SEO Optimizationv 9', tag: 'Marketing', sales: '12342', prices: '399.000', image: "/images/image4.png" },
+        { id: "10", title: 'Digital Marketing 10', tag: 'Business', sales: '12342', prices: '399.000', image: "/images/image2.png" },
+        { id: "11", title: 'UX/UI Design 11', tag: 'Design', sales: '12342', prices: '399.000', image: "/images/image1.png" },
     ];
 
     // Tính tổng số phần tử có thể hiển thị
@@ -38,12 +43,12 @@ export default function ListCard3() {
         setItemsToShow((prev) => Math.min(prev + 10, totalItems));
     };
     const collapseItems = () => {
-        setItemsToShow(8); // Thu gọn về 8 phần tử
+        setItemsToShow(8);
     };
 
     return (
         <div className="relative container mx-auto pb-[20px]">
-            <div className="grid grid-cols-1 xl:grid-cols-4 md:grid-cols-3 gap-6 mx-auto">
+            <div className="grid grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 2xl:grid-rows-2 gap-6 mx-auto">
                 {currentItems.map((comment) => (
                     <div key={comment.title}>
                         <HorizontalCard comments={[comment]} />

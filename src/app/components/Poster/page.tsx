@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import React from 'react'
 
 export default function Poster() {
@@ -12,7 +13,7 @@ export default function Poster() {
                     <div className="hidden md:flex">
                         <div className="relative xl:top-[45px] md:top-[120px] left-1/2 transform -translate-x-1/2 -translate-y-2/3 z-10 "
                             style={{ width: "90%", height: "90px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <img src="images/Poster.png" alt="Logo" style={{ width: "100%", height: "auto", borderRadius: "5px" }} />
+                            <Image src="/images/Poster.png" alt="Logo" style={{ width: "100%", height: "auto", borderRadius: "5px" }} width={1000} height={100} />
                         </div>
                     </div>
                 </div>

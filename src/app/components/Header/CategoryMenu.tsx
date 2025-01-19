@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function CategoryMenu() {
     const [isOpen, setIsOpen] = useState(false);
@@ -47,7 +48,7 @@ export default function CategoryMenu() {
 
     return (
         <div className="relative">
-            <button
+            {/* <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100"
                 style={{ color: 'var(--clr-txt-3)' }}
@@ -61,7 +62,7 @@ export default function CategoryMenu() {
                 >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
-            </button>
+            </button> */}
 
             {isOpen && (
                 <div className="absolute left-0 mt-2 w-[800px] bg-white rounded-lg shadow-lg z-50 grid grid-cols-3 gap-4 p-6">
@@ -98,7 +99,7 @@ export default function CategoryMenu() {
                                     href={`/brand/${brand.name.toLowerCase()}`}
                                     className="flex items-center space-x-2 hover:text-blue-600"
                                 >
-                                    <img src={brand.icon} alt={brand.name} className="w-5 h-5" />
+                                    <Image src={brand.icon} alt={brand.name} className="w-5 h-5" width={24} height={24} />
                                     <span className="text-sm">{brand.name}</span>
                                 </Link>
                             ))}
@@ -115,7 +116,7 @@ export default function CategoryMenu() {
                                     href={`/service/${service.name.toLowerCase()}`}
                                     className="flex items-center space-x-2 hover:text-blue-600"
                                 >
-                                    <img src={service.icon} alt={service.name} className="w-5 h-5" />
+                                    <Image src={service.icon} alt={service.name} className="w-5 h-5" width={24} height={24} />
                                     <span className="text-sm">{service.name}</span>
                                 </Link>
                             ))}

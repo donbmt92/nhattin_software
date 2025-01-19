@@ -1,5 +1,6 @@
 import React, {ReactElement, ReactNode} from 'react';
 import {Star, ShoppingCart, Shield} from 'lucide-react';
+import Image from 'next/image';
 
 interface InfoCardProps {
     icon: ReactNode;
@@ -30,10 +31,11 @@ export default function Items() {
                         {/* Image Section */}
                         <div className="flex items-center md:w-1/2">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <Image
                                 className="w-full max-w-[275px] rounded-lg"
                                 src="https://gamikey.com/wp-content/uploads/2024/08/Wukong-768x768.jpg"
                                 alt="Black Myth: Wukong"
+                                width={100} height={100}
                             />
 
                             {/* Stats Section */}

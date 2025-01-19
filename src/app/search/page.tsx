@@ -2,7 +2,6 @@ import PromoBanner from "@/app/components/search/PromoBanner";
 import CategoryFilter from "@/app/components/search/CategoryFilter";
 import NewProductList from "@/app/components/search/NewProductList";
 import ProductGrid from "@/app/components/search/ProductGrid";
-import Headers from "../components/Header/page";
 
 export default function SearchPage() {
     return (

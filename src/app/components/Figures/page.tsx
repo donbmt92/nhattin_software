@@ -1,4 +1,3 @@
-import { icon } from '@fortawesome/fontawesome-svg-core'
 import { faAlignJustify, faAlignLeft, faBookAtlas, faCertificate } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'

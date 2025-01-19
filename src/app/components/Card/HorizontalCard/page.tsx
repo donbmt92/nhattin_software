@@ -36,7 +36,7 @@ export default function HorizontalCard({ comments }: HeaderSectionsProps) {
             <p style={{ position: 'absolute', top: '5px', left: '5px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)', padding: '3px 10px', borderRadius: '5px', zIndex: 2, fontSize: '10px', }} >
               {comment.tag}
             </p>
-            <a href="/product/1"><img src="images/image1.png" alt="Images" style={{ width: '100%', height: 'auto', borderRadius: '5px', objectFit: 'cover', zIndex: 1, cursor: 'pointer' }} /></a>          </div>
+            <a href="/product/1"><img src={comment.image} alt="Images" style={{ width: '100%', height: 'auto', borderRadius: '5px', objectFit: 'cover', zIndex: 1, cursor: 'pointer' }} /></a>          </div>
           <div style={{ flex: '7' }}>
             <div style={{ minHeight: '54px', display: 'flex', alignItems: 'center', }}>
               <p className="mb-1 font-semibold text-[18px] mt-1 mx-1" style={{ color: 'var(--clr-txt-1)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '22px', textAlign: 'left', }}>

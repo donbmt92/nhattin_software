@@ -10,7 +10,7 @@ interface HeaderSectionsProps {
         tag: string;
         sales: string;
         prices: string;
-        img: string;
+        image: string;
     }[];
 }
 
@@ -23,15 +23,8 @@ export default function StandCard({ comments }: HeaderSectionsProps) {
             title: comment.title,
             price: comment.prices,
             quantity: 1,
-            image: comment.img
+            image: comment.image
         });
-    };
-
-    const getImagePath = (path: string | undefined) => {
-        if (!path) return '/images/default.png'; // Fallback image
-        if (path.startsWith('http')) return path; // External URL
-        if (path.startsWith('/')) return path; // Already has leading slash
-        return `/${path}`; // Add leading slash
     };
 
     return (
@@ -44,13 +37,8 @@ export default function StandCard({ comments }: HeaderSectionsProps) {
                         <div className="pb-[130px] md:pb-[175px]"></div>
                         <div className="relative top-[-40px] md:top-[-60px] left-1/2 transform -translate-x-1/2 -translate-y-2/3 z-2 "
                             style={{ width: "90%", height: "90px", backgroundColor: "var(--clr-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <a href="/product/1" className="relative w-full h-full">
-                                <Image 
-                                    src={getImagePath(comment.img)}
-                                    alt={comment.title}
-                                    fill
-                                    className="object-cover rounded-[5px] cursor-pointer"
-                                />
+                            <a href="/product/1">
+                            <Image src={comment.image} alt="Logo" style={{ width: "100%", height: "auto", objectFit: "cover", borderRadius: "5px", cursor: "pointer" }} width={1000} height={100} />
                             </a>
                         </div>
                     </div>

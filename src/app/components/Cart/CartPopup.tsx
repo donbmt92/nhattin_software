@@ -29,8 +29,9 @@ export default function CartPopup() {
                 <Image
                   src={item.image}
                   alt={item.title}
-                  fill
                   className="object-cover rounded"
+                  width={100}
+                  height={100}
                 />
               </div>
               <div className="flex-1 ml-4">

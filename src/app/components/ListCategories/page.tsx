@@ -1,15 +1,16 @@
+import Image from 'next/image';
 import React from 'react'
 
 export default function ListCategories() {
     const categories = [
-        { icon: <img src="images/icon/icon1.png" alt="" />, label: 'Xem Phim' },
-        { icon: <img src="images/icon/icon2.png" alt="" />, label: 'Thể Thao' },
-        { icon: <img src="images/icon/icon3.png" alt="" />, label: 'Sức Khỏe' },
-        { icon: <img src="images/icon/icon4.png" alt="" />, label: 'Công Việc' },
-        { icon: <img src="images/icon/icon5.png" alt="" />, label: 'Thiết Kế' },
-        { icon: <img src="images/icon/icon6.png" alt="" />, label: 'AI' },
-        { icon: <img src="images/icon/icon7.png" alt="" />, label: 'Học Tập' },
-        { icon: <img src="images/icon/icon8.png" alt="" />, label: 'Âm Nhạc' },
+        { icon: <Image src="/images/icon/icon1.png" alt="" width={100} height={100} />, label: 'Xem Phim' },
+        { icon: <Image src="/images/icon/icon2.png" alt="" width={100} height={100} />, label: 'Thể Thao' },
+        { icon: <Image src="/images/icon/icon3.png" alt="" width={100} height={100} />, label: 'Sức Khỏe' },
+        { icon: <Image src="/images/icon/icon4.png" alt="" width={100} height={100} />, label: 'Công Việc' },
+        { icon: <Image src="/images/icon/icon5.png" alt="" width={100} height={100} />, label: 'Thiết Kế' },
+        { icon: <Image src="/images/icon/icon6.png" alt="" width={100} height={100} />, label: 'AI' },
+        { icon: <Image src="/images/icon/icon7.png" alt="" width={100} height={100} />, label: 'Học Tập' },
+        { icon: <Image src="/images/icon/icon8.png" alt="" width={100} height={100} />, label: 'Âm Nhạc' },
     ];
     return (
         <div className="bg-gray-100 py-8">
