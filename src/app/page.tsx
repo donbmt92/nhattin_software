@@ -21,7 +21,6 @@ export default function Home() {
             <ListProductNews />
             <GiftCards />
             <Figures/>
-            <LinkContact/>
         </>
     );
 }

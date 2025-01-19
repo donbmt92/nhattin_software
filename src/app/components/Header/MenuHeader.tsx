@@ -11,7 +11,7 @@ export default function MenuHeader() {
     ]
     
     return (
-        <div className="container mx-auto items-center justify-between grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 mt-[30px]">
+        <div className="container mx-auto items-center justify-between grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 mt-[10px]">
             {navbars.map((item, index) => (
                 <div key={index} className="flex items-center justify-center my-5">
                     <Image src={item.icon} alt={item.name} width={24} height={24} />

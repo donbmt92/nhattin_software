@@ -1,3 +1,4 @@
+"use client"
 import React from 'react'
 import TopHeader from './TopHeader';
 import MenuHeader from './MenuHeader';
@@ -7,7 +8,7 @@ export default function Headers() {
 
     return (
         <div>
-            <div style={{ backgroundColor: 'var(--clr-bg-4)', padding: "40px 0px 0px 0px" }}>
+            <div style={{ backgroundColor: 'var(--clr-bg-4)', padding: "10px 0px 0px 0px" }}>
                 <TopHeader />
                 <MenuHeader />
             </div>

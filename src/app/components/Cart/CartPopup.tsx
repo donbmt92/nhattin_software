@@ -3,6 +3,7 @@ import { useCart } from '@/context/CartContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function CartPopup() {
   const { items, isCartOpen, toggleCart, removeFromCart, updateQuantity } = useCart();
@@ -68,11 +69,11 @@ export default function CartPopup() {
             <span className="font-semibold">Tổng tiền:</span>
             <span className="text-red-600 font-bold">{total.toLocaleString()} VNĐ</span>
           </div>
-          <button
+          <Link href="/order"
             className="w-full py-2 bg-red-600 text-white rounded-md font-semibold hover:bg-red-700"
           >
             Thanh toán
-          </button>
+          </Link>
         </div>
       </div>
     </div>

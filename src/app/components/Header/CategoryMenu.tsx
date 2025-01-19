@@ -6,14 +6,20 @@ import Image from 'next/image';
 export default function CategoryMenu() {
     const [isOpen, setIsOpen] = useState(false);
 
-    const categories = {
-        "Giải trí": ["Xem phim", "Nghe nhạc"],
-        "Học tập": ["Học Tiếng Anh", "Khóa học"],
-        "Làm việc": ["Thiết kế đồ họa"],
-        "Bảo mật": ["Diệt Virus"],
-        "Sức khỏe": [],
-        "Game": []
-    };
+    const categories = [
+        "Giải trí",
+        "Xem phim",
+        "Nghe nhạc",
+        "Học tập",
+        "Học Tiếng Anh",
+        "Khóa học",
+        "Làm việc",
+        "Thiết kế đồ họa",
+        "Bảo mật",
+        "Diệt Virus",
+        "Sức khỏe",
+        "Game"
+    ];
 
     const brands = {
         "Thương hiệu": [
@@ -70,21 +76,15 @@ export default function CategoryMenu() {
                     <div>
                         <h3 className="font-bold mb-4">Danh mục</h3>
                         <div className="space-y-2">
-                            {Object.entries(categories).map(([category, subcategories]) => (
-                                <div key={category}>
-                                    <Link href={`/category/${category.toLowerCase()}`} className="block hover:text-blue-600 font-medium">
-                                        {category}
-                                    </Link>
-                                    {subcategories.map((sub) => (
-                                        <Link
-                                            key={sub}
-                                            href={`/category/${category.toLowerCase()}/${sub.toLowerCase()}`}
-                                            className="block pl-4 text-sm text-gray-600 hover:text-blue-600"
-                                        >
-                                            {sub}
-                                        </Link>
-                                    ))}
-                                </div>
+                            {categories.map((category) => (
+                                <Link 
+                                    key={category}
+                                    href={`/category/${category.toLowerCase()}`}
+                                    className="block hover:text-blue-600 font-medium"
+                                >
+                                    1
+                                    {category}
+                                </Link>
                             ))}
                         </div>
                     </div>

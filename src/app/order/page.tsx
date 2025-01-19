@@ -7,10 +7,7 @@ import Footer from '@/components/Footer'
 export default function OrderPage() {
   return (
     <div>
-      <Headers/>
-      <OrderDetails/>
-      <LinkContact/>
-      <Footer/>
+      <OrderDetails />
     </div>
   )
 }

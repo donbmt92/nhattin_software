@@ -4,17 +4,20 @@ import HorizontalCard from '../HorizontalCard/page';
 
 export default function ListCard3() {
     const [itemsToShow, setItemsToShow] = useState(8);
+
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 1280 && window.innerWidth <= 1535) {
-                setItemsToShow(6);
-            } else {
-                setItemsToShow(8); // Các kích thước khác hiển thị 8 mục
+            if (typeof window !== 'undefined') {
+                if (window.innerWidth >= 1280 && window.innerWidth <= 1535) {
+                    setItemsToShow(6);
+                } else {
+                    setItemsToShow(8);
+                }
             }
         };
 
-        handleResize(); // Gọi ngay lần đầu
         window.addEventListener("resize", handleResize);
+        handleResize();
 
         return () => window.removeEventListener("resize", handleResize);
     }, []);

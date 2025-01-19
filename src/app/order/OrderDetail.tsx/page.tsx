@@ -26,25 +26,29 @@ export default function OrderDetails() {
             [productId]: Math.max((prev[productId] || 1) - 1, 1),
         }));
     };
-    const [maxWidth, setMaxWidth] = useState("150px");
+    const [maxWidth, setMaxWidth] = useState("200px"); // Default to mobile size
 
     useEffect(() => {
         const updateMaxWidth = () => {
+            if (typeof window === 'undefined') return;
+            
             if (window.matchMedia("(min-width: 1537px)").matches) {
-                setMaxWidth("600px"); // XXL
+                setMaxWidth("600px");
             } else if (window.matchMedia("(min-width: 1280px)").matches) {
-                setMaxWidth("450px"); // Xl
+                setMaxWidth("450px");
             } else if (window.matchMedia("(min-width: 1024px)").matches) {
-                setMaxWidth("600px"); // LG
+                setMaxWidth("600px");
             } else if (window.matchMedia("(min-width: 768px)").matches) {
-                setMaxWidth("350px"); // MD
+                setMaxWidth("350px");
             } else {
-                setMaxWidth("200px"); // smaller
+                setMaxWidth("200px");
             }
         };
 
-        updateMaxWidth();
+        // Add event listener
         window.addEventListener("resize", updateMaxWidth);
+        // Run once after mount
+        updateMaxWidth();
 
         return () => window.removeEventListener("resize", updateMaxWidth);
     }, []);
@@ -55,7 +59,7 @@ export default function OrderDetails() {
             price: 1000,
             type: 'Giải trí',
             quantity: 1,
-            imgSrc: '../images/image12.png',
+            imgSrc: '/images/image12.png',
         },
         {
             id: 2,
@@ -63,7 +67,7 @@ export default function OrderDetails() {
             price: 1000,
             type: 'Giải trí',
             quantity: 1,
-            imgSrc: '../images/image12.png',
+            imgSrc: '/images/image12.png',
         },
     ];
 
@@ -71,22 +75,22 @@ export default function OrderDetails() {
         {
             id: "momo",
             label: "Thanh toán bằng ví MoMo",
-            logo: "../images/momo.png",
+            logo: "/images/momo.png",
         },
         {
             id: "vtcpay",
             label: "VTCPay",
-            logo: "../images/vtcpay.png",
+            logo: "/images/vtcpay.png",
         },
         {
             id: "vietcombank",
             label: "Thanh toán Vietcombank",
-            logo: "../images/vietcombank.png",
+            logo: "/images/vietcombank.png",
         },
         {
             id: "alepay",
             label: "Thanh toán trực tuyến",
-            logo: "../images/alepay.png",
+            logo: "/images/alepay.png",
         },
     ];
 
@@ -102,13 +106,25 @@ export default function OrderDetails() {
                 <div className="grid grid-cols-1 xl:grid-cols-3">
                     <div className='col-span-2' style={{ margin: '0px 10px', padding: '10px' }}>
                         {products.map((product) => (
-                            <div className=" m-2 grid grid-cols-1 md:grid-cols-12">
-                                <div key={product.id} className="col-span-10 flex py-6" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }} >
+                            <div key={product.id} className=" m-2 grid grid-cols-1 md:grid-cols-12">
+                                <div className="col-span-10 flex py-6" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }} >
                                     <div className='justify-center items-center flex mx-3 cursor-pointer'>
-                                        <Image src="/images/icon/icon28.png" alt="" style={{ width: '40px', height: '40px', objectFit: 'contain', }} width={40} height={40} />
+                                        <Image 
+                                            src="/images/icon/icon28.png" 
+                                            alt="Delete icon"
+                                            width={40} 
+                                            height={40}
+                                            style={{ objectFit: 'contain' }}
+                                        />
                                     </div>
                                     <div className='flex justify-center items-center'>
-                                        <Image src={product.imgSrc} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} width={100} height={100} />
+                                        <Image 
+                                            src={product.imgSrc} 
+                                            alt={product.name}
+                                            width={100} 
+                                            height={100}
+                                            style={{ maxWidth: '100px', maxHeight: '100px' }}
+                                        />
                                         <div className='mx-3'>
                                             <h2 style={{
                                                 fontSize: '20px',
@@ -216,10 +232,16 @@ export default function OrderDetails() {
                                         style={{ border: '1px solid var(--clr-bg-3)' }}
                                     />
                                     <button
-                                        className="absolute right-[7px] top-[7px]  cursor-pointer rounded-md"
+                                        className="absolute right-[7px] top-[7px] cursor-pointer rounded-md"
                                         style={{ color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)' }}
                                     >
-                                        <Image src="/images/icon/icon29.png" alt="" style={{ width: '45px', height: '40px' }} width={100} height={100} />
+                                        <Image 
+                                            src="/images/icon/icon29.png" 
+                                            alt="Apply coupon"
+                                            width={45} 
+                                            height={40}
+                                            style={{ width: '45px', height: '40px' }}
+                                        />
                                     </button>
                                 </div>
                                 <div>
@@ -250,8 +272,9 @@ export default function OrderDetails() {
                                                             <Image
                                                                 src={method.logo}
                                                                 alt={method.label}
+                                                                width={40}
+                                                                height={40}
                                                                 className="w-10 mr-3"
-                                                                width={100} height={100}
                                                             />
                                                         </div>
                                                         <input
@@ -279,7 +302,14 @@ export default function OrderDetails() {
                                             className="w-full py-2 rounded-md mt-4 flex items-center justify-center cursor-pointer"
                                             style={{ backgroundColor: 'var(--clr-bg-7)', color: 'var(--clr-txt-5)', fontWeight: 'bold' }}
                                         >
-                                            Đặt Hàng <Image src="/images/icon/icon30.png" alt="" style={{ marginLeft: '10px' }}width={100} height={100} />
+                                            Đặt Hàng 
+                                            <Image 
+                                                src="/images/icon/icon30.png" 
+                                                alt="Order icon"
+                                                width={24}
+                                                height={24}
+                                                style={{ marginLeft: '10px' }}
+                                            />
                                         </button>
                                     </div>
                                 </div>

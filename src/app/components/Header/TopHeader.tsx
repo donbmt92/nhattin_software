@@ -7,13 +7,25 @@ import React, { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import CartPopup from '../Cart/CartPopup';
 import CategoryMenu from './CategoryMenu';
+import { useRouter } from 'next/navigation';
 
 export default function TopHeader() {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const { items, toggleCart } = useCart();
+    const router = useRouter();
 
     const toggleSearchPopup = () => {
         setIsPopupVisible(!isPopupVisible);
+    };
+
+    const handleSearch = (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+            setIsPopupVisible(false);
+            setSearchQuery('');
+        }
     };
 
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -24,13 +36,16 @@ export default function TopHeader() {
                 <div className="flex items-center col-span-3 mx-4">
                     <Link href="/" className="text-white font-bold text-2xl flex items-center">
                         <Image
-                            src="/images/icon/logo.jpg"
-                            alt="Logo"
-                            width={50}
-                            height={50}
+                            src="/images/icon/logo.svg"
+                            alt="Nhất Tín Marketing"
+                            width={120}
+                            height={120}
                             className="mr-2"
+                            style={{ objectFit: 'contain' }}
                         />
-                        Nhattin
+                        <div className="flex flex-col">
+                            <span className="text-base font-semibold">Nhattin Software</span>
+                        </div>
                     </Link>
                     <div className="ml-4 hidden lg:block">
                         <CategoryMenu />
@@ -57,44 +72,51 @@ export default function TopHeader() {
                                 >
                                     &times;
                                 </button>
-                                <input
-                                    type="text"
-                                    placeholder="Nhập nội dung cần tìm..."
-                                    className="w-full py-3 px-3 mb-4 rounded-md text-md border border-gray-300"
-                                />
-                                <button
-                                    className="w-full py-3 text-white font-semibold rounded-md"
-                                    style={{ backgroundColor: 'var(--clr-bg-4)' }}
-                                    onClick={toggleSearchPopup}
-                                >
-                                    Tìm kiếm
-                                </button>
+                                <form onSubmit={handleSearch}>
+                                    <input
+                                        type="text"
+                                        placeholder="Nhập nội dung cần tìm..."
+                                        className="w-full py-3 px-3 mb-4 rounded-md text-md border border-gray-300"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="w-full py-3 text-white font-semibold rounded-md"
+                                        style={{ backgroundColor: 'var(--clr-bg-4)' }}
+                                    >
+                                        Tìm kiếm
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     )}
                     {/* Desktop View: Full Search */}
-                    <div className="hidden lg:block relative bg-white rounded-md">
+                    <form onSubmit={handleSearch} className="hidden lg:block relative bg-white rounded-md">
                         <input
                             type="text"
                             placeholder="Nhập nội dung cần tìm..."
                             className="w-full py-3 px-3 pr-[130px] rounded-md text-md"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
                         <button
+                            type="submit"
                             className="absolute right-[1px] top-[1px] px-5 py-[11px] cursor-pointer rounded-r-md text-md"
                             style={{ color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)' }}
                         >
                             Tìm kiếm
                         </button>
-                    </div>
+                    </form>
                 </div>
                 <div className="flex justify-end items-center space-x-4 text-sm col-span-8 lg:col-span-4 mx-4">
-                    <button style={{ display: 'flex', alignItems: 'center', color: 'var(--clr-txt-3)' }}>
+                    <Link href="/profile" style={{ display: 'flex', alignItems: 'center', color: 'var(--clr-txt-3)' }}>
                         <Image src="/images/icon/icon19.png" alt="Account" width={24} height={24} />
                         <div className="text-left mx-3">
                             <p className="text-xs">Tài khoản</p>
                             <p className="text-md font-semibold">Nguyễn Quốc Duy</p>
                         </div>
-                    </button>
+                    </Link>
                     <button
                         onClick={toggleCart}
                         style={{ display: 'flex', alignItems: 'center', color: 'var(--clr-txt-3)' }}
