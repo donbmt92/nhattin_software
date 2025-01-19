@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react'
+import Image from 'next/image'
 
 export default function NewProductList() {
     const products = [
@@ -53,36 +54,36 @@ export default function NewProductList() {
     ]
 
     return (
-        <div className="w-full max-w-md rounded-lg bg-white p-4">
-            <h2 className="mb-4 text-lg font-semibold">Sản Phẩm Mới</h2>
-            <div className="space-y-4">
-                {products.map((product) => (
-                    <div
-                        key={product.id}
-                        className="flex items-center gap-4 rounded-lg p-2 hover:bg-gray-50"
-                    >
-                        <div className={`h-20 w-20 overflow-hidden rounded-lg ${product.bgColor}`}>
-                            <img
-                                src={product.image}
-                                alt={product.name}
-                                className="h-full w-full object-cover"
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-medium">{product.name}</h3>
-                            <div className="mt-1 flex items-center">
-                                {Array.from({ length: product.rating }).map((_, index) => (
-                                    <Star
-                                        key={index}
-                                        className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                                    />
-                                ))}
-                            </div>
-                            <div className="mt-1 text-sm text-gray-600">{product.priceRange}</div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+                <div key={product.id} className="group relative rounded-lg border border-gray-200 bg-white p-4">
+                    <div className="relative mb-4 aspect-square overflow-hidden rounded-lg">
+                        <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={300}
+                            height={300}
+                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
+                        <div className="mt-1 text-sm text-gray-500">{product.priceRange}</div>
+                        <div className="mt-1 flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                                <Star
+                                    key={i}
+                                    className={`h-4 w-4 ${
+                                        i < Math.floor(product.rating)
+                                            ? "fill-yellow-400 text-yellow-400"
+                                            : "fill-gray-200 text-gray-200"
+                                    }`}
+                                />
+                            ))}
                         </div>
                     </div>
-                ))}
-            </div>
+                </div>
+            ))}
         </div>
     )
 }

@@ -1,5 +1,5 @@
 "use client";
-import ListCard1 from "@/app/components/Card/ListCard1/page";
+import ListCard1 from "@/app/components/Card/ListCard1/ListCard1";
 import Image from "next/image";
 
 export default function ListProductTop() {

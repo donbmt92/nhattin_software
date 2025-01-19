@@ -1,5 +1,5 @@
 "use client";
-import ListCard2 from '@/app/components/Card/ListCard2/page'
+import ListCard2 from '@/app/components/Card/ListCard2/ListCard2'
 import React from 'react'
 
 export default function ListProductSales() {

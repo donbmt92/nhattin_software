@@ -1,5 +1,5 @@
 "use client";
-import ListCard3 from '@/app/components/Card/ListCard3/page';
+import ListCard3 from '@/app/components/Card/ListCard3/ListCard3';
 import React from 'react'
 
 export default function ListProductNews() {

@@ -3,6 +3,7 @@
 import { Filter, Percent, TrendingUp, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Image from 'next/image'
 
 interface ProductType {
     id: string
@@ -131,7 +132,9 @@ function FilterSection({
 
                 {selectedBrand && (
                     <div className="flex items-center gap-2 rounded-lg bg-green-100 px-3 py-2">
-                        <img src={BRANDS.find(b => b.name === selectedBrand)?.icon} alt={selectedBrand} className="h-4 w-4" />
+                        {selectedBrand && BRANDS.find(b => b.name === selectedBrand)?.icon && (
+                            <Image src={BRANDS.find(b => b.name === selectedBrand)!.icon} alt={selectedBrand} width={16} height={16} />
+                        )}
                         <span className="text-sm">{selectedBrand}</span>
                         <button onClick={() => onBrandChange('')} className="rounded-full p-1 hover:bg-green-200">
                             <X className="h-3 w-3" />
@@ -173,7 +176,7 @@ function FilterSection({
                                         : 'border-gray-200 hover:bg-gray-50'
                                     }`}
                             >
-                                <img src={brand.icon} alt={brand.name} className="h-4 w-4" />
+                                <Image src={brand.icon} alt={brand.name} width={16} height={16} />
                                 {brand.name}
                             </button>
                         ))}
@@ -216,8 +219,13 @@ function ProductList({
             {products.map((product) => (
                 <div key={product.id} className="group relative rounded-lg border border-gray-200 bg-white p-4">
                     <div className={`relative mb-4 aspect-square overflow-hidden rounded-lg ${getBackgroundColor(product.type)}`}>
-                        <img src={product.image} alt={product.name}
-                            className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                        <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={300}
+                            height={200}
+                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        />
                         <span className="absolute left-2 top-2 rounded bg-red-500 px-2 py-1 text-xs text-white">
                             {product.tag}
                         </span>
@@ -277,7 +285,7 @@ export default function ProductGrid() {
         <div className="mx-auto max-w-7xl p-4">
             {searchQuery && (
                 <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-2">Kết quả tìm kiếm cho "{searchQuery}"</h2>
+                    <h2 className="text-xl font-semibold mb-2">Kết quả tìm kiếm cho &quot;{searchQuery}&quot;</h2>
                     <p className="text-gray-600">Tìm thấy {filteredProducts.length} sản phẩm</p>
                 </div>
             )}

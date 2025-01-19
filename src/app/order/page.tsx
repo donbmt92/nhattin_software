@@ -1,13 +1,10 @@
 import React from 'react'
-import Headers from '../components/Header/page'
-import OrderDetails from './OrderDetail.tsx/page'
-import LinkContact from '../components/LinkContact/page'
-import Footer from '@/components/Footer'
+import OrderDetail from './OrderDetail.tsx/page'
 
 export default function OrderPage() {
   return (
     <div>
-      <OrderDetails />
+      <OrderDetail />
     </div>
   )
 }

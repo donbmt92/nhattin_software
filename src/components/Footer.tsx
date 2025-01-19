@@ -1,21 +1,27 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Facebook, Instagram, Youtube } from 'lucide-react'
-import LinkContact from '@/app/components/LinkContact/page'
-const SocialLink = ({ href, icon, children }) => (
-    <Link href={href} className="hover:opacity-80">
-        {icon}
-        <span className="sr-only">{children}</span>
-    </Link>
-)
+import LinkContact from '@/app/components/LinkContact/LinkContact'
 
-const FooterLink = ({ href, className, children }) => (
+interface FooterLinkProps {
+    href: string;
+    className?: string;
+    children: React.ReactNode;
+}
+
+interface FooterLinksProps {
+    links: Array<{
+        href: string;
+        label: string;
+    }>;
+}
+
+const FooterLink = ({ href, className, children }: FooterLinkProps) => (
     <Link href={href} className={`inline-flex justify-center items-center px-6 py-2 ${className}`}>
         {children}
     </Link>
 )
 
-const FooterLinks = ({ links }) => (
+const FooterLinks = ({ links }: FooterLinksProps) => (
     <ul className="space-y-2">
         {links.map((link) => (
             <li key={link.href}>
@@ -26,6 +32,7 @@ const FooterLinks = ({ links }) => (
         ))}
     </ul>
 )
+
 const Footer = () => {
     return (
         <>

@@ -26,7 +26,7 @@ const BottomNavLinks = [
 ]
 
 // Category Menu Component
-const CategoryMenu = ({isOpen, onClose}) => {
+const CategoryMenu = ({isOpen, onClose}: {isOpen: boolean, onClose: () => void}) => {
     const categories = [
         "Giải trí",
         "Học tập",

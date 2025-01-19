@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const ImageSlider = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -45,9 +46,11 @@ const ImageSlider = () => {
                     {images.map((image, index) => (
                         <div key={index} className="flex-none w-1/4 px-2">
                             <div className="h-full flex flex-col">
-                                <img
+                                <Image
                                     src={image.src}
                                     alt={`Slide ${index + 1}`}
+                                    width={300}
+                                    height={225}
                                     className="object-cover w-full h-3/4 rounded-lg"
                                 />
                                 <p className="mt-2 text-center text-sm font-medium">{image.title}</p>

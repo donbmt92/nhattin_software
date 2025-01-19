@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import HorizontalCard from '../HorizontalCard/page';
+import HorizontalCard from '../HorizontalCard/HorizontalCard';
 
 export default function ListCard3() {
     const [itemsToShow, setItemsToShow] = useState(8);

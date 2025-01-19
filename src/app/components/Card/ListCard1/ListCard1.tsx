@@ -1,9 +1,7 @@
 "use client";
 
-import { faCartShopping, faHeart } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react'
-import StandCard from '../StandCard/page';
+import StandCard from '../StandCard/StandCard';
 
 export default function ListCard1() {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -31,21 +29,13 @@ export default function ListCard1() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Điều hướng slide trái
-    const goToPrevSlide = () => {
-        setCurrentSlide((prevIndex) =>
-            prevIndex - 1 < 0 ? comments.length - 1 : prevIndex - 1
-        );
-    };
+  
     // Điều hướng slide phải
     const goToNextSlide = () => {
         setCurrentSlide((prevIndex) => (prevIndex + 1) % comments.length);
     };
 
-    // Tính toán các phần tử trong slide hiện tại
-    const currentItems = Array(imagesPerSlide)
-        .fill(null)
-        .map((_, i) => comments[(currentSlide + i) % comments.length]);
+    
     const getTransformValue = () => {
         return `translateX(-${currentSlide * (100 / imagesPerSlide)}%)`;
     };

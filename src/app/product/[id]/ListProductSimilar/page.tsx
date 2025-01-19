@@ -1,5 +1,5 @@
 "use client";
-import ListCard4 from '@/app/components/Card/ListCard4/page';
+import ListCard4 from '@/app/components/Card/ListCard4/ListCard4';
 import React from 'react'
 
 export default function ListProductSimilar() {

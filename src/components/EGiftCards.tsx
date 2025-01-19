@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const giftCards = [
     { id: 1, name: 'Razer Gold', image: 'https://gamikey.com/wp-content/uploads/2024/09/Razer.jpg' },
@@ -19,7 +20,13 @@ export default function EGiftCards() {
                     {giftCards.map((card) => (
                         <div key={card.id} className="flex-shrink-0 w-48">
                             <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                                <img src={card.image} alt={card.name} className="w-full h-60 object-cover" />
+                                <Image 
+                                    src={card.image} 
+                                    alt={card.name} 
+                                    width={192}
+                                    height={240}
+                                    className="w-full h-60 object-cover"
+                                />
                             </div>
                         </div>
                     ))}

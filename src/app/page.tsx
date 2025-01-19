@@ -1,14 +1,12 @@
-
-import Sliders from "./components/Sliders/page";
-import ListCategories from "@/app/components/ListCategories/page";
-import ListProductTop from "@/app/components/ListProductTop/page";
-import ListProductSales from "@/app/components/ListProductSales/page";
-import Poster from "@/app/components/Poster/page";
-import ListProductNews from "@/app/components/ListProductNews/page";
-import GiftCards from "@/app/components/GiftCard/page";
+import React from 'react'
+import ListProductTop from './components/ListProductTop/ListProductTop'
+import ListCategories from './components/ListCategories/ListCategories'
+import Poster from './components/Poster/Poster'
+import Sliders from "./components/Sliders/Sliders";
+import ListProductSales from "@/app/components/ListProductSales/ListProductSales";
+import ListProductNews from "@/app/components/ListProductNews/ListProductNews";
 import Figures from "@/app/components/Figures/page";
-import LinkContact from "./components/LinkContact/page";
-
+import GiftCards from './components/GiftCard/page'
 
 export default function Home() {
     return (

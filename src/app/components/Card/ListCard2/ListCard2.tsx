@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import HorizontalCard from '../HorizontalCard/page';
+import HorizontalCard from '../HorizontalCard/HorizontalCard';
 
 export default function ListCard2() {
     const [currentIndex, setCurrentIndex] = useState(0); // Chỉ mục của thẻ hiện tại

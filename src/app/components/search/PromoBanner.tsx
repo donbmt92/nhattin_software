@@ -1,3 +1,6 @@
+import React from 'react';
+import Image from 'next/image';
+
 export default function PromoBanner() {
     return (
         <div className="grid gap-6 md:grid-cols-2 mx-auto max-w-7xl pt-3 pb-3">
@@ -27,8 +30,13 @@ export default function PromoBanner() {
                 </div>
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 transform">
                     <div className="relative h-48 w-64">
-                        <img src="/image/banner01.svg" alt="Description of SVG"
-                             className="w-full h-full object-contain"/>
+                        <Image 
+                            src="/image/banner01.svg" 
+                            alt="Description of SVG"
+                            width={256}
+                            height={192}
+                            className="w-full h-full object-contain"
+                        />
                     </div>
                 </div>
 
@@ -44,9 +52,11 @@ export default function PromoBanner() {
                 className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-100 to-teal-200 p-6 shadow-lg">
                 <div className="relative z-10">
                     <div className="flex items-baseline gap-1">
-                        <img
-                            src="/placeholder.svg?height=24&width=80"
+                        <Image
+                            src="/placeholder.svg"
                             alt="Netflix"
+                            width={80}
+                            height={24}
                             className="h-6"
                         />
                         <span className="text-3xl font-bold text-red-600">79K</span>
