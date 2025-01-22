@@ -8,9 +8,12 @@ export default function ListCard3() {
     useEffect(() => {
         const handleResize = () => {
             if (typeof window !== 'undefined') {
-                if (window.innerWidth >= 1280 && window.innerWidth <= 1535) {
+                if (window.innerWidth >= 768 && window.innerWidth <= 1535) {
                     setItemsToShow(6);
-                } else {
+                } else if (window.innerWidth >= 320 && window.innerWidth <= 767) {
+                    setItemsToShow(4);
+                }
+                else {
                     setItemsToShow(8);
                 }
             }

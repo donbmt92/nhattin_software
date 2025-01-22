@@ -40,7 +40,7 @@ export default function HorizontalCard({ comments }: HeaderSectionsProps) {
           <div style={{ flex: '7' }}>
             <div style={{ minHeight: '54px', display: 'flex', alignItems: 'center', }}>
               <p
-                className="mb-1 font-semibold text-[18px] mt-1 mx-1 sm:min-w-[300px]"
+                className="mb-3 font-semibold text-[20px] 2xl:text-[18px] xl:text-[20px] lg:text-[16px] md:text-[18px] sm:text-[25px] mt-1 px-2 max-w-[220px] sm:max-w-[350px]"
                 style={{
                   color: "var(--clr-txt-1)",
                   display: "-webkit-box",
@@ -48,10 +48,9 @@ export default function HorizontalCard({ comments }: HeaderSectionsProps) {
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
-                  lineHeight: "22px",
+                  lineHeight: "25px",
                   textAlign: "left",
-                  maxWidth: "200px",
-                  minWidth: "auto", // Mặc định là auto
+                  minWidth: "auto",
                 }}
               >
                 {comment.title}
@@ -59,30 +58,32 @@ export default function HorizontalCard({ comments }: HeaderSectionsProps) {
             </div>
 
             <div className="flex justify-between items-center">
-              <div className="flex items-center mx-1">
-                <p className="text-[11px] mr-2" style={{ color: 'var(--clr-txt-1)' }}>
+              <div className="flex items-center mx-1 mb-2">
+                <p className="text-[14px] xl:text-[14px] lg:text-[12px] md:text-[14px] sm:text-[16px] ml-[5px]" style={{ color: 'var(--clr-txt-1)' }}>
                   Đã Bán: {comment.sales}
                 </p>
                 <FontAwesomeIcon icon={faHeart} style={{ color: 'var(--clr-txt-1)', width: '12px', height: '12px' }} />
               </div>
             </div>
-            <div className="flex justify-start items-end mb-2 mx-1">
-              <p className="text-[16px] mr-2 font-semibold" style={{ color: 'var(--clr-txt-4)' }}>
+            <div className="flex justify-start items-end mb-2 mx-1 md:mb-3">
+              <p className="text-[17px] 2xl:text-[16px] xl:text-[18px] lg:text-[14px] md:text-[16px] sm:text-[28px] mr-2 font-semibold" style={{ color: 'var(--clr-txt-4)' }}>
                 {comment.prices} Vnđ
               </p>
-              <span className="text-[12px] mr-2 font-semibold mb-1" style={{ color: 'var(--clr-txt-1)', textDecoration: 'line-through' }}>
+              <span className="text-[11px] 2xl:text-[11px] xl:text-[12px] lg:text-[10px] md:text-[12px] sm:text-[18px] mr-2 font-semibold mb-1" style={{ color: 'var(--clr-txt-1)', textDecoration: 'line-through' }}>
                 {comment.prices} vnđ
               </span>
             </div>
             <div className="flex justify-center items-center mb-2">
               <button
                 onClick={() => handleAddToCart(comment)}
-                style={{ borderRadius: '5px', padding: '5px 5px', color: 'var(--clr-txt-2)', border: '1px solid var(--clr-bg-3)', fontSize: '16px', fontWeight: 'bold', marginRight: '5px' }}>
+                className='text-[16px] 2xl:text-[13px] xl:text-[14px] lg:text-[10px] md:text-[13px] sm:text-[25px] mr-2 font-semibold px-2 py-1'
+                style={{ borderRadius: '5px', color: 'var(--clr-txt-2)', border: '1px solid var(--clr-bg-3)'}}>
                 <FontAwesomeIcon icon={faCartShopping} style={{ marginRight: '5px' }} />
                 Giỏ hàng
               </button>
               <button
-                style={{ borderRadius: '5px', padding: '5px 8px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)', fontSize: '16px', fontWeight: 'bold', marginRight: '5px' }}>
+                className='text-[16px] 2xl:text-[13px] xl:text-[14px] lg:text-[10px] md:text-[13px] sm:text-[25px] mr-2 font-semibold px-2 sm:px-4 py-1'
+                style={{ borderRadius: '5px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)'}}>
                 Mua ngay
               </button>
             </div>

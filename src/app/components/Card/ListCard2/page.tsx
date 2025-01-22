@@ -8,7 +8,14 @@ export default function ListCard2() {
         const handleResize = () => {
             if (window.innerWidth >= 1280 && window.innerWidth <= 1535) {
                 setItemsPerPage(6);
-            } else {
+            } else if (window.innerWidth >= 768 && window.innerWidth <= 1279) {
+                setItemsPerPage(4);
+            } else if (window.innerWidth >= 640 && window.innerWidth <= 767) {
+                setItemsPerPage(2);
+            } else if (window.innerWidth >= 320 && window.innerWidth <= 639) {
+                setItemsPerPage(4);                                                     
+            }
+            else {
                 setItemsPerPage(8); // Các kích thước khác hiển thị 8 mục
             }
         };
