@@ -52,7 +52,7 @@ export default function ListCard1() {
     return (
         <div className="relative container mx-auto pb-[20px] overflow-hidden">
             <div
-                className="flex flex-nowrap mx-auto"
+                className="flex flex-nowrap mx-auto transition-transform duration-500 ease-in-out"
                 style={{
                     transform: getTransformValue(),
                 }}
