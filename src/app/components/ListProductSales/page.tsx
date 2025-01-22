@@ -4,7 +4,7 @@ import React from 'react'
 
 export default function ListProductSales() {
     return (
-        <div className="relative container mx-auto py-[50px]">
+        <div className="relative container mx-auto py-[50px] px-3">
             <div>
                 <h2 className="text-[30px] font-bold text-left mb-1">Sản phẩm bán chạy</h2>
                 <hr style={{ border: "1px solid var(--clr-bg-4)", marginBottom: "40px", width: "150px" }}/>

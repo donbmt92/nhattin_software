@@ -15,10 +15,12 @@ export default function ListCard1() {
     ];
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setImagesPerSlide(4); // Mobile: Hiển thị 4 sản phẩm
+            if (window.innerWidth >= 768) {
+                setImagesPerSlide(3); // md trở lên: 3 sản phẩm
+            } else if (window.innerWidth >= 640) {
+                setImagesPerSlide(2); // sm: 2 sản phẩm
             } else {
-                setImagesPerSlide(3); // Desktop: Hiển thị 3 sản phẩm
+                setImagesPerSlide(1); // xs: 1 sản phẩm
             }
         };
         // Gọi hàm khi component được mount
@@ -45,21 +47,20 @@ export default function ListCard1() {
         .fill(null)
         .map((_, i) => comments[(currentSlide + i) % comments.length]);
     const getTransformValue = () => {
-        return `translateX(-${currentSlide * (100 / imagesPerSlide)}%)`;
+        return `translateX(-${currentSlide * (200 / imagesPerSlide)}%)`;
     };
     return (
         <div className="relative container mx-auto pb-[20px] overflow-hidden">
             <div
-                className="flex transition-transform duration-500 ease-in-out grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3"
+                className="flex flex-nowrap mx-auto"
                 style={{
-                    width: `${(comments.length * 60) / imagesPerSlide}%`,
                     transform: getTransformValue(),
                 }}
             >
                 {comments.map((comment, index) => (
                     <div
                         key={index}
-                        className="flex-shrink-0 "
+                        className="flex-shrink-0"
                         style={{
                             width: `${100 / imagesPerSlide}%`,
                         }}

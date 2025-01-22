@@ -3,7 +3,6 @@ import React from 'react'
 import ProductDetails from './ProductDetails/page'
 import Policys from './Policy/page';
 import ListProductSimilar from './ListProductSimilar/page';
-import LinkContact from '@/app/components/LinkContact/page';
 import Descriptions from './Descriptions/page';
 
 export default function ProductDetailPage() {
@@ -21,7 +20,6 @@ export default function ProductDetailPage() {
             <Policys />
             <Descriptions/>
             <ListProductSimilar/>
-            <LinkContact/>
         </div>
     )
 }

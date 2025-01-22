@@ -5,18 +5,20 @@ export default function ListCard4() {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [imagesPerSlide, setImagesPerSlide] = useState(3);
     const comments = [
-        { id:"1", title: "Mua Tài Khoản Nexflix Premium Mua Tài Khoản Nexflix Premium", tag: "Giải trí", sales: "12342", prices: "399.000", image: "/images/image1.png" },
-        { id:"2", title: "Web Development", tag: "Lorem ipsum ", sales: "12342", prices: "399.000", image: "/images/image2.png" },
-        { id:"3", title: "Mobile App Design", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image3.png" },
-        { id:"4", title: "Mobile App Design 2", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image4.png" },
-        { id:"5", title: "Mobile App Design 3", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image1.png" },
+        { id: "1", title: "Mua Tài Khoản Nexflix Premium Mua Tài Khoản Nexflix Premium", tag: "Giải trí", sales: "12342", prices: "399.000", image: "/images/image1.png" },
+        { id: "2", title: "Web Development", tag: "Lorem ipsum ", sales: "12342", prices: "399.000", image: "/images/image2.png" },
+        { id: "3", title: "Mobile App Design", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image3.png" },
+        { id: "4", title: "Mobile App Design 2", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image4.png" },
+        { id: "5", title: "Mobile App Design 3", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image1.png" },
     ];
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setImagesPerSlide(4); // Mobile: Hiển thị 4 sản phẩm
+            if (window.innerWidth >= 768) {
+                setImagesPerSlide(3); // md trở lên: 3 sản phẩm
+            } else if (window.innerWidth >= 640) {
+                setImagesPerSlide(2); // sm: 2 sản phẩm
             } else {
-                setImagesPerSlide(3); // Desktop: Hiển thị 3 sản phẩm
+                setImagesPerSlide(1); // xs: 1 sản phẩm
             }
         };
         // Gọi hàm khi component được mount
@@ -48,16 +50,15 @@ export default function ListCard4() {
     return (
         <div className="relative container mx-auto pb-[20px] overflow-hidden">
             <div
-                className="flex transition-transform duration-500 ease-in-out grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4"
+                className="flex flex-nowrap mx-auto transition-transform duration-500 ease-in-out"
                 style={{
-                    width: `${(comments.length * 45) / imagesPerSlide}%`,
                     transform: getTransformValue(),
                 }}
             >
                 {comments.map((comment, index) => (
                     <div
                         key={index}
-                        className="flex-shrink-0 "
+                        className="flex-shrink-0"
                         style={{
                             width: `${100 / imagesPerSlide}%`,
                         }}

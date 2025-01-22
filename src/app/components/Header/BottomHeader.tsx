@@ -62,16 +62,18 @@ export default function BottomHeader() {
                         </svg>
                     </span>
                 </div>
-                <div className="flex col-span-4 lg:justify-end justify-center items-center space-x-10 mx-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 col-span-4 lg:justify-end justify-center items-center space-x-10 mx-8">
                     {headerLinks.map((item, index) => (
-                        <div key={index} className="flex items-center my-5">
-                            <Image src={item.icon} alt={item.name} width={24} height={24} />
-                            <Link
-                                href={item.link}
-                                className="text-[var(--clr-txt-1)] text-lg ml-5 font-bold"
-                            >
-                                {item.name}
-                            </Link>
+                        <div key={index} className=" items-center my-5">
+                            <div className="flex items-center justify-center">
+                                <Image src={item.icon} alt={item.name} width={24} height={24} />
+                                <Link
+                                    href={item.link}
+                                    className="text-[var(--clr-txt-1)] text-lg ml-5 font-bold"
+                                >
+                                    {item.name}
+                                </Link>
+                            </div>
                         </div>
                     ))}
                 </div>

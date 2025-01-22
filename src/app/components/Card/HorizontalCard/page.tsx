@@ -5,7 +5,7 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 
 interface HeaderSectionsProps {
-  comments: { 
+  comments: {
     id: string;
     title: string;
     tag: string;
@@ -39,7 +39,21 @@ export default function HorizontalCard({ comments }: HeaderSectionsProps) {
             <a href="/product/1"><img src={comment.image} alt="Images" style={{ width: '100%', height: 'auto', borderRadius: '5px', objectFit: 'cover', zIndex: 1, cursor: 'pointer' }} /></a>          </div>
           <div style={{ flex: '7' }}>
             <div style={{ minHeight: '54px', display: 'flex', alignItems: 'center', }}>
-              <p className="mb-1 font-semibold text-[18px] mt-1 mx-1" style={{ color: 'var(--clr-txt-1)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: '22px', textAlign: 'left', }}>
+              <p
+                className="mb-1 font-semibold text-[18px] mt-1 mx-1 sm:min-w-[300px]"
+                style={{
+                  color: "var(--clr-txt-1)",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  lineHeight: "22px",
+                  textAlign: "left",
+                  maxWidth: "200px",
+                  minWidth: "auto", // Mặc định là auto
+                }}
+              >
                 {comment.title}
               </p>
             </div>
@@ -64,11 +78,11 @@ export default function HorizontalCard({ comments }: HeaderSectionsProps) {
               <button
                 onClick={() => handleAddToCart(comment)}
                 style={{ borderRadius: '5px', padding: '5px 5px', color: 'var(--clr-txt-2)', border: '1px solid var(--clr-bg-3)', fontSize: '16px', fontWeight: 'bold', marginRight: '5px' }}>
-                <FontAwesomeIcon icon={faCartShopping} className="mr-2" />
+                <FontAwesomeIcon icon={faCartShopping} style={{ marginRight: '5px' }} />
                 Giỏ hàng
               </button>
               <button
-                style={{ borderRadius: '5px', padding: '5px 10px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)', fontSize: '16px', fontWeight: 'bold' }}>
+                style={{ borderRadius: '5px', padding: '5px 8px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)', fontSize: '16px', fontWeight: 'bold', marginRight: '5px' }}>
                 Mua ngay
               </button>
             </div>

@@ -47,7 +47,7 @@ export default function ProductDetail({ data }: ProductDetailProps) {
     return (
         <div className="container mx-auto my-6">
             <div className="grid lg:grid-cols-12 md:grid-cols-2 grid-col-1">
-                <div className='flex justify-center items-center md:col-span-5'>
+                <div className='flex justify-center items-center md:col-span-5 px-3'>
                     <Image src="/images/image2.png" alt="" style={{ borderRadius: "10px", width: "100%" }} width={1000} height={100} />
                 </div>
                 <div className="md:col-span-1 mx-6"></div>
@@ -231,13 +231,13 @@ export default function ProductDetail({ data }: ProductDetailProps) {
                                     marginRight: '15px',
                                 }}>
                                 <div className="flex justify-center items-center mx-auto">
-                                    <Image src="/images/icon/icon18.png" alt="" style={{ width: '25px', height: '25px', textAlign: 'center' }} width={100} height={100} />
+                                    <Image src="/images/icon/icon18.png" alt="" style={{ width: '25px', height: '25px', textAlign: 'center' }} width={1000} height={100} />
                                 </div>
                                 <div> Thêm vào giỏ</div>
                             </button>
                             &nbsp;
                             <button className=" rounded-md flex px-4"
-                                style={{ padding: '15px 60px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-6)', fontSize: '18px' }}>
+                                style={{ padding: '15px 40px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-6)', fontSize: '18px' }}>
                                <Link href="/order">Mua ngay</Link> 
                             </button>
                         </div>

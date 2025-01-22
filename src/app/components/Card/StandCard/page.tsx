@@ -33,10 +33,10 @@ export default function StandCard({ comments }: HeaderSectionsProps) {
                 <div key={index} className="relative mx-4 my-8 flex flex-col items-center justify-center text-center z-1"
                     style={{ border: " 1px solid var(--clr-txt-2)", backgroundColor: "var(--clr-bg)", borderRadius: "5px", boxShadow: "0px 8px 15px 10px rgb(0 0 0 / 0.08), 0 4px 4px -2px rgb(0 0 0 / 0.05)", }}
                 >
-                    <div className="">
+                   <div className="">
                         <div className="pb-[130px] md:pb-[175px]"></div>
-                        <div className="relative top-[-40px] md:top-[-60px] left-1/2 transform -translate-x-1/2 -translate-y-2/3 z-2 "
-                            style={{ width: "90%", height: "90px", backgroundColor: "var(--clr-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div className="relative top-[-40px] md:top-[-60px] left-1/2 transform -translate-x-1/2 -translate-y-2/3 z-2 h-[120px] lg:h-[90px] md:h-[50px]"
+                            style={{ width: "90%", backgroundColor: "var(--clr-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <a href="/product/1">
                             <Image src={comment.image} alt="Logo" style={{ width: "100%", height: "auto", objectFit: "cover", borderRadius: "5px", cursor: "pointer" }} width={1000} height={100} />
                             </a>

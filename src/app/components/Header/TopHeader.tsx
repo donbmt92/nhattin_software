@@ -33,7 +33,7 @@ export default function TopHeader() {
     return (
         <>
             <div className="container mx-auto items-center justify-between grid grid-cols-12">
-                <div className="flex items-center col-span-3 mx-4">
+                <div className="flex items-center lg:col-span-3 md:col-span-5 col-span-5 mx-4">
                     <Link href="/" className="text-white font-bold text-2xl flex items-center">
                         <Image
                             src="/images/icon/logo.svg"
@@ -43,7 +43,7 @@ export default function TopHeader() {
                             className="mr-2"
                             style={{ objectFit: 'contain' }}
                         />
-                        <div className="flex flex-col">
+                        <div className=" flex-col hidden md:flex">
                             <span className="text-base font-semibold">Nhattin Software</span>
                         </div>
                     </Link>
@@ -51,7 +51,7 @@ export default function TopHeader() {
                         <CategoryMenu />
                     </div>
                 </div>
-                <div className="flex-grow mx-4 col-span-1 lg:col-span-5">
+                <div className="flex-grow mx-4 col-span-2 lg:col-span-5">
                     {/* Mobile View: Icon */}
                     <div className="relative rounded-md lg:hidden">
                         <button
@@ -109,12 +109,12 @@ export default function TopHeader() {
                         </button>
                     </form>
                 </div>
-                <div className="flex justify-end items-center space-x-4 text-sm col-span-8 lg:col-span-4 mx-4">
+                <div className="flex justify-end items-center space-x-4 text-sm col-span-4 md:col-span-5 lg:col-span-4 mx-4">
                     <Link href="/profile" style={{ display: 'flex', alignItems: 'center', color: 'var(--clr-txt-3)' }}>
                         <Image src="/images/icon/icon19.png" alt="Account" width={24} height={24} />
                         <div className="text-left mx-3">
-                            <p className="text-xs">Tài khoản</p>
-                            <p className="text-md font-semibold">Nguyễn Quốc Duy</p>
+                            <p className="text-xs hidden lg:block">Tài khoản</p>
+                            <p className="text-md font-semibold hidden md:block">Nguyễn Quốc Duy</p>
                         </div>
                     </Link>
                     <button
@@ -123,7 +123,7 @@ export default function TopHeader() {
                     >
                         <Image src="/images/icon/icon20.png" alt="Cart" width={24} height={24} />
                         <div className="text-left mx-3">
-                            <p className="text-xs">Giỏ hàng</p>
+                            <p className="text-xs hidden md:block">Giỏ hàng</p>
                             <p className="text-md font-semibold">{totalItems}</p>
                         </div>
                     </button>
