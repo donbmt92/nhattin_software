@@ -47,7 +47,7 @@ export default function ListCard1() {
         .fill(null)
         .map((_, i) => comments[(currentSlide + i) % comments.length]);
     const getTransformValue = () => {
-        return `translateX(-${currentSlide * (200 / imagesPerSlide)}%)`;
+        return `translateX(-${currentSlide * (100 / imagesPerSlide)}%)`;
     };
     return (
         <div className="relative container mx-auto pb-[20px] overflow-hidden">
