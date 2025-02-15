@@ -2,14 +2,48 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const router = useRouter();
 
-    const handleSubmit = (e: { preventDefault: () => void; }) => {
+    const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        // Handle login logic here
+        setError('');
+        
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+            console.log(data);
+            if(data){
+                localStorage.setItem('token', data.access_token);
+                console.log(JSON.stringify(data.data));
+                
+                localStorage.setItem('user', JSON.stringify(data.data));
+                // Kiểm tra role và điều hướng
+                if (data.data.role === '"ADMIN"') {
+                    console.log('admin', data.data.role);
+                    router.push('/dashboard');
+                } else {
+                    console.log('user', data.data.role);
+                    router.push('/');
+                }
+            }
+         
+        } catch (err) {
+            setError('An error occurred during login');
+            console.error('Login error:', err);
+        }
     };
 
     return (
@@ -94,6 +128,12 @@ export default function Login() {
                                 Sign in
                             </button>
                         </div>
+
+                        {error && (
+                            <div className="mt-2 text-center text-sm text-red-600">
+                                {error}
+                            </div>
+                        )}
 
                         <div className="mt-6">
                             <div className="relative">
