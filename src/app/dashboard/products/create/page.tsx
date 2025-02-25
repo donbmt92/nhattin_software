@@ -2,10 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ProductForm from "../ProductForm";
+import axios from 'axios';
 
 export default function CreateProduct() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    
     const handleSubmit = async (formData: FormData) => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -15,24 +17,25 @@ export default function CreateProduct() {
         setIsLoading(true);
         
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create product');
-            }
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/products`, 
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
 
             router.push('/dashboard/products');
             router.refresh();
         } catch (error) {
             console.error('Error creating product:', error);
-            alert(error instanceof Error ? error.message : 'Failed to create product. Please try again.');
+            if (axios.isAxiosError(error)) {
+                alert(error.response?.data?.message || 'Failed to create product. Please try again.');
+            } else {
+                alert('Failed to create product. Please try again.');
+            }
         } finally {
             setIsLoading(false);
         }

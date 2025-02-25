@@ -29,6 +29,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Image from "next/image";
+import axios from "axios";
 
 // MongoDB ObjectId regex pattern
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
@@ -44,6 +45,7 @@ const formSchema = z.object({
     .min(0, "Price must not be less than 0"),
     desc: z.string().min(10, "Description must be at least 10 characters"),
     id_category: z.string().regex(objectIdRegex, "Must be a valid MongoDB ID"),
+    id_discount: z.string().optional(),
 });
 
 interface ProductFormProps {
@@ -54,29 +56,67 @@ interface ProductFormProps {
         desc: string;
         image: string;
         id_category: string;
+        id_discount?: string;
     };
     onSubmit: (data: FormData) => void;
     isLoading?: boolean;
 }
 
+interface Discount {
+    _id: string;
+    name: string;
+    discount_percent: number;
+    status: string;
+    time_end: string;
+}
+
 export default function ProductForm({ initialData, onSubmit, isLoading }: ProductFormProps) {
-    const [imagePreview, setImagePreview] = useState<string | null>(initialData?.image || null);
+    const [imagePreview, setImagePreview] = useState<string | null>(
+        initialData?.image 
+            ? `${process.env.NEXT_PUBLIC_API_URL}/${initialData.image}`
+            : null
+    );
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [categories, setCategories] = useState<Array<{ _id: string; name: string }>>([]);
+    const [discounts, setDiscounts] = useState<Array<{ _id: string; name: string; discount_percent: number }>>([]);
 
-    // Fetch categories
+    // Fetch categories and discounts
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
-                if (!response.ok) throw new Error('Failed to fetch categories');
-                const data = await response.json();
-                setCategories(data);
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('No token found');
+                    return;
+                }
+
+                // Fetch categories
+                const categoriesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
+                if (!categoriesResponse.ok) throw new Error('Failed to fetch categories');
+                const categoriesData = await categoriesResponse.json();
+                setCategories(categoriesData);
+
+                // Fetch active discounts
+                const discountsResponse = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/discounts`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
+                // Filter only active discounts
+                const activeDiscounts = discountsResponse.data.filter(
+                    (discount: Discount) => 
+                        discount.status === 'active' && 
+                        new Date(discount.time_end) > new Date()
+                );
+                setDiscounts(activeDiscounts);
             } catch (error) {
-                console.error('Error fetching categories:', error);
+                console.error('Error fetching data:', error);
             }
         };
-        fetchCategories();
+        fetchData();
     }, []);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -86,8 +126,21 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
             price: initialData?.price || 0,
             desc: initialData?.desc || "",
             id_category: initialData?.id_category || "",
+            id_discount: initialData?.id_discount || "none",
         },
     });
+
+    useEffect(() => {
+        if (initialData) {
+            form.reset({
+                name: initialData.name,
+                price: initialData.price,
+                desc: initialData.desc,
+                id_category: initialData.id_category,
+                id_discount: initialData.id_discount || "none",
+            });
+        }
+    }, [initialData, form]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -106,22 +159,21 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
         
         const formData = new FormData();
         
-        // Xử lý các trường dữ liệu
-        formData.append('name', values.name);
-        // Chuyển price thành số nguyên và gửi dưới dạng number
-        const priceValue = parseInt(values.price.toString(), 10);
-        if (!isNaN(priceValue)) {
-            formData.set('price', priceValue);
-        }
-        formData.append('desc', values.desc);
-        formData.append('id_category', values.id_category);
-        
+        // Chỉ thêm image vào FormData nếu có
         if (selectedFile) {
             formData.append('image', selectedFile);
         }
-        
-        if (initialData?.id) {
-            formData.append('id', initialData.id);
+
+        // Thêm các trường dữ liệu khác
+        formData.append('name', values.name);
+        // Đảm bảo price là số dương và được chuyển thành string
+        const price = Math.max(0, Math.abs(values.price));
+        formData.append('price', price.toString());
+        formData.append('desc', values.desc);
+        formData.append('id_category', values.id_category);
+        // Chỉ thêm id_discount nếu có giá trị và khác "none"
+        if (values.id_discount && values.id_discount !== "none") {
+            formData.append('id_discount', values.id_discount);
         }
         
         // Log để kiểm tra
@@ -243,7 +295,10 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Category</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select 
+                                        onValueChange={field.onChange} 
+                                        value={field.value}
+                                    >
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select a category" />
@@ -253,6 +308,35 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
                                             {categories.map((category) => (
                                                 <SelectItem key={category._id} value={category._id}>
                                                     {category.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="id_discount"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Discount</FormLabel>
+                                    <Select 
+                                        onValueChange={field.onChange} 
+                                        value={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a discount (optional)" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="none">No discount</SelectItem>
+                                            {discounts.map((discount) => (
+                                                <SelectItem key={discount._id} value={discount._id}>
+                                                    {discount.name} ({discount.discount_percent}% off)
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

@@ -29,23 +29,48 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import axios from 'axios';
 
 interface Product {
     _id: {
         id: string;
-        id_category: any;
+        id_category: {
+            _id: string;
+            type: string;
+            name: string;
+        };
+        id_discount?: {
+            id: string;
+            name: string;
+            desc: string;
+            discount_percent: number;
+            time_start: string;
+            time_end: string;
+            status: string;
+        };
         name: string;
         image: string;
         desc: string;
         price: number;
-        createdAt: string;
-        updatedAt: string;
+    };
+    id_category: {
+        _id: string;
+        type: string;
+        name: string;
+    };
+    id_discount?: {
+        id: string;
+        name: string;
+        desc: string;
+        discount_percent: number;
+        time_start: string;
+        time_end: string;
+        status: string;
     };
     name: string;
     price: number;
     desc: string;
     image: string;
-    category?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -55,15 +80,11 @@ export default function ProductsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
     const fetchProducts = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
-            const data = await response.json();
-            console.log(data);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+            const data = response.data;
+            console.log("this is data", data);
             
             // Verify that data is an array before setting it
             if (Array.isArray(data)) {
@@ -74,28 +95,47 @@ export default function ProductsPage() {
             }
         } catch (error) {
             console.error('Error fetching products:', error);
-            setError('Failed to fetch products');
+            if (axios.isAxiosError(error)) {
+                setError(error.response?.data?.message || 'Failed to fetch products');
+            } else {
+                setError('Failed to fetch products');
+            }
             setProducts([]);
         } finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
     const handleDelete = async (id: string) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Please login to delete a product');
+            return;
+        }
+
         try {
-            const token = localStorage.getItem('token')
-            console.log("Deleting product with ID:", id);
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
-                method: 'DELETE',
+            setLoading(true);
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
+                    'Authorization': `Bearer ${token}`
+                }
             });
-            // Refresh products list
-            fetchProducts();
+            
+            // Refresh products list after successful deletion
+            await fetchProducts();
         } catch (error) {
             console.error('Error deleting product:', error);
+            if (axios.isAxiosError(error)) {
+                alert(error.response?.data?.message || 'Failed to delete product. Please try again.');
+            } else {
+                alert('Failed to delete product. Please try again.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -136,6 +176,7 @@ export default function ProductsPage() {
                                 <TableHead>Name</TableHead>
                                 <TableHead>Price</TableHead>
                                 <TableHead>Category</TableHead>
+                                <TableHead>Discount</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -152,8 +193,34 @@ export default function ProductsPage() {
                                         />
                                     </TableCell>
                                     <TableCell className="font-medium">{product.name}</TableCell>
-                                    <TableCell>${product.price.toFixed(2)}</TableCell>
-                                    <TableCell>{product.category}</TableCell>
+                                    <TableCell>
+                                        {(product.id_discount || product._id.id_discount) ? (
+                                            <div>
+                                                <span className="line-through text-gray-500">
+                                                    {product.price.toLocaleString('vi-VN')} VND
+                                                </span>
+                                                <br />
+                                                <span className="text-red-600">
+                                                    {(product.price * (1 - (product.id_discount?.discount_percent || product._id.id_discount?.discount_percent || 0) / 100)).toLocaleString('vi-VN')} VND
+                                                </span>
+                                                <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
+                                                    -{product.id_discount?.discount_percent || product._id.id_discount?.discount_percent}%
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <span>{product.price.toLocaleString('vi-VN')} VND</span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>{product.id_category.name}</TableCell>
+                                    <TableCell>
+                                        {(product.id_discount || product._id.id_discount) ? (
+                                            <span className="text-sm text-green-600">
+                                                {product.id_discount?.name || product._id.id_discount?.name}
+                                            </span>
+                                        ) : (
+                                            <span className="text-sm text-gray-500">No discount</span>
+                                        )}
+                                    </TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Link href={`/dashboard/products/edit/${product._id.id}`}>
                                             <Button variant="secondary" size="sm">
@@ -162,7 +229,7 @@ export default function ProductsPage() {
                                         </Link>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" size="sm">
+                                                <Button variant="secondary" size="sm" className="bg-red-100 text-red-800 hover:bg-red-200">
                                                     Delete
                                                 </Button>
                                             </AlertDialogTrigger>
