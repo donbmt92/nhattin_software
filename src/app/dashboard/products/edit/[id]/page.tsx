@@ -16,7 +16,7 @@ interface Product {
         name: string;
     };
     id_discount?: {
-        id: string;
+        _id: string;
         name: string;
         desc: string;
         discount_percent: number;
@@ -24,6 +24,11 @@ interface Product {
         time_end: string;
         status: string;
     };
+    id_inventory?: string;
+    original_price?: number;
+    current_price?: number;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export default function EditProduct({ params }: { params: { id: string } }) {
@@ -31,6 +36,13 @@ export default function EditProduct({ params }: { params: { id: string } }) {
     const [product, setProduct] = useState<Product | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
+    const [discountWarning, setDiscountWarning] = useState<string | null>(null);
+
+    // Helper function to check if a discount is valid
+    const isDiscountValid = (discount?: Product['id_discount']) => {
+        if (!discount) return true; // No discount is valid
+        return discount.status === 'active' && new Date(discount.time_end) > new Date();
+    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -49,6 +61,11 @@ export default function EditProduct({ params }: { params: { id: string } }) {
                 });
                 console.log('Product data:', response.data);
                 setProduct(response.data);
+                
+                // Check if product has an expired discount
+                if (response.data.id_discount && !isDiscountValid(response.data.id_discount)) {
+                    setDiscountWarning(`This product has an expired discount: ${response.data.id_discount.name}. The discount will not be applied to the product price.`);
+                }
             } catch (error) {
                 console.error('Error fetching product:', error);
                 if (axios.isAxiosError(error)) {
@@ -103,17 +120,38 @@ export default function EditProduct({ params }: { params: { id: string } }) {
 
     // Transform the data to match ProductForm's expected format
     const formData = {
+        id: product._id,
         name: product.name,
         price: product.price,
         desc: product.desc,
         image: product.image,
         id_category: product.id_category._id,
-        id_discount: product.id_discount?.id || "",
+        id_discount: product.id_discount?._id || "none",
+        original_price: product.original_price,
+        current_price: product.current_price
     };
+
+    console.log('Form data for edit:', formData);
 
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-6">Edit Product</h1>
+            {discountWarning && (
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm text-yellow-700">
+                                {discountWarning}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
             <ProductForm 
                 initialData={formData}
                 onSubmit={handleSubmit}

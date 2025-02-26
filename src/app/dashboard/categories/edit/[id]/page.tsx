@@ -27,11 +27,11 @@ export default function EditCategoryPage() {
                         'Authorization': `Bearer ${token}`,
                     }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch category');
                 }
-                
+
                 const data = await response.json();
                 setCategory(data);
             } catch (error) {

@@ -73,6 +73,8 @@ interface Product {
     image: string;
     createdAt: string;
     updatedAt: string;
+    original_price?: number;
+    current_price?: number;
 }
 
 export default function ProductsPage() {
@@ -80,11 +82,17 @@ export default function ProductsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Helper function to check if a discount is valid
+    const isDiscountValid = (discount?: Product['id_discount']) => {
+        if (!discount) return false;
+        return discount.status === 'active' && new Date(discount.time_end) > new Date();
+    };
+
     const fetchProducts = async () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/products`);
             const data = response.data;
-            console.log("this is data", data);
+            console.log("Products data:", data);
             
             // Verify that data is an array before setting it
             if (Array.isArray(data)) {
@@ -194,29 +202,47 @@ export default function ProductsPage() {
                                     </TableCell>
                                     <TableCell className="font-medium">{product.name}</TableCell>
                                     <TableCell>
-                                        {(product.id_discount || product._id.id_discount) ? (
+                                        {isDiscountValid(product.id_discount) ? (
                                             <div>
                                                 <span className="line-through text-gray-500">
-                                                    {product.price.toLocaleString('vi-VN')} VND
+                                                    {product.base_price?.toLocaleString('vi-VN')} VND
                                                 </span>
                                                 <br />
                                                 <span className="text-red-600">
-                                                    {(product.price * (1 - (product.id_discount?.discount_percent || product._id.id_discount?.discount_percent || 0) / 100)).toLocaleString('vi-VN')} VND
+                                                    {(product.price * (1 - (product.id_discount!.discount_percent || 0) / 100)).toLocaleString('vi-VN')} VND
                                                 </span>
                                                 <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
-                                                    -{product.id_discount?.discount_percent || product._id.id_discount?.discount_percent}%
+                                                    -{product.id_discount!.discount_percent}%
+                                                </span>
+                                            </div>
+                                        ) : product.original_price ? (
+                                            <div>
+                                                <span className="line-through text-gray-500">
+                                                    {product.original_price.toLocaleString('vi-VN')} VND
+                                                </span>
+                                                <br />
+                                                <span className="text-red-600">
+                                                    {product.current_price ? 
+                                                        product.current_price.toLocaleString('vi-VN') : 
+                                                        product.base_price?.toLocaleString('vi-VN')} VND
                                                 </span>
                                             </div>
                                         ) : (
-                                            <span>{product.price.toLocaleString('vi-VN')} VND</span>
+                                            <span>{product.base_price?.toLocaleString('vi-VN')} VND</span>
                                         )}
                                     </TableCell>
                                     <TableCell>{product.id_category.name}</TableCell>
                                     <TableCell>
-                                        {(product.id_discount || product._id.id_discount) ? (
-                                            <span className="text-sm text-green-600">
-                                                {product.id_discount?.name || product._id.id_discount?.name}
-                                            </span>
+                                        {product.id_discount ? (
+                                            isDiscountValid(product.id_discount) ? (
+                                                <span className="text-sm text-green-600">
+                                                    {product.id_discount.name}
+                                                </span>
+                                            ) : (
+                                                <span className="text-sm text-orange-600">
+                                                    {product.id_discount.name} (expired)
+                                                </span>
+                                            )
                                         ) : (
                                             <span className="text-sm text-gray-500">No discount</span>
                                         )}
