@@ -25,8 +25,13 @@ interface Product {
         status: string;
     };
     id_inventory?: string;
-    original_price?: number;
-    current_price?: number;
+    min_price?: number;
+    max_price?: number;
+    rating?: number;
+    total_reviews?: number;
+    sold?: number;
+    warranty_policy?: boolean;
+    status?: string;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -59,7 +64,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-                console.log('Product data:', response.data);
+                console.log('Product data Edit:', response.data);
                 setProduct(response.data);
                 
                 // Check if product has an expired discount
@@ -122,13 +127,19 @@ export default function EditProduct({ params }: { params: { id: string } }) {
     const formData = {
         id: product._id,
         name: product.name,
-        price: product.price,
         desc: product.desc,
         image: product.image,
         id_category: product.id_category._id,
         id_discount: product.id_discount?._id || "none",
-        original_price: product.original_price,
-        current_price: product.current_price
+        id_inventory: product.id_inventory,
+        base_price: product.price,
+        min_price: product.min_price,
+        max_price: product.max_price,
+        rating: product.rating,
+        total_reviews: product.total_reviews,
+        sold: product.sold,
+        warranty_policy: product.warranty_policy || false,
+        status: product.status || 'IN_STOCK'
     };
 
     console.log('Form data for edit:', formData);

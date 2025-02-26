@@ -50,8 +50,15 @@ interface Product {
         };
         name: string;
         image: string;
-        desc: string;
-        price: number;
+        description: string;
+        base_price: number;
+        min_price: number;
+        max_price: number;
+        rating: number;
+        total_reviews: number;
+        sold: number;
+        warranty_policy: boolean;
+        status: string;
     };
     id_category: {
         _id: string;
@@ -68,13 +75,19 @@ interface Product {
         status: string;
     };
     name: string;
-    price: number;
-    desc: string;
+    description: string;
     image: string;
+    thumbnail: string;
+    base_price: number;
+    min_price: number;
+    max_price: number;
+    rating: number;
+    total_reviews: number;
+    sold: number;
+    warranty_policy: boolean;
+    status: string;
     createdAt: string;
     updatedAt: string;
-    original_price?: number;
-    current_price?: number;
 }
 
 export default function ProductsPage() {
@@ -205,30 +218,18 @@ export default function ProductsPage() {
                                         {isDiscountValid(product.id_discount) ? (
                                             <div>
                                                 <span className="line-through text-gray-500">
-                                                    {product.base_price?.toLocaleString('vi-VN')} VND
+                                                    {product.base_price.toLocaleString('vi-VN')} VND
                                                 </span>
                                                 <br />
                                                 <span className="text-red-600">
-                                                    {(product.price * (1 - (product.id_discount!.discount_percent || 0) / 100)).toLocaleString('vi-VN')} VND
+                                                    {(product.base_price * (1 - (product.id_discount!.discount_percent || 0) / 100)).toLocaleString('vi-VN')} VND
                                                 </span>
                                                 <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">
                                                     -{product.id_discount!.discount_percent}%
                                                 </span>
                                             </div>
-                                        ) : product.original_price ? (
-                                            <div>
-                                                <span className="line-through text-gray-500">
-                                                    {product.original_price.toLocaleString('vi-VN')} VND
-                                                </span>
-                                                <br />
-                                                <span className="text-red-600">
-                                                    {product.current_price ? 
-                                                        product.current_price.toLocaleString('vi-VN') : 
-                                                        product.base_price?.toLocaleString('vi-VN')} VND
-                                                </span>
-                                            </div>
                                         ) : (
-                                            <span>{product.base_price?.toLocaleString('vi-VN')} VND</span>
+                                            <span>{product.base_price.toLocaleString('vi-VN')} VND</span>
                                         )}
                                     </TableCell>
                                     <TableCell>{product.id_category.name}</TableCell>

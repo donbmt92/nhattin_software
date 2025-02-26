@@ -36,22 +36,31 @@ const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 const formSchema = z.object({
     name: z.string().min(3, "Name must be at least 3 characters").max(100, "Name must not exceed 100 characters"),
-    price: z.number({
-        required_error: "Price is required",
-        invalid_type_error: "Price must be a number",
-    })
-    .int("Price must be an integer")
-    .nonnegative("Price must not be less than 0")
-    .min(0, "Price must not be less than 0"),
     desc: z.string().min(10, "Description must be at least 10 characters"),
     id_category: z.string().regex(objectIdRegex, "Must be a valid MongoDB ID"),
     id_discount: z.string().optional(),
     id_inventory: z.string().optional(),
-    original_price: z.number().optional(),
-    current_price: z.number().optional(),
-    base_price: z.number().optional(),
-    min_price: z.number().optional(),
-    max_price: z.number().optional(),
+    base_price: z.number({
+        required_error: "Base price is required",
+        invalid_type_error: "Base price must be a number",
+    })
+    .int("Base price must be an integer")
+    .nonnegative("Base price must not be less than 0")
+    .min(0, "Base price must not be less than 0"),
+    min_price: z.number({
+        invalid_type_error: "Min price must be a number",
+    })
+    .int("Min price must be an integer")
+    .nonnegative("Min price must not be less than 0")
+    .min(0, "Min price must not be less than 0")
+    .optional(),
+    max_price: z.number({
+        invalid_type_error: "Max price must be a number",
+    })
+    .int("Max price must be an integer")
+    .nonnegative("Max price must not be less than 0")
+    .min(0, "Max price must not be less than 0")
+    .optional(),
     rating: z.number().min(0).max(5).optional(),
     total_reviews: z.number().min(0).optional(),
     sold: z.number().min(0).optional(),
@@ -63,15 +72,12 @@ interface ProductFormProps {
     initialData?: {
         id?: string;
         name: string;
-        price: number;
         desc: string;
         image: string;
         id_category: string;
         id_discount?: string;
         id_inventory?: string;
-        original_price?: number;
-        current_price?: number;
-        base_price?: number;
+        base_price: number;
         min_price?: number;
         max_price?: number;
         rating?: number;
@@ -148,16 +154,13 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: initialData?.name || "",
-            price: initialData?.price || 0,
             desc: initialData?.desc || "",
             id_category: initialData?.id_category || "",
             id_discount: initialData?.id_discount || "none",
             id_inventory: initialData?.id_inventory || undefined,
-            original_price: initialData?.original_price || undefined,
-            current_price: initialData?.current_price || undefined,
-            base_price: initialData?.base_price || undefined,
-            min_price: initialData?.min_price || undefined,
-            max_price: initialData?.max_price || undefined,
+            base_price: initialData?.base_price || 0,
+            min_price: initialData?.min_price || initialData?.base_price || undefined,
+            max_price: initialData?.max_price || initialData?.base_price || undefined,
             rating: initialData?.rating || undefined,
             total_reviews: initialData?.total_reviews || undefined,
             sold: initialData?.sold || undefined,
@@ -172,16 +175,13 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
             console.log('Setting form values from initialData:', initialData);
             form.reset({
                 name: initialData.name,
-                price: initialData.price,
                 desc: initialData.desc,
                 id_category: initialData.id_category,
                 id_discount: initialData.id_discount || "none",
                 id_inventory: initialData.id_inventory || undefined,
-                original_price: initialData.original_price || undefined,
-                current_price: initialData.current_price || undefined,
-                base_price: initialData.base_price || undefined,
-                min_price: initialData.min_price || undefined,
-                max_price: initialData.max_price || undefined,
+                base_price: initialData.base_price,
+                min_price: initialData.min_price || initialData.base_price,
+                max_price: initialData.max_price || initialData.base_price,
                 rating: initialData.rating || undefined,
                 total_reviews: initialData.total_reviews || undefined,
                 sold: initialData.sold || undefined,
@@ -208,78 +208,45 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
         
         const formData = new FormData();
         
-        // Chỉ thêm image vào FormData nếu có
         if (selectedFile) {
             formData.append('image', selectedFile);
         }
 
-        // Thêm các trường dữ liệu khác
         formData.append('name', values.name);
-        
-        // Đảm bảo price là số dương
-        const price = Math.max(0, Math.abs(values.price));
-        // formData.append('price', price.toString());
-        
-        // Thêm description (backend expects 'description', not 'desc')
         formData.append('description', values.desc);
-        
         formData.append('id_category', values.id_category);
+        formData.append('base_price', values.base_price.toString());
 
-        // Chỉ thêm id_discount nếu có giá trị và khác "none"
         if (values.id_discount && values.id_discount !== "none") {
             formData.append('id_discount', values.id_discount);
         }
         
-        // Add id_inventory if provided
         if (values.id_inventory) {
             formData.append('id_inventory', values.id_inventory);
         }
         
-        // Add original_price if provided
-        if (values.original_price !== undefined) {
-            // formData.append('original_price', values.original_price.toString());
-        }
-        
-        // Add current_price if provided
-        if (values.current_price !== undefined) {
-            // formData.append('current_price', values.current_price.toString());
-        }
-        
-        // Add base_price if provided (required by backend)
-        if (values.base_price !== undefined) {
-            formData.append('base_price', values.base_price.toString());
-        } else {
-            // If base_price is not provided, use price as base_price
-            formData.append('base_price', price.toString());
-        }
-        
-        // Add min_price if provided (required by backend)
+        // Add min_price if provided, otherwise use base_price
         if (values.min_price !== undefined) {
             formData.append('min_price', values.min_price.toString());
         } else {
-            // If min_price is not provided, use price as min_price
-            formData.append('min_price', price.toString());
+            formData.append('min_price', values.base_price.toString());
         }
         
-        // Add max_price if provided (required by backend)
+        // Add max_price if provided, otherwise use base_price
         if (values.max_price !== undefined) {
             formData.append('max_price', values.max_price.toString());
         } else {
-            // If max_price is not provided, use price as max_price
-            formData.append('max_price', price.toString());
+            formData.append('max_price', values.base_price.toString());
         }
         
-        // Add rating if provided
         if (values.rating !== undefined) {
             formData.append('rating', values.rating.toString());
         }
         
-        // Add total_reviews if provided
         if (values.total_reviews !== undefined) {
             formData.append('total_reviews', values.total_reviews.toString());
         }
         
-        // Add sold if provided
         if (values.sold !== undefined) {
             formData.append('sold', values.sold.toString());
         }
@@ -331,7 +298,25 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
 
                         <FormField
                             control={form.control}
-                            name="price"
+                            name="desc"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Enter product description"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="base_price"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Price (VND)</FormLabel>
@@ -362,47 +347,14 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
 
                         <FormField
                             control={form.control}
-                            name="base_price"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Base Price (VND, required by backend)</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            placeholder="Enter base price (defaults to price if empty)"
-                                            value={field.value || ''}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                const numValue = value === '' ? undefined : Math.max(0, Math.floor(Number(value)));
-                                                field.onChange(numValue);
-                                            }}
-                                            onBlur={(e) => {
-                                                const value = e.target.value;
-                                                if (value === '') {
-                                                    field.onChange(undefined);
-                                                } else {
-                                                    const numValue = Math.max(0, Math.floor(Number(value)));
-                                                    e.target.value = numValue.toString();
-                                                    field.onChange(numValue);
-                                                }
-                                            }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
                             name="min_price"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Min Price (VND, required by backend)</FormLabel>
+                                    <FormLabel>Min Price (VND, optional)</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
-                                            placeholder="Enter minimum price (defaults to price if empty)"
+                                            placeholder="Enter minimum price (defaults to base price if empty)"
                                             value={field.value || ''}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -431,11 +383,11 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
                             name="max_price"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Max Price (VND, required by backend)</FormLabel>
+                                    <FormLabel>Max Price (VND, optional)</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
-                                            placeholder="Enter maximum price (defaults to price if empty)"
+                                            placeholder="Enter maximum price (defaults to base price if empty)"
                                             value={field.value || ''}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -452,90 +404,6 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
                                                     field.onChange(numValue);
                                                 }
                                             }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="original_price"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Original Price (VND, optional)</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            placeholder="Enter original price if different"
-                                            value={field.value || ''}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                const numValue = value === '' ? undefined : Math.max(0, Math.floor(Number(value)));
-                                                field.onChange(numValue);
-                                            }}
-                                            onBlur={(e) => {
-                                                const value = e.target.value;
-                                                if (value === '') {
-                                                    field.onChange(undefined);
-                                                } else {
-                                                    const numValue = Math.max(0, Math.floor(Number(value)));
-                                                    e.target.value = numValue.toString();
-                                                    field.onChange(numValue);
-                                                }
-                                            }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="current_price"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Current Price (VND, optional)</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            placeholder="Enter current price if different"
-                                            value={field.value || ''}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                const numValue = value === '' ? undefined : Math.max(0, Math.floor(Number(value)));
-                                                field.onChange(numValue);
-                                            }}
-                                            onBlur={(e) => {
-                                                const value = e.target.value;
-                                                if (value === '') {
-                                                    field.onChange(undefined);
-                                                } else {
-                                                    const numValue = Math.max(0, Math.floor(Number(value)));
-                                                    e.target.value = numValue.toString();
-                                                    field.onChange(numValue);
-                                                }
-                                            }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="desc"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Enter product description"
-                                            className="resize-none"
-                                            {...field}
                                         />
                                     </FormControl>
                                     <FormMessage />
