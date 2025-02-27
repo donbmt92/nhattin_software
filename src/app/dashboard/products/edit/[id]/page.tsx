@@ -5,11 +5,28 @@ import ProductForm from "../../ProductForm";
 import axios from 'axios';
 
 interface Product {
-    _id: string;
-    name: string;
-    price: number;
-    desc: string;
-    image: string;
+    _id: {
+        id: string;
+        id_category: {
+            _id: string;
+            type: string;
+            name: string;
+        };
+        name: string;
+        description: string;
+        image: string;
+        thumbnail: string;
+        base_price: number;
+        min_price: number;
+        max_price: number;
+        rating: number;
+        total_reviews: number;
+        sold: number;
+        warranty_policy: boolean;
+        status: string;
+        createdAt: string;
+        updatedAt: string;
+    };
     id_category: {
         _id: string;
         type: string;
@@ -24,16 +41,20 @@ interface Product {
         time_end: string;
         status: string;
     };
-    id_inventory?: string;
-    min_price?: number;
-    max_price?: number;
-    rating?: number;
-    total_reviews?: number;
-    sold?: number;
-    warranty_policy?: boolean;
-    status?: string;
-    createdAt?: string;
-    updatedAt?: string;
+    name: string;
+    description: string;
+    image: string;
+    thumbnail: string;
+    base_price: number;
+    min_price: number;
+    max_price: number;
+    rating: number;
+    total_reviews: number;
+    sold: number;
+    warranty_policy: boolean;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export default function EditProduct({ params }: { params: { id: string } }) {
@@ -125,21 +146,20 @@ export default function EditProduct({ params }: { params: { id: string } }) {
 
     // Transform the data to match ProductForm's expected format
     const formData = {
-        id: product._id,
+        id: product._id.id,
         name: product.name,
-        desc: product.desc,
+        desc: product.description,
         image: product.image,
         id_category: product.id_category._id,
         id_discount: product.id_discount?._id || "none",
-        id_inventory: product.id_inventory,
-        base_price: product.price,
+        base_price: product.base_price,
         min_price: product.min_price,
         max_price: product.max_price,
         rating: product.rating,
         total_reviews: product.total_reviews,
         sold: product.sold,
-        warranty_policy: product.warranty_policy || false,
-        status: product.status || 'IN_STOCK'
+        warranty_policy: product.warranty_policy,
+        status: product.status
     };
 
     console.log('Form data for edit:', formData);

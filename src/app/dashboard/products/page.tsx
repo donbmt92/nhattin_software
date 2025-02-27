@@ -40,7 +40,7 @@ interface Product {
             name: string;
         };
         id_discount?: {
-            id: string;
+            _id: string;
             name: string;
             desc: string;
             discount_percent: number;
@@ -49,8 +49,9 @@ interface Product {
             status: string;
         };
         name: string;
-        image: string;
         description: string;
+        image: string;
+        thumbnail: string;
         base_price: number;
         min_price: number;
         max_price: number;
@@ -59,6 +60,8 @@ interface Product {
         sold: number;
         warranty_policy: boolean;
         status: string;
+        createdAt: string;
+        updatedAt: string;
     };
     id_category: {
         _id: string;
@@ -66,7 +69,7 @@ interface Product {
         name: string;
     };
     id_discount?: {
-        id: string;
+        _id: string;
         name: string;
         desc: string;
         discount_percent: number;

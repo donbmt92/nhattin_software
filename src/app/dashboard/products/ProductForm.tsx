@@ -17,7 +17,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -30,6 +29,17 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Image from "next/image";
 import axios from "axios";
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import { Toggle } from "@/components/ui/toggle";
+import { 
+    Bold, 
+    Italic, 
+    Strikethrough, 
+    List, 
+    ListOrdered,
+    Heading2
+} from "lucide-react";
 
 // MongoDB ObjectId regex pattern
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
@@ -97,6 +107,97 @@ interface Discount {
     status: string;
     time_end: string;
 }
+
+const Tiptap = ({ 
+    value, 
+    onChange 
+}: { 
+    value: string;
+    onChange: (value: string) => void;
+}) => {
+    const editor = useEditor({
+        extensions: [StarterKit],
+        content: value,
+        editorProps: {
+            attributes: {
+                class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl max-w-none min-h-[150px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+            },
+        },
+        onUpdate: ({ editor }) => {
+            onChange(editor.getHTML());
+        },
+    });
+
+    return (
+        <div className="border rounded-lg border-input bg-background">
+            <div className="flex flex-wrap gap-1 p-1 border-b border-input bg-muted/50">
+                <Toggle
+                    size="sm"
+                    pressed={editor?.isActive('bold')}
+                    onPressedChange={() => editor?.chain().focus().toggleBold().run()}
+                    variant="outline"
+                    className="h-8 w-8 p-0 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                    aria-label="Toggle bold"
+                >
+                    <Bold className="h-4 w-4" />
+                </Toggle>
+                <Toggle
+                    size="sm"
+                    pressed={editor?.isActive('italic')}
+                    onPressedChange={() => editor?.chain().focus().toggleItalic().run()}
+                    variant="outline"
+                    className="h-8 w-8 p-0 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                    aria-label="Toggle italic"
+                >
+                    <Italic className="h-4 w-4" />
+                </Toggle>
+                <Toggle
+                    size="sm"
+                    pressed={editor?.isActive('strike')}
+                    onPressedChange={() => editor?.chain().focus().toggleStrike().run()}
+                    variant="outline"
+                    className="h-8 w-8 p-0 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                    aria-label="Toggle strikethrough"
+                >
+                    <Strikethrough className="h-4 w-4" />
+                </Toggle>
+                <Toggle
+                    size="sm"
+                    pressed={editor?.isActive('heading', { level: 2 })}
+                    onPressedChange={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+                    variant="outline"
+                    className="h-8 w-8 p-0 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                    aria-label="Toggle heading"
+                >
+                    <Heading2 className="h-4 w-4" />
+                </Toggle>
+                <Toggle
+                    size="sm"
+                    pressed={editor?.isActive('bulletList')}
+                    onPressedChange={() => editor?.chain().focus().toggleBulletList().run()}
+                    variant="outline"
+                    className="h-8 w-8 p-0 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                    aria-label="Toggle bullet list"
+                >
+                    <List className="h-4 w-4" />
+                </Toggle>
+                <Toggle
+                    size="sm"
+                    pressed={editor?.isActive('orderedList')}
+                    onPressedChange={() => editor?.chain().focus().toggleOrderedList().run()}
+                    variant="outline"
+                    className="h-8 w-8 p-0 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+                    aria-label="Toggle ordered list"
+                >
+                    <ListOrdered className="h-4 w-4" />
+                </Toggle>
+            </div>
+            <div className="p-3">
+                <EditorContent editor={editor} />
+            </div>
+        </div>
+    );
+};
 
 export default function ProductForm({ initialData, onSubmit, isLoading }: ProductFormProps) {
     const [imagePreview, setImagePreview] = useState<string | null>(
@@ -303,10 +404,9 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
                                 <FormItem>
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
-                                        <Textarea
-                                            placeholder="Enter product description"
-                                            className="resize-none"
-                                            {...field}
+                                        <Tiptap
+                                            value={field.value}
+                                            onChange={field.onChange}
                                         />
                                     </FormControl>
                                     <FormMessage />
