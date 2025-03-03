@@ -1,8 +1,18 @@
 "use client";
 import ListCard2 from '@/app/components/Card/ListCard2/ListCard2'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import api from '../utils/api';
 
 export default function ListProductSales() {
+    const [product, setProduct] = useState<any[]>([]);
+    const getListProduct = async () => {
+        const productResponse = await api.get("/products/");
+        setProduct(productResponse.data);
+    };
+
+    useEffect(() => {
+        getListProduct();
+    }, []);
     return (
         <div className="relative container mx-auto py-[50px]">
             <div>
@@ -11,7 +21,7 @@ export default function ListProductSales() {
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-4 md:grid-cols-3 gap-6 mx-auto">
                 <div className="col-span-4">
-                    <ListCard2 />
+                    <ListCard2 products={product} />
                 </div>
             </div>
         </div>

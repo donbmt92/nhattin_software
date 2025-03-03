@@ -1,24 +1,24 @@
 "use client";
+import React, { useEffect, useRef, useState } from 'react';
+import StandCard from "../StandCard/StandCard";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from 'react-slick';
+import { Product } from '@/app/profile/types';
 
-import React, { useEffect, useState } from 'react'
-import StandCard from '../StandCard/StandCard';
-
-export default function ListCard4() {
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [imagesPerSlide, setImagesPerSlide] = useState(3);
-    const comments = [
-        { id:"1", title: "Mua Tài Khoản Nexflix Premium Mua Tài Khoản Nexflix Premium", tag: "Giải trí", sales: "12342", prices: "399.000", image: "/images/image1.png" },
-        { id:"2", title: "Web Development", tag: "Lorem ipsum ", sales: "12342", prices: "399.000", image: "/images/image2.png" },
-        { id:"3", title: "Mobile App Design", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image3.png" },
-        { id:"4", title: "Mobile App Design 2", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image4.png" },
-        { id:"5", title: "Mobile App Design 3", tag: "Lorem ipsum", sales: "12342", prices: "399.000", image: "/images/image1.png" },
-    ];
+export default function ListCard4({ products }: { products: Product[] }) {
+    const sliderRef = useRef<Slider | null>(null);
+    const [imagesPerSlide, setImagesPerSlide] = useState(4);
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setImagesPerSlide(4); // Mobile: Hiển thị 4 sản phẩm
+            if (window.innerWidth >= 978) {
+                setImagesPerSlide(4); // LG: 4 sản phẩm
+            } else if (window.innerWidth >= 645) {
+                setImagesPerSlide(3); // MD: 3 sản phẩm
+            } else if (window.innerWidth >= 480) {
+                setImagesPerSlide(2); // SM: 2 sản phẩm
             } else {
-                setImagesPerSlide(3); // Desktop: Hiển thị 3 sản phẩm
+                setImagesPerSlide(1); // XS: 1 sản phẩm
             }
         };
         // Gọi hàm khi component được mount
@@ -28,39 +28,32 @@ export default function ListCard4() {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
- 
-    // Điều hướng slide phải
-    const goToNextSlide = () => {
-        setCurrentSlide((prevIndex) => (prevIndex + 1) % comments.length);
+    const settings = {
+        // dots: true, // Hiển thị dấu chấm điều hướng
+        // infinite: true, // Vòng lặp vô hạn
+        speed: 500, // Tốc độ chuyển slide
+        slidesToShow: imagesPerSlide, // Hiển thị 1 slide mỗi lần
+        slidesToScroll: 1, // Cuộn 1 slide mỗi lần
+        // autoplay: true, // Tự động chạy slide
+        autoplaySpeed: 5000, // Thời gian chuyển đổi slide (ms)
+        dotsClass: 'slick-dots custom-dots',
+        arrows: false
     };
-
-    
-    const getTransformValue = () => {
-        return `translateX(-${currentSlide * (100 / imagesPerSlide)}%)`;
+    const goToNextSlide = () => {
+        sliderRef.current?.slickNext();
     };
     return (
-        <div className="relative container mx-auto pb-[20px] overflow-hidden">
-            <div
-                className="flex transition-transform duration-500 ease-in-out grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4"
-                style={{
-                    width: `${(comments.length * 45) / imagesPerSlide}%`,
-                    transform: getTransformValue(),
-                }}
-            >
-                {comments.map((comment, index) => (
-                    <div
-                        key={index}
-                        className="flex-shrink-0 "
-                        style={{
-                            width: `${100 / imagesPerSlide}%`,
-                        }}
-                    >
-                        <StandCard comments={[comment]} />
+        <div className="relative w-full">
+            <Slider ref={sliderRef} {...settings}>
+                {products.map((prd) => (
+                    <div key={prd.id} className="px-2">
+                        <StandCard products={[prd]} />
                     </div>
                 ))}
-            </div>
+            </Slider>
+
             {/* Nút điều hướng */}
+
             <button
                 onClick={goToNextSlide}
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-l-full z-4" style={{ fontSize: "25px", backgroundColor: "var(--clr-bg)", color: "var(--clr-txt-1)", border: "1px solid var(--clr-bg-3)" }}
@@ -68,5 +61,5 @@ export default function ListCard4() {
                 ❯
             </button>
         </div>
-    )
+    );
 }

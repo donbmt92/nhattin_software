@@ -1,19 +1,55 @@
 "use client";
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faRightFromBracket, faRightToBracket, faSearch, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import CartPopup from '../Cart/CartPopup';
 import CategoryMenu from './CategoryMenu';
 import { useRouter } from 'next/navigation';
-
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import api from '../utils/api';
+import { jwtDecode } from "jwt-decode";
+interface User {
+    id: string;
+    fullName: string;
+    email?: string;
+}
 export default function TopHeader() {
+    let timeout: NodeJS.Timeout;
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const { items, toggleCart } = useCart();
     const router = useRouter();
+    const [isOpen, setIsOpen] = useState(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (error) {
+                console.error("Lỗi parse user từ localStorage:", error);
+                setUser(null);
+            }
+        }
+    }, []);
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        setIsOpen(true);
+    };
+
+    const handleMouseLeave = () => {
+        timeoutRef.current = setTimeout(() => setIsOpen(false), 300);
+    };
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.reload()
+    }
 
     const toggleSearchPopup = () => {
         setIsPopupVisible(!isPopupVisible);
@@ -33,25 +69,20 @@ export default function TopHeader() {
     return (
         <>
             <div className="container mx-auto items-center justify-between grid grid-cols-12">
-                <div className="flex items-center col-span-3 mx-4">
-                    <Link href="/" className="text-white font-bold text-2xl flex items-center">
+                <div className="flex items-center justify-center col-span-3 mx-4 w-full">
+                    <Link href="/" className="flex items-center w-full">
                         <Image
                             src="/images/icon/logo.svg"
                             alt="Nhất Tín Marketing"
-                            width={120}
-                            height={120}
+                            width={100}
+                            height={100}
                             className="mr-2"
                             style={{ objectFit: 'contain' }}
                         />
-                        <div className="flex flex-col">
-                            <span className="text-base font-semibold">Nhattin Software</span>
-                        </div>
+                        <h2 className="text-base font-semibold hidden md:block text-white">Nhattin Software</h2>
                     </Link>
-                    <div className="ml-4 hidden lg:block">
-                        <CategoryMenu />
-                    </div>
                 </div>
-                <div className="flex-grow mx-4 col-span-1 lg:col-span-5">
+                <div className="flex-grow mx-4 col-span-4 lg:col-span-5 flex justify-center items-center">
                     {/* Mobile View: Icon */}
                     <div className="relative rounded-md lg:hidden">
                         <button
@@ -109,26 +140,58 @@ export default function TopHeader() {
                         </button>
                     </form>
                 </div>
-                <div className="flex justify-end items-center space-x-4 text-sm col-span-8 lg:col-span-4 mx-4">
-                    <Link href="/profile" style={{ display: 'flex', alignItems: 'center', color: 'var(--clr-txt-3)' }}>
-                        <Image src="/images/icon/icon19.png" alt="Account" width={24} height={24} />
-                        <div className="text-left mx-3">
-                            <p className="text-xs">Tài khoản</p>
-                            <p className="text-md font-semibold">Nguyễn Quốc Duy</p>
+                <div className="flex justify-end items-center space-x-4 text-sm col-span-4 lg:col-span-4 mx-4">
+                    <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
+                        <div
+                            className="relative"
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                        >
+                            <DropdownMenu.Trigger asChild>
+                                <div className="flex items-center cursor-pointer mb-2">
+                                    <Image src="/images/icon/icon19.png" alt="Account" width={24} height={24} />
+                                    <div className="text-left mx-3 hidden md:block" style={{ color: "var(--clr-txt-3)" }}>
+                                        <p className="text-xs ">{user ? "Xin chào" : ""}</p>
+                                        <p className="text-md font-semibold cursor-pointer" onClick={() => { if (!user) window.location.href = "/login"; }}>{user?.fullName || "Đăng nhập"}</p>
+                                    </div>
+                                </div>
+                            </DropdownMenu.Trigger>
+                            {user && (
+                                <DropdownMenu.Portal>
+                                    <DropdownMenu.Content
+                                        className="w-50 bg-white shadow-md rounded-md border p-1 mt-3"
+                                        side="bottom"
+                                        align="start"
+                                        onMouseEnter={handleMouseEnter}
+                                        onMouseLeave={handleMouseLeave}
+                                    >
+                                        <DropdownMenu.Item className="p-2 hover:bg-gray-100 rounded-md">
+                                            <Link href="/profile">
+                                                <FontAwesomeIcon icon={faUserCircle} className="mr-2" /> Thông tin cá nhân
+                                            </Link>
+                                        </DropdownMenu.Item>
+                                        <DropdownMenu.Item className="p-2 hover:bg-gray-100 rounded-md">
+                                            <Link href="/" onClick={logout}>
+                                                <FontAwesomeIcon icon={faRightToBracket} className="mr-2" /> Đăng xuất
+                                            </Link>
+                                        </DropdownMenu.Item>
+                                    </DropdownMenu.Content>
+                                </DropdownMenu.Portal>
+                            )}
                         </div>
-                    </Link>
+                    </DropdownMenu.Root>
                     <button
                         onClick={toggleCart}
                         style={{ display: 'flex', alignItems: 'center', color: 'var(--clr-txt-3)' }}
                     >
-                        <Image src="/images/icon/icon20.png" alt="Cart" width={24} height={24} />
-                        <div className="text-left mx-3">
+                        <Image src="/images/icon/icon20.png" alt="Cart" width={24} height={24} className='mb-2' />
+                        <div className="text-left mx-3 hidden md:block">
                             <p className="text-xs">Giỏ hàng</p>
                             <p className="text-md font-semibold">{totalItems}</p>
                         </div>
                     </button>
                 </div>
-            </div>
+            </div >
             <CartPopup />
         </>
     )

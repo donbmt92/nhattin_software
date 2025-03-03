@@ -28,7 +28,7 @@ export default function CartPopup() {
             <div key={item.id} className="flex items-center mb-4 p-2 border rounded">
               <div className="w-20 h-20 relative">
                 <Image
-                  src={item.image}
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/${item.image}`}
                   alt={item.title}
                   className="object-cover rounded"
                   width={100}
@@ -70,7 +70,7 @@ export default function CartPopup() {
             <span className="text-red-600 font-bold">{total.toLocaleString()} VNĐ</span>
           </div>
           <Link href="/order"
-            className="w-full py-2 bg-red-600 text-white rounded-md font-semibold hover:bg-red-700"
+            className="w-full p-2 bg-red-600 text-white rounded-md font-semibold hover:bg-red-700"
           >
             Thanh toán
           </Link>

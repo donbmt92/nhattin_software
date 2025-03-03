@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ export default function Login() {
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         setError('');
-        
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
                 method: 'POST',
@@ -25,10 +25,10 @@ export default function Login() {
 
             const data = await response.json();
             console.log(data);
-            if(data){
+            if (data) {
                 localStorage.setItem('token', data.access_token);
                 console.log(JSON.stringify(data.data));
-                
+
                 localStorage.setItem('user', JSON.stringify(data.data));
                 // Kiểm tra role và điều hướng
                 if (data.data.role === '"ADMIN"') {
@@ -39,7 +39,7 @@ export default function Login() {
                     router.push('/');
                 }
             }
-         
+
         } catch (err) {
             setError('An error occurred during login');
             console.error('Login error:', err);
@@ -51,27 +51,28 @@ export default function Login() {
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8">
-                        <Image
+                        {/* <Image
                             className="mx-auto h-12 w-auto"
                             src="/images/logo.png"
                             alt="Your Company"
                             width={48}
                             height={48}
-                        />
+                        /> */}
                         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                            Sign in to your account
+                            Đăng nhập 
                         </h2>
                     </div>
                     <div className="space-y-6">
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email address
+                                Email
                             </label>
                             <div className="mt-1">
                                 <input
                                     id="email"
                                     name="email"
                                     type="email"
+                                    placeholder='Nhập địa chỉ Email'
                                     autoComplete="email"
                                     required
                                     value={email}
@@ -83,13 +84,14 @@ export default function Login() {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
+                                Mật khẩu
                             </label>
                             <div className="mt-1">
                                 <input
                                     id="password"
                                     name="password"
                                     type="password"
+                                    placeholder='Nhập mật khẩu'
                                     autoComplete="current-password"
                                     required
                                     value={password}
@@ -108,13 +110,13 @@ export default function Login() {
                                     className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                                 />
                                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                                    Remember me
+                                    Ghi nhớ
                                 </label>
                             </div>
 
                             <div className="text-sm">
                                 <Link href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                    Forgot your password?
+                                    Quên mật khẩu?
                                 </Link>
                             </div>
                         </div>
@@ -125,7 +127,7 @@ export default function Login() {
                                 onClick={handleSubmit}
                                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
-                                Sign in
+                                Đăng nhập
                             </button>
                         </div>
 
