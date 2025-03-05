@@ -1,42 +1,22 @@
 "use client";
-import { faRightFromBracket, faRightToBracket, faSearch, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faRightToBracket, faSearch, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import Image from 'next/image';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import CartPopup from '../Cart/CartPopup';
-import CategoryMenu from './CategoryMenu';
 import { useRouter } from 'next/navigation';
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import api from '../utils/api';
-import { jwtDecode } from "jwt-decode";
-interface User {
-    id: string;
-    fullName: string;
-    email?: string;
-}
+
 export default function TopHeader() {
-    let timeout: NodeJS.Timeout;
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const { items, toggleCart } = useCart();
+    const { user, totalItems, toggleCart } = useCart();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (error) {
-                console.error("Lỗi parse user từ localStorage:", error);
-                setUser(null);
-            }
-        }
-    }, []);
     const handleMouseEnter = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setIsOpen(true);
@@ -63,8 +43,6 @@ export default function TopHeader() {
             setSearchQuery('');
         }
     };
-
-    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
         <>

@@ -18,6 +18,15 @@ export interface UserProfile {
     //     vipStatus: string;
     // }
 }
+export interface User {
+    id: string;
+    fullName: string;
+    email?: string;
+}
+export interface Notification {
+    message: string;
+    type: 'success' | 'error';
+  }
 export interface Product {
     _id: any;
     id: string;

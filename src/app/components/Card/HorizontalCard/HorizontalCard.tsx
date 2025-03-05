@@ -5,22 +5,10 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Product } from '@/app/profile/types';
-
+import { Product } from '@/app/profile/types';;
 
 export default function HorizontalCard({ products }: { products: Product[] }) {
   const { addToCart } = useCart();
-
-  const handleAddToCart = (product: Product) => {
-    addToCart({
-      id: product._id,
-      title: product.name,
-      price: product.base_price,
-      quantity: 1,
-      image: product.image
-    });
-  };
-
   return (
     <div className="flex">
       {products.map((prd, index) => (
@@ -64,7 +52,7 @@ export default function HorizontalCard({ products }: { products: Product[] }) {
             </div>
             <div className="flex justify-center items-center mb-2">
               <button
-                onClick={() => handleAddToCart(prd)}
+                onClick={() => addToCart(prd)}
                 className='2xl:text-[11px] xl:text-[15px] lg:text-[18px] md:text-[12px] sm:text-[20px] text-[12px]'
                 style={{ borderRadius: '5px', padding: '5px 5px', color: 'var(--clr-txt-2)', border: '1px solid var(--clr-bg-3)', fontWeight: 'bold', marginRight: '5px' }}>
                 <FontAwesomeIcon icon={faCartShopping} className="mr-2" />

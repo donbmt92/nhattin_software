@@ -5,18 +5,7 @@ import Image from 'next/image'
 import { Product } from '@/app/profile/types';
 
 export default function StandCard({ products }: { products: Product[] }) {
-  const { addToCart } = useCart();
-
-  const handleAddToCart = (product: Product) => {
-    addToCart({
-      id: product._id,
-      title: product.name,
-      price: product.base_price,
-      quantity: 1,
-      image: product.image
-    });
-  };
-
+    const { addToCart } = useCart();
     return (
         <div className="py-[100px]">
             {products.map((prd, index) => (
@@ -56,7 +45,7 @@ export default function StandCard({ products }: { products: Product[] }) {
                             <p className="text-[24px] font-semibold text-[var(--clr-txt-4)]">
                                 {Number(prd.base_price).toLocaleString('vi-VN')} đ
                             </p>
-                            <button onClick={() => handleAddToCart(prd)} className="cursor-pointer">
+                            <button onClick={() => addToCart(prd)} className="cursor-pointer">
                                 <Image src="/images/icon/icon10.png" alt="Add to Cart" width={25} height={25} />
                             </button>
                         </div>
