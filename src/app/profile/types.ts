@@ -7,7 +7,7 @@ export interface Order {
 }
 
 export interface UserProfile {
-    name: string;
+    fullName: string;
     id: string;
     email: string;
     phone: string;

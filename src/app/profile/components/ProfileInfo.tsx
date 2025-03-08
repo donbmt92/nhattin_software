@@ -1,9 +1,30 @@
 "use client";
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { UserProfile } from '../types';
 import InfoField from './InfoField';
+import EditProfileModal from './EditProfileModal';
+import ChangePasswordModal from './ChangePasswordModal';
 
-const ProfileInfo = memo(({ user }: { user: UserProfile }) => {
+const ProfileInfo = memo(({ user, onUserUpdate }: { user: UserProfile; onUserUpdate: (updatedUser: UserProfile) => void; }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+    const handleEditClick = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleOpenPasswordModal = () => {
+        setIsPasswordModalOpen(true);
+    };
+
+    const handleClosePasswordModal = () => {
+        setIsPasswordModalOpen(false);
+    };
+
     const displayName = 'ProfileInfo';
     ProfileInfo.displayName = displayName;
     
@@ -54,7 +75,7 @@ const ProfileInfo = memo(({ user }: { user: UserProfile }) => {
                         </defs>
                     </svg>
                 </div>
-                <h2 className="text-xl font-semibold mb-1">{user.name}</h2>
+                <h2 className="text-xl font-semibold mb-1">{user.fullName}</h2>
                 <p className="text-gray-500 text-sm mb-4">#{user.id}</p>
                 
                 <div className="w-full space-y-2">
@@ -62,10 +83,25 @@ const ProfileInfo = memo(({ user }: { user: UserProfile }) => {
                     <InfoField label="Phone" value={user.phone} />
                 </div>
                 
-                <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">
+                <button onClick={handleEditClick} className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">
                     Chỉnh Sửa
                 </button>
+                <button onClick={handleOpenPasswordModal} className="mt-2 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors">
+                    Đổi Mật Khẩu
+                </button>
             </div>
+            <EditProfileModal 
+                isOpen={isModalOpen} 
+                onClose={handleCloseModal} 
+                user={user} 
+                onUserUpdate={onUserUpdate} 
+            />
+            <ChangePasswordModal 
+                isOpen={isPasswordModalOpen} 
+                onClose={handleClosePasswordModal} 
+                userId={user.id} 
+                onPasswordChange={handleClosePasswordModal} 
+            />
         </div>
     );
 });
