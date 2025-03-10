@@ -135,7 +135,7 @@ export default function ProductsPage() {
     }, []);
 
     const handleDelete = async (id: string) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('nhattin_token');
         if (!token) {
             alert('Please login to delete a product');
             return;

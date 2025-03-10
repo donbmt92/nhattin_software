@@ -9,7 +9,7 @@ export default function CreateProduct() {
     const [isLoading, setIsLoading] = useState(false);
     
     const handleSubmit = async (formData: FormData) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('nhattin_token');
         if (!token) {
             alert('Please login to create a product');
             return;

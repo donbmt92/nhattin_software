@@ -23,7 +23,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const getCategories = async (): Promise<Category[]> => {
     try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('nhattin_token');
         if (!token) {
             throw new Error('No authentication token found');
         }
@@ -58,7 +58,7 @@ const getCategories = async (): Promise<Category[]> => {
 
 const deleteCategory = async (id: string): Promise<void> => {
     try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('nhattin_token');
         if (!token) {
             throw new Error('No authentication token found');
         }

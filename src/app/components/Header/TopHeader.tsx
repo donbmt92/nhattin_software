@@ -26,8 +26,8 @@ export default function TopHeader() {
         timeoutRef.current = setTimeout(() => setIsOpen(false), 300);
     };
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('nhattin_token');
+        localStorage.removeItem('nhattin_user');
         window.location.reload()
     }
 

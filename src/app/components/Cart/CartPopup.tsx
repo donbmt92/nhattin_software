@@ -2,10 +2,10 @@
 import { useCart } from "@/context/CartContext";
 import { faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Link from "next/link";
+// import Link from "next/link";
 import Image from "next/image";
 export default function CartPopup() {
-  const { listCart, total, totalItems, isCartOpen, toggleCart, updateQuantity, removeFromCart } = useCart();
+  const { listCart, total, totalItems, isCartOpen, toggleCart, updateQuantity, removeFromCart, createOrders } = useCart();
   if (!isCartOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end">
@@ -64,12 +64,12 @@ export default function CartPopup() {
             <span className="font-semibold">Tổng tiền:</span>
             <span className="text-red-600 font-bold">{total.toLocaleString('vi-VN')} VNĐ</span>
           </div>
-          <Link
-            href="/order"
+          <button
+            onClick={createOrders}
             className="w-full p-2 bg-red-600 text-white rounded-md font-semibold hover:bg-red-700"
           >
             Thanh toán
-          </Link>
+          </button>
         </div>
       </div>
     </div>

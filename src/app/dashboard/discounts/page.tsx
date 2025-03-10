@@ -66,7 +66,7 @@ export default function DiscountsPage() {
 
     const fetchDiscounts = async () => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('nhattin_token');
             if (!token) {
                 setError('Please login to view discounts');
                 return;
@@ -100,7 +100,7 @@ export default function DiscountsPage() {
     }, []);
 
     const handleDelete = async (id: string) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('nhattin_token');
         if (!token) {
             alert('Please login to delete a discount');
             return;
@@ -133,7 +133,7 @@ export default function DiscountsPage() {
     };
 
     const handleFormSubmit = async (data: DiscountFormData) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('nhattin_token');
         if (!token) {
             alert('Please login to continue');
             return;

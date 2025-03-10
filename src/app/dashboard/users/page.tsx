@@ -95,7 +95,7 @@ export default function UsersPage() {
     const fetchUsers = async () => {
         setIsLoading(true);
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('nhattin_token');
             if (!token) {
                 setError('Please login to view users');
                 setIsLoading(false);
@@ -145,7 +145,7 @@ export default function UsersPage() {
     const handleDeleteUser = async (userId: string) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('nhattin_token');
                 if (!token) {
                     alert('Please login to delete a user');
                     return;
@@ -177,7 +177,7 @@ export default function UsersPage() {
 
     const onSubmit = async (data: z.infer<typeof userFormSchema>) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('nhattin_token');
             if (!token) {
                 alert('Please login to update user');
                 return;

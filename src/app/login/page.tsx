@@ -26,10 +26,10 @@ export default function Login() {
             const data = await response.json();
             console.log(data);
             if (data) {
-                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('nhattin_token', data.access_token);
                 console.log(JSON.stringify(data.data));
 
-                localStorage.setItem('user', JSON.stringify(data.data));
+                localStorage.setItem('nhattin_user', JSON.stringify(data.data));
                 // Kiểm tra role và điều hướng
                 if (data.data.role === '"ADMIN"') {
                     console.log('admin', data.data.role);

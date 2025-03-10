@@ -73,7 +73,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('nhattin_token');
                 if (!token) {
                     alert('Please login to view product details');
                     router.push('/dashboard/products');
@@ -109,7 +109,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
     }, [params.id, router]);
 
     const handleSubmit = async (formData: FormData) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('nhattin_token');
         if (!token) {
             alert('Please login to update the product');
             return;

@@ -213,7 +213,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading }: Produc
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('nhattin_token');
                 if (!token) {
                     console.error('No token found');
                     return;

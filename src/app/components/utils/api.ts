@@ -7,7 +7,7 @@ const api = axios.create({
 // Thêm interceptor để đính kèm token nếu có
 api.interceptors.request.use(
     (config: any) => {
-        const token = localStorage.getItem('token'); // Hoặc lấy từ cookie nếu bạn đang sử dụng cookie
+        const token = localStorage.getItem('nhattin_token'); // Hoặc lấy từ cookie nếu bạn đang sử dụng cookie
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -28,7 +28,7 @@ api.interceptors.response.use(
             console.log('API Response Error:', error.response);
             if (error.response.status == 401) {
                 // Xóa token từ localStorage
-                localStorage.removeItem('token');
+                localStorage.removeItem('nhattin_token');
                 // Hoặc nếu bạn sử dụng cookies, bạn có thể xóa cookie tại đây
 
                 // Chuyển hướng đến trang đăng nhập hoặc home

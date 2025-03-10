@@ -23,7 +23,7 @@ interface CategoryData {
 }
 
 const createCategory = async (data: CategoryData) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('nhattin_token');
     const response = await fetch(`${API_URL}/categories`, {
         method: 'POST',
         headers: {
@@ -37,7 +37,7 @@ const createCategory = async (data: CategoryData) => {
 };
 
 const updateCategory = async (id: string, data: CategoryData) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('nhattin_token');
     const response = await fetch(`${API_URL}/categories?id=${id}`, {
         method: 'PATCH',
         headers: {

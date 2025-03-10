@@ -15,8 +15,8 @@ export default function Dashboard() {
     useEffect(() => {
         // Check if user is logged in and is admin
         const checkAuth = () => {
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('user');
+            const token = localStorage.getItem('nhattin_token');
+            const userData = localStorage.getItem('nhattin_user');
 
             if (!token || !userData) {
                 router.push('/login');

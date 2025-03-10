@@ -21,7 +21,7 @@ export default function EditCategoryPage() {
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('nhattin_token');
                 const response = await fetch(`${API_URL}/categories/${params.id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,

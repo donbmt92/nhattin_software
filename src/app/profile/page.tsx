@@ -11,7 +11,7 @@ export default function Profile() {
     console.log(user);
 
     const getUserDetail = async () => {
-        const storedUser = localStorage.getItem("user");
+        const storedUser = localStorage.getItem("nhattin_user");
 
         if (!storedUser) return;
 

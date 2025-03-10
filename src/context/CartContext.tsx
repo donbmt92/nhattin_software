@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import api from "@/app/components/utils/api";
 import { User, Notification, Product } from "@/app/profile/types";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
@@ -15,6 +16,7 @@ interface CartContextType {
   updateQuantity: (id: string, quantity: number) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
   addToCart: (product: Product) => Promise<void>;
+  createOrders: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -23,11 +25,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [listCart, setListCart] = useState<any[]>([]);
-  const totalItems = listCart.reduce((sum, item) => sum + item.quantity, 0);
-  const total = listCart.reduce((sum, item) => sum + item.id_product.base_price * item.quantity, 0);
+  console.log(listCart);
+  const totalItems = listCart?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const total = listCart?.reduce((sum, item) => sum + item.id_product.base_price * item.quantity, 0) || 0;
   const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("nhattin_user");
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
@@ -52,9 +55,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
       console.log("Gọi API lấy giỏ hàng...");
       const response = await api.get("/carts/");
-      setListCart(response.data);
+
+      // Check if response.data is an array
+      if (Array.isArray(response.data)) {
+        setListCart(response.data);
+      } else {
+        // If it's an object with a message (empty cart), set an empty array
+        console.log("Giỏ hàng trống:", response.data.message);
+        setListCart([]);
+      }
     } catch (error) {
       console.error("Lỗi khi lấy giỏ hàng:", error);
+      setListCart([]);
     }
   };
   useEffect(() => {
@@ -67,8 +79,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (!user) return;
       // Gọi API lấy danh sách giỏ hàng mới nhất để kiểm tra (tránh trường hợp dữ liệu cũ)
       const { data: updatedCart } = await api.get("/carts");
-
-      // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng chưa
+      console.log(updatedCart);
+      
+      // Check if updatedCart is an array or an object with a message
+      if (!Array.isArray(updatedCart)) {
+        // If cart is empty, just add the product
+        console.log("Giỏ hàng trống, thêm sản phẩm mới");
+        const response = await api.post("/carts", { id_product: product._id.id, quantity: 1 });
+        
+        if (response.data) {
+          await getListCart(); // Gọi lại danh sách giỏ hàng sau khi thêm mới
+          showNotification(`Đã thêm ${product.name} vào giỏ hàng`, "success");
+        } else {
+          throw new Error("Dữ liệu phản hồi không hợp lệ");
+        }
+        return;
+      }
+      
+      // If updatedCart is an array, proceed with the existing logic
       const existingItem = updatedCart.find((item: any) =>
         String(item.id_product?._id || item.id_product) === String(product._id)
       );
@@ -119,8 +147,35 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setIsCartOpen(!isCartOpen);
   };
 
+  //create payment
+  const createOrders = async () => {
+    try {
+      // Create order data based on the CreateOrderDto requirements
+      const orderData = {
+        note: "", // Default empty note, you might want to add a note input field in your UI
+        total: total, // Using the total from the cart context
+        status: "pending", // Default status for new orders
+        voucher: "" // Optional voucher code, can be added later
+      };
+      
+      const response = await api.post("/orders", orderData);
+      
+      if (response.data) {
+        // Clear cart after successful order creation
+        await getListCart();
+        showNotification("Đơn hàng đã được tạo thành công", "success");
+        // Close cart after order is created
+        setIsCartOpen(false);
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo đơn hàng:", error);
+      showNotification("Không thể tạo đơn hàng", "error");
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ user, listCart, total, totalItems, notification, isCartOpen, toggleCart, getListCart, updateQuantity, removeFromCart, addToCart }}>
+    <CartContext.Provider value={{ user, listCart, total, totalItems, notification, isCartOpen, toggleCart, getListCart, updateQuantity, removeFromCart, addToCart, createOrders }}>
       {children}
       {notification && (
         <div className="fixed bottom-4 right-4 z-50 animate-fade-in-up">
