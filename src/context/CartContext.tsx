@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import api from "@/app/components/utils/api";
+import axios from "axios";
 import { User, Notification, Product } from "@/app/profile/types";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState, useCallback } from "react";
 
 
 interface CartContextType {
@@ -47,14 +47,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setNotification(null);
     }, 3000); // Hide notification after 3 seconds
   };
-  const getListCart = async () => {
+  const getListCart = useCallback(async () => {
     try {
       if (!user) {
         console.log("Không có user, không gọi API.");
         return;
       }
       console.log("Gọi API lấy giỏ hàng...");
-      const response = await api.get("/carts/");
+      const token = localStorage.getItem('nhattin_token');
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/carts`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
       // Check if response.data is an array
       if (Array.isArray(response.data)) {
@@ -65,27 +70,40 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setListCart([]);
       }
     } catch (error) {
+      alert(error);
       console.error("Lỗi khi lấy giỏ hàng:", error);
       setListCart([]);
     }
-  };
+  }, [user]);
   useEffect(() => {
     if (!user) return;
     console.log("User tồn tại, gọi getListCart()");
     getListCart();
-  }, [user]);
+  }, [getListCart, user]);
   const addToCart = async (product: Product) => {
     try {
       if (!user) return;
+      const token = localStorage.getItem('nhattin_token');
       // Gọi API lấy danh sách giỏ hàng mới nhất để kiểm tra (tránh trường hợp dữ liệu cũ)
-      const { data: updatedCart } = await api.get("/carts");
+      const { data: updatedCart } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/carts`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       console.log(updatedCart);
       
       // Check if updatedCart is an array or an object with a message
       if (!Array.isArray(updatedCart)) {
         // If cart is empty, just add the product
         console.log("Giỏ hàng trống, thêm sản phẩm mới");
-        const response = await api.post("/carts", { id_product: product._id.id, quantity: 1 });
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/carts`, 
+          { id_product: product._id.id, quantity: 1 },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
         
         if (response.data) {
           await getListCart(); // Gọi lại danh sách giỏ hàng sau khi thêm mới
@@ -103,12 +121,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       if (existingItem) {
         // Nếu đã có trong giỏ hàng, cập nhật số lượng
-        await api.patch(`/carts/${existingItem._id}`, { quantity: existingItem.quantity + 1 });
+        await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/carts/${existingItem._id}`, 
+          { quantity: existingItem.quantity + 1 },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
         await getListCart(); // Gọi lại danh sách giỏ hàng sau khi cập nhật
         showNotification(`Đã cập nhật số lượng ${product.name} trong giỏ hàng`, "success");
       } else {
         // Nếu chưa có trong giỏ hàng, thêm mới
-        const response = await api.post("/carts", { id_product: product._id.id, quantity: 1 });
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/carts`, 
+          { id_product: product._id.id, quantity: 1 },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
 
         if (response.data) {
           await getListCart(); // Gọi lại danh sách giỏ hàng sau khi thêm mới
@@ -126,7 +158,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const updateQuantity = async (id: string, quantity: number) => {
     if (quantity < 1) return;
     try {
-      await api.patch(`/carts/${id}`, { quantity });
+      const token = localStorage.getItem('nhattin_token');
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/carts/${id}`, 
+        { quantity },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
       setListCart((prev) =>
         prev.map((item) => (item._id === id ? { ...item, quantity } : item))
       );
@@ -137,7 +177,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const removeFromCart = async (id: string) => {
     try {
-      await api.delete(`/carts/${id}`);
+      const token = localStorage.getItem('nhattin_token');
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/carts/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setListCart((prev) => prev.filter((item) => item._id !== id));
     } catch (error) {
       console.error("Lỗi khi xóa sản phẩm:", error);
@@ -150,6 +195,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   //create payment
   const createOrders = async () => {
     try {
+      const token = localStorage.getItem('nhattin_token');
       // Create order data based on the CreateOrderDto requirements
       const orderData = {
         note: "", // Default empty note, you might want to add a note input field in your UI
@@ -158,7 +204,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         voucher: "" // Optional voucher code, can be added later
       };
       
-      const response = await api.post("/orders", orderData);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/orders`, 
+        orderData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
       
       if (response.data) {
         // Clear cart after successful order creation
