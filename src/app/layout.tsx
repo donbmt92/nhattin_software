@@ -1,11 +1,12 @@
 "use client";
-import {Inter} from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import {CartProvider} from "@/context/CartContext";
+import { CartProvider } from "@/context/CartContext";
 import Headers from "./components/Header/page";
 import Footer from "@/components/Footer";
+import { ExpandingFloatButton } from "@/components/ui/expanding-float-button";
 
-const inter = Inter({subsets: ["latin"]});
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
     children,
@@ -16,9 +17,10 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <CartProvider>
-                    <Headers/>
+                    <Headers />
                     {children}
-                    <Footer/>
+                    <ExpandingFloatButton />
+                    <Footer />
                 </CartProvider>
             </body>
         </html>

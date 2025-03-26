@@ -209,7 +209,7 @@ export default function ProductsPage() {
                                 <TableRow key={product._id.id}>
                                     <TableCell>
                                         <Image
-                                            src={`${process.env.NEXT_PUBLIC_API_URL}/${product.image}`}
+                                            src={product.image}
                                             alt={product.name}
                                             width={48}
                                             height={48}

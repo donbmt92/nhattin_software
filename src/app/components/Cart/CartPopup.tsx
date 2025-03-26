@@ -23,7 +23,7 @@ export default function CartPopup() {
             <div key={item.id_product} className="flex items-center mb-4 p-2 border rounded">
               <div className="w-20 h-20 relative">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL}/${item.id_product.image}`}
+                  src={`${item.id_product.image}`}
                   alt={item.id_product.name}
                   className="object-cover rounded"
                   width={100}

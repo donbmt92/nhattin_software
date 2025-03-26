@@ -4,6 +4,10 @@ import { Filter, Percent, TrendingUp, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+import axios from 'axios'
+
+// Add API URL from env
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface ProductType {
     id: string
@@ -14,45 +18,6 @@ interface ProductType {
     type: string
     category: string
 }
-
-const PRODUCTS: ProductType[] = [
-    {
-        id: '1',
-        name: 'Netflix Premium - 1 tháng',
-        image: '/images/icon/netflix.svg',
-        price: '399.000 đ',
-        tag: 'Giá tốt',
-        type: 'netflix',
-        category: 'Giải trí'
-    },
-    {
-        id: '2',
-        name: 'Spotify Premium - 1 năm',
-        image: '/images/icon/spotify.svg',
-        price: '599.000 đ',
-        tag: 'Bán chạy',
-        type: 'spotify',
-        category: 'Nghe nhạc'
-    },
-    {
-        id: '3',
-        name: 'Coursera Plus - 6 tháng',
-        image: '/images/icon/coursera.svg',
-        price: '899.000 đ',
-        tag: 'Học tập',
-        type: 'coursera',
-        category: 'Học tập'
-    },
-    {
-        id: '4',
-        name: 'Youtube Premium - 1 năm',
-        image: '/images/icon/youtube.svg',
-        price: '499.000 đ',
-        tag: 'Hot',
-        type: 'youtube',
-        category: 'Giải trí'
-    }
-]
 
 const CATEGORIES = [
     "Giải trí",
@@ -249,16 +214,48 @@ export default function ProductGrid() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
     const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>('')
+    const [products, setProducts] = useState<ProductType[]>([])
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+
+    const fetchProducts = async (categoryName?: string) => {
+        try {
+            setLoading(true)
+            setError(null)
+            console.log(categoryName || selectedCategory)
+            const response = await axios.get(`${API_URL}/products/search/by-category-name`, {
+                    params: {
+                    categoryName: categoryName || selectedCategory
+                }
+            })
+            console.log(response.data)
+            setProducts(response.data)
+        } catch (err) {
+            setError('Không thể tải danh sách sản phẩm')
+            console.error('Error fetching products:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
         const category = searchParams.get('category');
         const brand = searchParams.get('brand');
         const query = searchParams.get('q');
 
-        if (category) setSelectedCategory(category);
+        if (category) {
+            setSelectedCategory(category)
+            fetchProducts(category)
+        }
         if (brand) setSelectedBrand(brand);
         if (query) setSearchQuery(query);
     }, [searchParams]);
+
+    useEffect(() => {
+        if (selectedCategory) {
+            fetchProducts()
+        }
+    }, [selectedCategory])
 
     const getBackgroundColor = (type: ProductType['type']) => {
         const colors: Record<string, string> = {
@@ -274,8 +271,7 @@ export default function ProductGrid() {
         return colors[type] || 'bg-gray-50'
     }
 
-    const filteredProducts = PRODUCTS.filter(product => {
-        if (selectedCategory && product.category !== selectedCategory) return false;
+    const filteredProducts = products.filter(product => {
         if (selectedBrand && product.type !== selectedBrand.toLowerCase()) return false;
         if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
@@ -295,14 +291,24 @@ export default function ProductGrid() {
                 activeFilter={activeFilter}
                 onFilterChange={setActiveFilter}
                 selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
+                onCategoryChange={(category) => {
+                    setSelectedCategory(category)
+                }}
                 selectedBrand={selectedBrand}
                 onBrandChange={setSelectedBrand}
             />
-            <ProductList
-                products={filteredProducts}
-                getBackgroundColor={getBackgroundColor}
-            />
+            {loading ? (
+                <div className="flex justify-center items-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                </div>
+            ) : error ? (
+                <div className="text-center py-8 text-red-500">{error}</div>
+            ) : (
+                <ProductList
+                    products={filteredProducts}
+                    getBackgroundColor={getBackgroundColor}
+                />
+            )}
         </div>
     )
 }

@@ -1,37 +1,206 @@
 "use client";
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
+import { Loader2, X } from "lucide-react";
+
+interface Product {
+    _id: string;
+    id_category: string;
+    name: string;
+    description: string;
+    image: string;
+    thumbnail: string;
+    base_price: number;
+    min_price: number;
+    max_price: number;
+    rating: number;
+    total_reviews: number;
+    sold: number;
+    warranty_policy: boolean;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface OrderItem {
+    id: string;
+    quantity: number;
+    old_price: number;
+    discount_precent: number;
+    final_price: number;
+    product_snapshot: {
+        name: string;
+        image: string;
+        description: string;
+        base_price: number;
+        category_id: string;
+        category_name: string;
+    };
+    product: Product;
+}
+
+interface Order {
+    id: string;
+    uid: string;
+    note: string;
+    voucher: string;
+    status: string;
+    total_items: number;
+    items: OrderItem[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface UserProfile {
+    _id: string;
+    fullName: string;
+    phone: string;
+    email?: string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+}
 
 export default function OrderDetails() {
+    const router = useRouter();
     type Quantities = {
         [productId: string]: number;
     };
-
+    const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
     const [quantities, setQuantities] = useState<Quantities>({});
     const [selectedMethod, setSelectedMethod] = useState("momo");
+    const [maxWidth, setMaxWidth] = useState("200px");
+    const [isLoading, setIsLoading] = useState(true);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+    const [order, setOrder] = useState('');
+    
+    // User information states
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [fullName, setFullName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
+    const [note, setNote] = useState('');
 
-    // Hàm xử lý khi nhấn nút trừ
-    const increaseQuantity = (productId: number) => {
+    // Load user data from API
+    useEffect(() => {
+        const getUserDetail = async () => {
+            if (typeof window === 'undefined') return;
+            
+            const storedUser = localStorage.getItem("nhattin_user");
+            if (!storedUser) return;
+
+            try {
+                const parsedUser = JSON.parse(storedUser);
+
+                // Check if parsedUser is an object or array
+                const userId = Array.isArray(parsedUser) ? parsedUser[0]?._id : parsedUser?._id;
+
+                if (userId) {
+                    const token = localStorage.getItem('nhattin_token');
+                    if (!token) {
+                        console.error('Authentication token not found');
+                        return;
+                    }
+
+                    const userResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    const userData = userResponse.data;
+                    setUser(userData);
+                    setFullName(userData.fullName || '');
+                    setPhone(userData.phone || '');
+                    setEmail(userData.email || '');
+                    
+                    console.log("User data fetched from API:", userData);
+                } else {
+                    console.error("Không tìm thấy _id của user.");
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy thông tin user:", error);
+            }
+        };
+
+        getUserDetail();
+    }, []);
+
+    const getOrder = async () => {
+        try {
+            const token = localStorage.getItem('nhattin_token');
+
+            if (!token) {
+                console.error('Authentication token not found');
+                return;
+            }
+
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/orders/my-orders`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch order data:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Hàm xử lý khi nhấn nút tăng/giảm
+    const increaseQuantity = (productId: string) => {
         setQuantities((prev) => ({
             ...prev,
             [productId]: (prev[productId] || 1) + 1,
         }));
     };
 
-    const decreaseQuantity = (productId: number) => {
+    const decreaseQuantity = (productId: string) => {
         setQuantities((prev) => ({
             ...prev,
             [productId]: Math.max((prev[productId] || 1) - 1, 1),
         }));
     };
-    const [maxWidth, setMaxWidth] = useState("200px"); // Default to mobile size
+
+    useEffect(() => {
+        const fetchOrderData = async () => {
+            const orderData = await getOrder();
+            setOrder(orderData[0].id);
+
+            if (orderData && orderData.length > 0) {
+                const typedOrderData = orderData as Order[];
+
+                // Flatten all items from all orders into a single array
+                const allItems = typedOrderData.flatMap(order => order.items);
+                setOrderItems(allItems);
+
+                // Initialize quantities from all order items
+                const initialQuantities: Quantities = {};
+                let total = 0;
+
+                allItems.forEach((item: OrderItem) => {
+                    initialQuantities[item.product._id] = item.quantity;
+                    total += item.final_price * item.quantity;
+                });
+
+                setQuantities(initialQuantities);
+                setTotalAmount(total);
+            }
+        };
+        fetchOrderData();
+    }, []);
 
     useEffect(() => {
         const updateMaxWidth = () => {
             if (typeof window === 'undefined') return;
-            
+
             if (window.matchMedia("(min-width: 1537px)").matches) {
                 setMaxWidth("600px");
             } else if (window.matchMedia("(min-width: 1280px)").matches) {
@@ -45,57 +214,216 @@ export default function OrderDetails() {
             }
         };
 
-        // Add event listener
         window.addEventListener("resize", updateMaxWidth);
-        // Run once after mount
         updateMaxWidth();
 
         return () => window.removeEventListener("resize", updateMaxWidth);
     }, []);
-    const products = [
-        {
-            id: 1,
-            name: 'Mua Tài khoản Netflix PremiumMua Tài khoản Netflix Premium',
-            price: 1000,
-            type: 'Giải trí',
-            quantity: 1,
-            imgSrc: '/images/image12.png',
-        },
-        {
-            id: 2,
-            name: 'Mua Tài khoản Netflix Premium',
-            price: 1000,
-            type: 'Giải trí',
-            quantity: 1,
-            imgSrc: '/images/image12.png',
-        },
-    ];
 
     const paymentMethods = [
         {
             id: "momo",
             label: "Thanh toán bằng ví MoMo",
             logo: "/images/momo.png",
+            code: "0856666647"
         },
         {
-            id: "vtcpay",
-            label: "VTCPay",
-            logo: "/images/vtcpay.png",
+            id: "MB bank",
+            label: "Thanh toán MB bank",
+            logo: "/images/Logo_MB_new.png",
+            code: "2222226255555"
         },
         {
-            id: "vietcombank",
-            label: "Thanh toán Vietcombank",
-            logo: "/images/vietcombank.png",
-        },
-        {
-            id: "alepay",
-            label: "Thanh toán trực tuyến",
-            logo: "/images/alepay.png",
+            id: "agribank",
+            label: "Thanh toán Agribank",
+            logo: "/images/IconAgribank.png",
+            code: "5215888826666"
         },
     ];
 
+    const handlePaymentSubmit = () => {
+        // Show the payment popup
+        setShowPaymentPopup(true);
+    };
+
+    const closePaymentPopup = () => {
+        setShowPaymentPopup(false);
+    };
+
+    const handlePaymentSuccess = async () => {
+        try {
+            // Get the first order ID (assuming we're updating the most recent order)
+            if (orderItems.length === 0) {
+                throw new Error("No order items found");
+            }
+            const orderId = orderItems[0].id.split('_')[0]; // Extract the order ID from the first item
+            console.log("orderId",orderId);
+            const token = localStorage.getItem('nhattin_token');
+            
+            // Create payment record
+            const paymentData = {
+                id_order: orderId,
+                provider: selectedMethod,
+                status: "completed",
+                amount: totalAmount,
+                is_bank_transfer: true,
+                bank_name: selectedMethod === "momo" ? "MoMo" : 
+                          selectedMethod === "MB bank" ? "MB Bank" : 
+                          selectedMethod === "agribank" ? "Agribank" : "Unknown",
+                transaction_reference: `${orderId}_${Date.now()}`,
+                transfer_date: new Date().toISOString(),
+                transfer_note: `${email} - ${phone} - ${fullName}`
+            };
+
+            // Create payment record
+            await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/payments`,
+                paymentData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Update order status
+            const response = await axios.patch(
+                `${process.env.NEXT_PUBLIC_API_URL}/orders/${order}`, 
+                { 
+                    status: 'completed'
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            console.log("response",response);
+            
+            // Close the popup
+            setShowPaymentPopup(false);
+            
+            // Navigate to the payment success page
+            router.push('/payment/success');
+        } catch (error) {
+            console.error('Error processing payment:', error);
+            // You might want to show an error message to the user here
+        }
+    };
+
+    // Display user information in the payment popup
+    const getUserInfo = () => {
+        if (user) {
+            return `${user.fullName} (${user.phone})`;
+        }
+        return "Chưa có thông tin";
+    };
+
     return (
         <div style={{ backgroundColor: 'var(--clr-bg-1)', padding: "40px 0px" }}>
+            {/* Payment Popup */}
+            {showPaymentPopup && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl p-8 max-w-2xl w-full relative shadow-2xl">
+                        <button
+                            onClick={closePaymentPopup}
+                            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                        >
+                            <X size={28} />
+                        </button>
+                        <div className="text-center mb-8">
+                            <h2 className="text-3xl font-bold mb-3" style={{ color: 'var(--clr-txt-1)' }}>Xác nhận thanh toán</h2>
+                            <p className="text-gray-600 text-lg">Vui lòng quét mã QR để hoàn tất thanh toán</p>
+                        </div>
+
+                        <div className="flex justify-center mb-6">
+                            {selectedMethod === "momo" && (
+                                <div className="text-center">
+                                    <Image
+                                        src="/images/momo.png"
+                                        alt="MoMo QR Code"
+                                        width={240}
+                                        height={240}
+                                        className="mx-auto mb-3 border-4 border-pink-100 rounded-lg p-2"
+                                    />
+                                    <p className="text-base text-gray-600 font-medium">Quét mã QR bằng ứng dụng MoMo</p>
+                                </div>
+                            )}
+
+                            {selectedMethod === "MB bank" && (
+                                <div className="text-center">
+                                    <Image
+                                        src="/images/Logo_MB_new.png"
+                                        alt="MB Bank QR Code"
+                                        width={240}
+                                        height={240}
+                                        className="mx-auto mb-3 border-4 border-blue-100 rounded-lg p-2"
+                                    />
+                                    <p className="text-base text-gray-600 font-medium">Quét mã QR bằng ứng dụng MB Bank</p>
+                                </div>
+                            )}
+
+                            {selectedMethod === "agribank" && (
+                                <div className="text-center">
+                                    <Image
+                                        src="/images/IconAgribank.png"
+                                        alt="Agribank QR Code"
+                                        width={240}
+                                        height={240}
+                                        className="mx-auto mb-3 border-4 border-green-100 rounded-lg p-2"
+                                    />
+                                    <p className="text-base text-gray-600 font-medium">Quét mã QR bằng ứng dụng Agribank</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="border-t pt-4 mb-4">
+                            <div className="flex justify-between mb-3">
+                                <span className="font-medium text-lg">Tổng thanh toán:</span>
+                                <span className="font-bold text-xl" style={{ color: 'var(--clr-txt-4)' }}>{totalAmount.toLocaleString()}đ</span>
+                            </div>
+                            <div className="flex justify-between mb-3">
+                                <span className="font-medium text-lg">Phương thức:</span>
+                                <span className="font-medium text-lg">{
+                                    paymentMethods.find(method => method.id === selectedMethod)?.label || selectedMethod
+                                }</span>
+                            </div>
+                            <div className="flex justify-between mb-3">
+                                <span className="font-medium text-lg">Khách hàng:</span>
+                                <span className="font-medium text-lg">{getUserInfo()}</span>
+                            </div>
+                            {/* TODO: add code */}
+                            <div className="flex justify-between mb-3">
+                                <span className="font-medium text-lg">Mã thanh toán:</span>
+                                <span className="font-medium text-lg">{paymentMethods.find(method => method.id === selectedMethod)?.code || selectedMethod}</span>
+                            </div>
+                            <div className="flex flex-col mb-3">
+                                <span className="font-semibold text-lg mb-2">Vui lòng chuyển khoản với nội dung: </span>
+                                <span className="font-bold text-xl py-2 px-3 bg-gray-100 rounded-md text-center" style={{ color: 'var(--clr-txt-4)' }}>
+                                    {email} - {phone} - {fullName}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex space-x-3 mt-6">
+                            <button
+                                onClick={closePaymentPopup}
+                                className="flex-1 py-3 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-lg font-medium"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handlePaymentSuccess}
+                                className="flex-1 py-3 px-4 rounded-md text-white font-medium text-lg"
+                                style={{ backgroundColor: 'var(--clr-bg-7)' }}
+                            >
+                                Đã thanh toán
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="container mx-auto p-4" style={{ backgroundColor: 'var(--clr-bg)', borderRadius: '10px' }}>
                 <div className="ml-6">
                     <h2 style={{ color: 'var(--clr-txt-1)', fontSize: '30px', marginBottom: '10px', fontWeight: 'bold' }}>Thanh Toán</h2>
@@ -105,120 +433,156 @@ export default function OrderDetails() {
                 </div>
                 <div className="grid grid-cols-1 xl:grid-cols-3">
                     <div className='col-span-2' style={{ margin: '0px 10px', padding: '10px' }}>
-                        {products.map((product) => (
-                            <div key={product.id} className=" m-2 grid grid-cols-1 md:grid-cols-12">
-                                <div className="col-span-10 flex py-6" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }} >
-                                    <div className='justify-center items-center flex mx-3 cursor-pointer'>
-                                        <Image 
-                                            src="/images/icon/icon28.png" 
-                                            alt="Delete icon"
-                                            width={40} 
-                                            height={40}
-                                            style={{ objectFit: 'contain' }}
-                                        />
-                                    </div>
-                                    <div className='flex justify-center items-center'>
-                                        <Image 
-                                            src={product.imgSrc} 
-                                            alt={product.name}
-                                            width={100} 
-                                            height={100}
-                                            style={{ maxWidth: '100px', maxHeight: '100px' }}
-                                        />
-                                        <div className='mx-3'>
-                                            <h2 style={{
-                                                fontSize: '20px',
-                                                fontWeight: 'bold',
-                                                whiteSpace: 'nowrap',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                maxWidth: maxWidth,
-                                            }}>{product.name}</h2>
-                                            <div className='flex my-2'>
-                                                <h2 className='text-[16px] font-bold mr-2'>Gói đăng ký: </h2>
-                                                <span>{product.type}</span>
-                                            </div>
+                        {isLoading ? (
+                            <div className="flex items-center justify-center min-h-[200px]">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : orderItems.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-lg text-gray-500">Không có đơn hàng nào</p>
+                            </div>
+                        ) : (
+                            <>
+                                {orderItems.map((item) => {
+                                    return (
+                                        <div key={item.id} className=" m-2 grid grid-cols-1 md:grid-cols-12">
+                                            <div className="col-span-10 flex py-6" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }} >
+                                                <div className='justify-center items-center flex mx-3 cursor-pointer'>
+                                                    <Image
+                                                        src="/images/icon/icon28.png"
+                                                        alt="Delete icon"
+                                                        width={40}
+                                                        height={40}
+                                                        style={{ objectFit: 'contain' }}
+                                                    />
+                                                </div>
+                                                <div className='flex justify-center items-center'>
+                                                    <Image
+                                                        src={`${process.env.NEXT_PUBLIC_API_URL}/${item.product.image}`}
+                                                        alt={item.product.name}
+                                                        width={100}
+                                                        height={100}
+                                                        style={{ maxWidth: '100px', maxHeight: '100px' }}
+                                                    />
+                                                    <div className='mx-3'>
+                                                        <h2 style={{
+                                                            fontSize: '20px',
+                                                            fontWeight: 'bold',
+                                                            whiteSpace: 'nowrap',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            maxWidth: maxWidth,
+                                                        }}>{item.product.name}</h2>
+                                                        <div className='flex my-2'>
+                                                            <h2 className='text-[16px] font-bold mr-2'>Gói đăng ký: </h2>
+                                                            <span>{item.product.status}</span>
+                                                        </div>
 
-                                            <h2 className='text-[23px] font-bold' style={{ color: 'var(--clr-txt-4)' }}>{product.price}đ</h2>
+                                                        <h2 className='text-[23px] font-bold' style={{ color: 'var(--clr-txt-4)' }}>{item.final_price}đ</h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='col-span-2 py-6 justify-center' style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
+                                                <p className="text-[18px] ml-4 font-semibold" style={{ color: 'var(--clr-txt-1)' }}>
+                                                    Số lượng:
+                                                </p>
+                                                <div className="flex my-3 justify-center xl:justify-start items-center">
+                                                    <div className="flex mx-4">
+                                                        <button
+                                                            onClick={() => decreaseQuantity(item.product._id)}
+                                                            className="font-semibold rounded-l"
+                                                            style={{
+                                                                minWidth: '30px',
+                                                                minHeight: '30px',
+                                                                border: '1px solid var(--clr-bg-3)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                            }}
+                                                        >
+                                                            <FontAwesomeIcon icon={faMinus} style={{ color: 'var(--clr-txt-1)', width: '15px', height: '15px' }} />
+                                                        </button>
+                                                        <div
+                                                            className=" flex justify-center items-center"
+                                                            style={{
+                                                                minWidth: '50px',
+                                                                minHeight: '35px',
+                                                                fontSize: '20px',
+                                                                padding: '0px 20px',
+                                                                textAlign: 'center',
+                                                            }}
+                                                        >
+                                                            {quantities[item.product._id] || 1}
+                                                        </div>
+                                                        <button
+                                                            onClick={() => increaseQuantity(item.product._id)}
+                                                            className="font-semibold rounded-r"
+                                                            style={{
+                                                                minWidth: '30px',
+                                                                minHeight: '30px',
+                                                                border: '1px solid var(--clr-bg-3)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                            }}
+                                                        >
+                                                            <FontAwesomeIcon icon={faPlus} style={{ color: 'var(--clr-txt-1)', width: '15px', height: '15px' }} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                                <div className=''>
+                                    <h2 style={{ color: 'var(--clr-txt-1)', fontSize: '26px', margin: '20px 0px', fontWeight: 'bold' }}>Thông tin nhận hàng</h2>
+                                    <div>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder='Họ và tên ...' 
+                                                    className='w-full p-2 border border-gray-300 rounded-md text-[18px]' 
+                                                    value={fullName}
+                                                    onChange={(e) => setFullName(e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder='Số điện thoại ...' 
+                                                    className='w-full p-2 border border-gray-300 rounded-md text-[18px]' 
+                                                    value={phone}
+                                                    onChange={(e) => setPhone(e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder='Địa chỉ Email * ...' 
+                                                    className='w-full p-2 border border-gray-300 rounded-md text-[18px]' 
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className='my-4'>
+                                            <textarea 
+                                                placeholder='Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn.' 
+                                                className='w-full p-2 border border-gray-300 rounded-md text-[18px]' 
+                                                style={{ minHeight: '150px' }}
+                                                value={note}
+                                                onChange={(e) => setNote(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className='my-4'>
+                                            <p>Dữ liệu cá nhân của bạn sẽ được sử dụng để xử lý đơn đặt hàng, hỗ trợ trải nghiệm của bạn trên toàn
+                                                bộ trang web này và cho các mục đích khác được mô tả trong <a href='/' style={{ color: 'var(--clr-txt-2)', fontWeight: 'bold' }}>chính sách riêng tư</a>.</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className='col-span-2 py-6 justify-center' style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
-                                    <p className="text-[18px] ml-4 font-semibold" style={{ color: 'var(--clr-txt-1)' }}>
-                                        Số lượng:
-                                    </p>
-                                    <div className="flex my-3 justify-center xl:justify-start items-center">
-
-                                        <div className="flex mx-4">
-                                            <button
-                                                onClick={() => decreaseQuantity(product.id)}
-                                                className="font-semibold rounded-l"
-                                                style={{
-                                                    minWidth: '30px',
-                                                    minHeight: '30px',
-                                                    border: '1px solid var(--clr-bg-3)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                }}
-                                            >
-                                                <FontAwesomeIcon icon={faMinus} style={{ color: 'var(--clr-txt-1)', width: '15px', height: '15px' }} />
-                                            </button>
-                                            <div
-                                                className=" flex justify-center items-center"
-                                                style={{
-                                                    minWidth: '50px',
-                                                    minHeight: '35px',
-                                                    fontSize: '20px',
-                                                    padding: '0px 20px',
-                                                    textAlign: 'center',
-                                                    // border: '1px solid var(--clr-bg-3)'
-                                                }}
-                                            >
-                                                {quantities[product.id] || 1}
-                                            </div>
-                                            <button
-                                                onClick={() => increaseQuantity(product.id)}
-                                                className="font-semibold rounded-r"
-                                                style={{
-                                                    minWidth: '30px',
-                                                    minHeight: '30px',
-                                                    border: '1px solid var(--clr-bg-3)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                }}
-                                            >
-                                                <FontAwesomeIcon icon={faPlus} style={{ color: 'var(--clr-txt-1)', width: '15px', height: '15px' }} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        <div className=''>
-                            <h2 style={{ color: 'var(--clr-txt-1)', fontSize: '26px', margin: '20px 0px', fontWeight: 'bold' }}>Thông tin nhận hàng</h2>
-                            <div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <input type="text" placeholder='Họ và tên ...' className='w-full p-2 border border-gray-300 rounded-md text-[18px]' />
-                                    </div>
-                                    <div>
-                                        <input type="text" placeholder='Số điện thoại ...' className='w-full p-2 border border-gray-300 rounded-md text-[18px]' />
-                                    </div>
-                                    <div>
-                                        <input type="text" placeholder='Địa chỉ Email * ...' className='w-full p-2 border border-gray-300 rounded-md text-[18px]' />
-                                    </div>
-                                </div>
-                                <div className='my-4'>
-                                    <textarea placeholder='Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn.' className='w-full p-2 border border-gray-300 rounded-md text-[18px]' style={{ minHeight: '150px' }} />
-                                </div>
-                                <div className='my-4'>
-                                    <p>Dữ liệu cá nhân của bạn sẽ được sử dụng để xử lý đơn đặt hàng, hỗ trợ trải nghiệm của bạn trên toàn
-                                        bộ trang web này và cho các mục đích khác được mô tả trong <a href='/' style={{ color: 'var(--clr-txt-2)', fontWeight: 'bold' }}>chính sách riêng tư</a>.</p>
-                                </div>
-                            </div>
-                        </div>
+                            </>
+                        )}
                     </div>
                     <div className='col-span-1' style={{ borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', margin: '0px 10px', padding: '10px' }}>
                         <div style={{ margin: '10px 20px', }}>
@@ -235,10 +599,10 @@ export default function OrderDetails() {
                                         className="absolute right-[7px] top-[7px] cursor-pointer rounded-md"
                                         style={{ color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)' }}
                                     >
-                                        <Image 
-                                            src="/images/icon/icon29.png" 
+                                        <Image
+                                            src="/images/icon/icon29.png"
                                             alt="Apply coupon"
-                                            width={45} 
+                                            width={45}
                                             height={40}
                                             style={{ width: '45px', height: '40px' }}
                                         />
@@ -248,11 +612,11 @@ export default function OrderDetails() {
                                     <div className="mt-6 border-b">
                                         <div className="flex justify-between my-4">
                                             <p className="font-medium">Tạm tính</p>
-                                            <p className="font-medium">1,148,000đ</p>
+                                            <p className="font-medium">{totalAmount.toLocaleString()}đ</p>
                                         </div>
                                         <div className="flex justify-between mb-6">
                                             <p className="font-semibold">Tổng</p>
-                                            <p className="font-semibold">1,148,000đ</p>
+                                            <p className="font-semibold">{totalAmount.toLocaleString()}đ</p>
                                         </div>
                                     </div>
                                     <div className="p-4 w-full justify-center">
@@ -288,23 +652,24 @@ export default function OrderDetails() {
                                                     </div>
 
                                                     {/* Hiển thị dòng thông báo cho MoMo dù được chọn hay không */}
-                                                    {method.id === "momo" && (
+                                                    {/* {method.id === "momo" && (
                                                         <div className="border-t rounded-b-md p-3">
                                                             <p className="text-sm text-gray-600">
                                                                 Quét mã thanh toán tới nhà cung cấp dịch vụ là GAMIKEY
                                                             </p>
                                                         </div>
-                                                    )}
+                                                    )} */}
                                                 </div>
                                             ))}
                                         </div>
                                         <button
                                             className="w-full py-2 rounded-md mt-4 flex items-center justify-center cursor-pointer"
                                             style={{ backgroundColor: 'var(--clr-bg-7)', color: 'var(--clr-txt-5)', fontWeight: 'bold' }}
+                                            onClick={handlePaymentSubmit}
                                         >
-                                            Đặt Hàng 
-                                            <Image 
-                                                src="/images/icon/icon30.png" 
+                                            Đặt Hàng
+                                            <Image
+                                                src="/images/icon/icon30.png"
                                                 alt="Order icon"
                                                 width={24}
                                                 height={24}

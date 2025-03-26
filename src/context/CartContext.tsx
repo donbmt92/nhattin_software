@@ -2,6 +2,7 @@
 import axios from "axios";
 import { User, Notification, Product } from "@/app/profile/types";
 import { createContext, ReactNode, useContext, useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 
 interface CartContextType {
@@ -17,18 +18,64 @@ interface CartContextType {
   removeFromCart: (id: string) => Promise<void>;
   addToCart: (product: Product) => Promise<void>;
   createOrders: () => Promise<void>;
+  handleLogout: () => void;
+  checkUserLogin: () => boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [listCart, setListCart] = useState<any[]>([]);
-  console.log(listCart);
   const totalItems = listCart?.reduce((sum, item) => sum + item.quantity, 0) || 0;
   const total = listCart?.reduce((sum, item) => sum + item.id_product.base_price * item.quantity, 0) || 0;
   const [user, setUser] = useState<User | null>(null);
+  
+  // Function to check if user is logged in
+  const checkUserLogin = useCallback(() => {
+    const token = localStorage.getItem('nhattin_token');
+    const userData = localStorage.getItem('nhattin_user');
+    return !!(token && userData);
+  }, []);
+  
+  // Function to handle user logout
+  const handleLogout = useCallback(() => {
+    // Clear user data and token from localStorage
+    localStorage.removeItem('nhattin_token');
+    localStorage.removeItem('nhattin_user');
+    
+    // Reset cart state
+    setListCart([]);
+    setUser(null);
+    
+    // Show notification
+    showNotification('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', 'error');
+    
+    // Redirect to login page
+    router.push('/login');
+  }, [router]);
+
+  // Function to handle API errors, specifically 401 Unauthorized
+  const handleApiError = useCallback((error: unknown) => {
+    if (
+      error && 
+      typeof error === 'object' && 
+      'response' in error && 
+      error.response && 
+      typeof error.response === 'object' && 
+      'status' in error.response && 
+      error.response.status === 401
+    ) {
+      console.log('Token expired or invalid. Logging out...');
+      handleLogout();
+      return true; // Error was handled
+    }
+    return false; // Error was not handled
+  }, [handleLogout]);
+  
+  // Load user data from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("nhattin_user");
     if (storedUser) {
@@ -41,12 +88,53 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  // Check token validity on mount
+  useEffect(() => {
+    const token = localStorage.getItem('nhattin_token');
+    if (!token) {
+      // No token found, clear user data if somehow it exists
+      if (user) {
+        setUser(null);
+        localStorage.removeItem('nhattin_user');
+      }
+      return;
+    }
+
+    // Verify token by making a simple authenticated request
+    const verifyToken = async () => {
+      try {
+        await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-token`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        // Token is valid, no action needed
+      } catch (error) {
+        // Token is invalid or expired
+        if (
+          error && 
+          typeof error === 'object' && 
+          'response' in error && 
+          error.response && 
+          typeof error.response === 'object' && 
+          'status' in error.response && 
+          error.response.status === 401
+        ) {
+          handleLogout();
+        }
+      }
+    };
+
+    verifyToken();
+  }, [handleLogout, user]);
+
   const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ message, type });
     setTimeout(() => {
       setNotification(null);
     }, 3000); // Hide notification after 3 seconds
   };
+  
   const getListCart = useCallback(async () => {
     try {
       if (!user) {
@@ -70,16 +158,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setListCart([]);
       }
     } catch (error) {
-      alert(error);
-      console.error("Lỗi khi lấy giỏ hàng:", error);
-      setListCart([]);
+      if (!handleApiError(error)) {
+        // Only show error if it's not a 401 (which is handled by handleApiError)
+        console.error("Lỗi khi lấy giỏ hàng:", error);
+        setListCart([]);
+      }
     }
-  }, [user]);
+  }, [user, handleApiError]);
+  
   useEffect(() => {
     if (!user) return;
     console.log("User tồn tại, gọi getListCart()");
     getListCart();
   }, [getListCart, user]);
+  
   const addToCart = async (product: Product) => {
     try {
       if (!user) return;
@@ -150,8 +242,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     } catch (error) {
-      console.error("Lỗi khi thêm vào giỏ hàng:", error);
-      showNotification("Không thể thêm sản phẩm vào giỏ hàng", "error");
+      if (!handleApiError(error)) {
+        console.error("Lỗi khi thêm vào giỏ hàng:", error);
+        showNotification("Không thể thêm sản phẩm vào giỏ hàng", "error");
+      }
     }
   };
 
@@ -171,7 +265,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         prev.map((item) => (item._id === id ? { ...item, quantity } : item))
       );
     } catch (error) {
-      console.error("Lỗi khi cập nhật số lượng:", error);
+      if (!handleApiError(error)) {
+        console.error("Lỗi khi cập nhật số lượng:", error);
+      }
     }
   };
 
@@ -185,9 +281,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
       setListCart((prev) => prev.filter((item) => item._id !== id));
     } catch (error) {
-      console.error("Lỗi khi xóa sản phẩm:", error);
+      if (!handleApiError(error)) {
+        console.error("Lỗi khi xóa sản phẩm:", error);
+      }
     }
   };
+  
   const toggleCart = () => {
     setIsCartOpen(!isCartOpen);
   };
@@ -199,7 +298,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       // Create order data based on the CreateOrderDto requirements
       const orderData = {
         note: "", // Default empty note, you might want to add a note input field in your UI
-        total: total, // Using the total from the cart context
+        // total: total, // Using the total from the cart context
+        items: listCart,
         status: "pending", // Default status for new orders
         voucher: "" // Optional voucher code, can be added later
       };
@@ -218,17 +318,35 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         await getListCart();
         showNotification("Đơn hàng đã được tạo thành công", "success");
         // Close cart after order is created
+        router.push('/order');
         setIsCartOpen(false);
         return response.data;
       }
     } catch (error) {
-      console.error("Lỗi khi tạo đơn hàng:", error);
-      showNotification("Không thể tạo đơn hàng", "error");
+      if (!handleApiError(error)) {
+        console.error("Lỗi khi tạo đơn hàng:", error);
+        showNotification("Không thể tạo đơn hàng", "error");
+      }
     }
   };
 
   return (
-    <CartContext.Provider value={{ user, listCart, total, totalItems, notification, isCartOpen, toggleCart, getListCart, updateQuantity, removeFromCart, addToCart, createOrders }}>
+    <CartContext.Provider value={{ 
+      user, 
+      listCart, 
+      total, 
+      totalItems, 
+      notification, 
+      isCartOpen, 
+      toggleCart, 
+      getListCart, 
+      updateQuantity, 
+      removeFromCart, 
+      addToCart, 
+      createOrders,
+      handleLogout,
+      checkUserLogin
+    }}>
       {children}
       {notification && (
         <div className="fixed bottom-4 right-4 z-50 animate-fade-in-up">

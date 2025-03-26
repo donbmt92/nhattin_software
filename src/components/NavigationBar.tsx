@@ -4,6 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {ShoppingCart, Menu, Users, Book, Home} from 'lucide-react'
 import {useState} from 'react'
+import UserLoginDisplay from './UserLoginDisplay'
+import { useCart } from '@/context/CartContext'
 
 const NavigationLinks = [
     {href: '/', label: 'Trang Chủ', icon: <Home/>},
@@ -168,6 +170,7 @@ const CategoryMenu = ({isOpen, onClose}: {isOpen: boolean, onClose: () => void})
 const NavigationBar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false)
+    const { totalItems } = useCart();
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
     const toggleCategoryMenu = () => setIsCategoryMenuOpen(!isCategoryMenuOpen)
@@ -207,18 +210,18 @@ const NavigationBar = () => {
 
                         {/* Account & Cart */}
                         <div className="flex items-center gap-4 md:gap-6">
-                            <Link href="/account" className="flex items-center gap-2 text-white hover:text-blue-100">
+                            <div className="flex items-center gap-2 text-white hover:text-blue-100">
                                 <Users className="h-6 w-6"/>
                                 <div className="text-sm hidden md:block">
-                                    <div>Login</div>
+                                    <UserLoginDisplay />
                                     <div>Account</div>
                                 </div>
-                            </Link>
+                            </div>
                             <Link href="/cart" className="flex items-center gap-2 text-white hover:text-blue-100">
                                 <ShoppingCart className="h-6 w-6"/>
                                 <div className="text-sm hidden md:block">
                                     <div>Your cart</div>
-                                    <div>20</div>
+                                    <div>{totalItems}</div>
                                 </div>
                             </Link>
                         </div>

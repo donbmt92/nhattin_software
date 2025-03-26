@@ -8,6 +8,7 @@ import ListProductNews from "@/app/components/ListProductNews/ListProductNews";
 import Figures from "@/app/components/Figures/page";
 import GiftCards from './components/GiftCard/page'
 
+
 export default function Home() {
     return (
         <>

@@ -19,7 +19,7 @@ export default function HorizontalCard({ products }: { products: Product[] }) {
             </p>
             <Link href={`/product/${prd._id.id}`}>
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/${prd.image}`}
+                src={prd.image}
                 alt="Product Image"
                 width={300}
                 height={200}

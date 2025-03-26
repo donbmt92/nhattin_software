@@ -5,7 +5,7 @@ interface DescriptionsProps {
         _id: string;
         id: string;
         name: string;
-        id_category: any;
+        id_category: string;
         sales: string;
         base_price: string;
         max_price: string;
@@ -40,11 +40,14 @@ export default function Descriptions({ products }: DescriptionsProps) {
                     </div>
                     <div>
                         {activeTab === 'description' && (
-                            <div className=" rounded-[15px] shadow p-6">
+                            <div className="rounded-[15px] shadow p-6">
                                 <h2 className="text-[#131336] text-[22px] font-bold uppercase mb-4">
                                     Mô tả ngắn <span className="font-normal">sản phẩm</span>
                                 </h2>
-                                {product.description}
+                                <div 
+                                    className="prose max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: product.description }} 
+                                />
                             </div>
                         )}
                         {activeTab === 'reviews' && (
@@ -54,7 +57,6 @@ export default function Descriptions({ products }: DescriptionsProps) {
                         )}
                     </div>
                 </>
-
             ))}
         </div>
     )

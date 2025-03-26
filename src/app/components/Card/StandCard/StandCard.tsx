@@ -15,9 +15,9 @@ export default function StandCard({ products }: { products: Product[] }) {
                 >
                     {/* Khung ảnh */}
                     <div className="relative w-full h-[140px] flex items-end justify-center">
-                        <a href={`/product/${prd._id}`} className="block w-[90%]">
+                        <a href={`/product/${prd._id?.id}`} className="block w-[90%]">
                             <Image
-                                src={`${process.env.NEXT_PUBLIC_API_URL}/${prd.image}`}
+                                src={prd.image}
                                 alt="Product Image"
                                 width={300}
                                 height={300}

@@ -12,6 +12,7 @@ export interface UserProfile {
     email: string;
     phone: string;
     role: string;
+    image?: string;
     // stats: {
     //     orders: number;
     //     spending: string;

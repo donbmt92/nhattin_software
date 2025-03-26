@@ -6,11 +6,11 @@ import VipIcon from './icons/VipIcon';
 
 interface StatCardProps {
     title: string;
-    // value: string | number;
+    value: string | number;
     type: 'orders' | 'spending' | 'vip';
 }
 
-const StatCard = memo(({ title, type }: StatCardProps) => {
+const StatCard = memo(({ title, value, type }: StatCardProps) => {
     const displayName = 'StatCard';
     StatCard.displayName = displayName;
 
@@ -45,7 +45,7 @@ const StatCard = memo(({ title, type }: StatCardProps) => {
             <div className="flex flex-col mt-5">
                 <h3 className="text-lg font-medium text-gray-800">{title}</h3>
                 <p className={`text-2xl font-bold mt-1 ${getTextColor()}`}>
-                    {/* {value} */}
+                    {value}
                 </p>
             </div>
             <div className="absolute right-2 top-1 w-24 h-24 pr-[150px]">
