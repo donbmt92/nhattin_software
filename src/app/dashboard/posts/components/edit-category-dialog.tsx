@@ -11,9 +11,10 @@ import { Textarea } from "@/components/ui/textarea"
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface Category {
-  id: string
+  _id: string
   name: string
   description: string
+  isActive?: boolean
 }
 
 interface EditCategoryDialogProps {
@@ -46,7 +47,7 @@ export default function EditCategoryDialog({
 
     try {
       setLoading(true)
-      await axios.patch(`${API_URL}/post-categories/${category.id}`, {
+      await axios.patch(`${API_URL}/post-categories/${category._id}`, {
         name,
         description,
       })

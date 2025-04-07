@@ -68,7 +68,7 @@ export default function DiscountsPage() {
         try {
             const token = localStorage.getItem('nhattin_token');
             if (!token) {
-                setError('Please login to view discounts');
+                setError('Vui lòng đăng nhập để xem danh sách khuyến mãi');
                 return;
             }
 
@@ -81,14 +81,14 @@ export default function DiscountsPage() {
             if (Array.isArray(response.data)) {
                 setDiscounts(response.data);
             } else {
-                setError('Invalid data format received from server');
+                setError('Định dạng dữ liệu không hợp lệ từ máy chủ');
             }
         } catch (error) {
             console.error('Error fetching discounts:', error);
             if (axios.isAxiosError(error)) {
-                setError(error.response?.data?.message || 'Failed to fetch discounts');
+                setError(error.response?.data?.message || 'Không thể tải danh sách khuyến mãi');
             } else {
-                setError('Failed to fetch discounts');
+                setError('Không thể tải danh sách khuyến mãi');
             }
         } finally {
             setLoading(false);
@@ -102,7 +102,7 @@ export default function DiscountsPage() {
     const handleDelete = async (id: string) => {
         const token = localStorage.getItem('nhattin_token');
         if (!token) {
-            alert('Please login to delete a discount');
+            alert('Vui lòng đăng nhập để xóa khuyến mãi');
             return;
         }
 
@@ -118,9 +118,9 @@ export default function DiscountsPage() {
         } catch (error) {
             console.error('Error deleting discount:', error);
             if (axios.isAxiosError(error)) {
-                alert(error.response?.data?.message || 'Failed to delete discount');
+                alert(error.response?.data?.message || 'Không thể xóa khuyến mãi');
             } else {
-                alert('Failed to delete discount');
+                alert('Không thể xóa khuyến mãi');
             }
         } finally {
             setLoading(false);
@@ -135,7 +135,7 @@ export default function DiscountsPage() {
     const handleFormSubmit = async (data: DiscountFormData) => {
         const token = localStorage.getItem('nhattin_token');
         if (!token) {
-            alert('Please login to continue');
+            alert('Vui lòng đăng nhập để tiếp tục');
             return;
         }
 
@@ -201,22 +201,22 @@ export default function DiscountsPage() {
         <div className="p-6 space-y-6">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                    <CardTitle>Discounts Management</CardTitle>
+                    <CardTitle>Quản lý Khuyến mãi</CardTitle>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                             <Button onClick={() => setSelectedDiscount(null)}>
-                                Add New Discount
+                                Thêm Khuyến mãi mới
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>
-                                    {selectedDiscount ? 'Edit Discount' : 'Create New Discount'}
+                                    {selectedDiscount ? 'Chỉnh sửa Khuyến mãi' : 'Tạo Khuyến mãi mới'}
                                 </DialogTitle>
                                 <DialogDescription>
                                     {selectedDiscount 
-                                        ? 'Edit the discount details below.' 
-                                        : 'Fill in the details to create a new discount.'}
+                                        ? 'Chỉnh sửa thông tin khuyến mãi bên dưới.' 
+                                        : 'Điền thông tin để tạo khuyến mãi mới.'}
                                 </DialogDescription>
                             </DialogHeader>
                             <DiscountForm
@@ -240,13 +240,13 @@ export default function DiscountsPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead>Discount %</TableHead>
-                                <TableHead>Start Time</TableHead>
-                                <TableHead>End Time</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Tên</TableHead>
+                                <TableHead>Mô tả</TableHead>
+                                <TableHead>Chiết khấu %</TableHead>
+                                <TableHead>Thời gian bắt đầu</TableHead>
+                                <TableHead>Thời gian kết thúc</TableHead>
+                                <TableHead>Trạng thái</TableHead>
+                                <TableHead className="text-right">Thao tác</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -261,7 +261,7 @@ export default function DiscountsPage() {
                                         <span className={`px-2 py-1 rounded-full text-xs ${
                                             discount.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                         }`}>
-                                            {discount.status}
+                                            {discount.status === 'active' ? 'Đang hoạt động' : 'Không hoạt động'}
                                         </span>
                                     </TableCell>
                                     <TableCell className="text-right space-x-2">
@@ -270,27 +270,27 @@ export default function DiscountsPage() {
                                             size="sm"
                                             onClick={() => handleEdit(discount)}
                                         >
-                                            Edit
+                                            Sửa
                                         </Button>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <Button variant="secondary" size="sm" className="bg-red-100 text-red-800 hover:bg-red-200">
-                                                    Delete
+                                                    Xóa
                                                 </Button>
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <AlertDialogTitle>Delete Discount</AlertDialogTitle>
+                                                    <AlertDialogTitle>Xóa Khuyến mãi</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        Are you sure you want to delete this discount? This action cannot be undone.
+                                                        Bạn có chắc chắn muốn xóa khuyến mãi này? Hành động này không thể hoàn tác.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogCancel>Hủy</AlertDialogCancel>
                                                     <AlertDialogAction
                                                         onClick={() => handleDelete(discount._id)}
                                                     >
-                                                        Delete
+                                                        Xóa
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>

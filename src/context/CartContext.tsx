@@ -30,6 +30,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [notification, setNotification] = useState<Notification | null>(null);
   const [listCart, setListCart] = useState<any[]>([]);
   const totalItems = listCart?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  console.log("abc",listCart);
+  
   const total = listCart?.reduce((sum, item) => sum + item.id_product.base_price * item.quantity, 0) || 0;
   const [user, setUser] = useState<User | null>(null);
   
@@ -174,22 +176,45 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   
   const addToCart = async (product: Product) => {
     try {
-      if (!user) return;
-      const token = localStorage.getItem('nhattin_token');
-      // Gọi API lấy danh sách giỏ hàng mới nhất để kiểm tra (tránh trường hợp dữ liệu cũ)
-      const { data: updatedCart } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/carts`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      console.log(updatedCart);
+      console.log("Add to cart product:", product);
       
-      // Check if updatedCart is an array or an object with a message
-      if (!Array.isArray(updatedCart)) {
-        // If cart is empty, just add the product
+      // Xác định ID sản phẩm từ các nguồn khác nhau có thể có
+      let productId;
+      if (typeof product._id === 'object' && product._id?.id) {
+        productId = product._id.id;
+      } else if (product._id) {
+        productId = product._id;
+      } else if (product.id) {
+        productId = product.id;
+      } else if ((product as any).product_id) {
+        productId = (product as any).product_id;
+      } else {
+        console.error("Không thể xác định ID sản phẩm:", product);
+        showNotification("Không thể xác định ID sản phẩm để thêm vào giỏ hàng", "error");
+        return;
+      }
+      
+      console.log("ID sản phẩm được xác định:", productId);
+      
+      const token = localStorage.getItem('nhattin_token');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+      
+      // Check if updatedCart is available
+      await getListCart();
+      
+      if (listCart.length === 0) {
         console.log("Giỏ hàng trống, thêm sản phẩm mới");
+        const payload = { 
+          id_product: productId, 
+          quantity: 1 
+        };
+        console.log("Request payload:", payload);
+        
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/carts`, 
-          { id_product: product._id.id, quantity: 1 },
+          payload,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -207,9 +232,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
       
       // If updatedCart is an array, proceed with the existing logic
-      const existingItem = updatedCart.find((item: any) =>
-        String(item.id_product?._id || item.id_product) === String(product._id)
-      );
+      const existingItem = listCart.find((item: any) => {
+        // Lấy ID từ item trong giỏ hàng
+        const cartItemId = item.id_product?._id || item.id_product;
+        
+        // Lấy ID từ sản phẩm mới
+        const newItemId = typeof product._id === 'object' ? product._id.id : product._id;
+        
+        console.log(`So sánh: cartItemId=${cartItemId}, newItemId=${newItemId}, bằng nhau=${String(cartItemId) === String(newItemId)}`);
+        
+        return String(cartItemId) === String(newItemId) || String(cartItemId) === String(productId);
+      });
 
       if (existingItem) {
         // Nếu đã có trong giỏ hàng, cập nhật số lượng
@@ -226,7 +259,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } else {
         // Nếu chưa có trong giỏ hàng, thêm mới
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/carts`, 
-          { id_product: product._id.id, quantity: 1 },
+          { id_product: productId, quantity: 1 },
           {
             headers: {
               'Authorization': `Bearer ${token}`

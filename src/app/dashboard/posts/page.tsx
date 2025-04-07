@@ -23,19 +23,28 @@ import EditCategoryDialog from "./components/edit-category-dialog"
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface Post {
-  id: string
+  _id: string
   title: string
   content: string
-  categoryId: string
-  category: PostCategory
+  categoryId?: string
+  category?: {
+    _id: string
+    name: string
+    description?: string
+    isActive?: boolean
+  }
   createdAt: string
   updatedAt: string
+  thumbnail?: string
+  slug?: string
+  isActive?: boolean
 }
 
 interface PostCategory {
-  id: string
+  _id: string
   name: string
   description: string
+  isActive?: boolean
   createdAt: string
   updatedAt: string
 }
@@ -54,7 +63,22 @@ export default function PostsPage() {
   const fetchPosts = async () => {
     try {
       const response = await axios.get(`${API_URL}/posts`)
-      setPosts(response.data)
+      console.log("fetchPosts", response.data);
+      
+      // Đảm bảo dữ liệu có định dạng đúng
+      const formattedPosts = Array.isArray(response.data) ? response.data.map(post => {
+        return {
+          ...post,
+          // Đảm bảo các trường chính luôn tồn tại
+          _id: post._id,
+          title: post.title || '',
+          content: post.content || '',
+          category: post.category || { _id: '', name: 'Không phân loại' }
+        };
+      }) : [];
+
+      console.log("Formatted posts:", formattedPosts);
+      setPosts(formattedPosts);
     } catch (error) {
       console.error("Error fetching posts:", error)
     }
@@ -63,9 +87,30 @@ export default function PostsPage() {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`${API_URL}/post-categories`)
-      setCategories(response.data)
+      console.log("Categories data from API:", response.data);
+      
+      // Đảm bảo dữ liệu có cấu trúc đúng
+      const categoriesData = response.data;
+      if (Array.isArray(categoriesData)) {
+        // Map data để đảm bảo cấu trúc nhất quán
+        const formattedCategories = categoriesData.map(cat => ({
+          _id: cat._id,
+          name: cat.name,
+          description: cat.description,
+          isActive: cat.isActive,
+          createdAt: cat.createdAt,
+          updatedAt: cat.updatedAt
+        }));
+        
+        console.log("Formatted categories:", formattedCategories);
+        setCategories(formattedCategories);
+      } else {
+        console.error("Categories data is not an array:", categoriesData);
+        setCategories([]);
+      }
     } catch (error) {
-      console.error("Error fetching categories:", error)
+      console.error('Error fetching categories:', error);
+      setCategories([]);
     }
   }
 
@@ -76,6 +121,8 @@ export default function PostsPage() {
 
   const handleDelete = async (id: string, type: 'post' | 'category') => {
     try {
+      console.log(id);
+      
       const endpoint = type === 'post' ? 'posts' : 'post-categories'
       await axios.delete(`${API_URL}/${endpoint}/${id}`)
       if (type === 'post') {
@@ -118,11 +165,11 @@ export default function PostsPage() {
               </TableHeader>
               <TableBody>
                 {posts.map((post) => (
-                  <TableRow key={post.id}>
+                  <TableRow key={post._id}>
                     <TableCell>{post.title}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">
-                        {post.category?.name}
+                        {post.category?.name || "Không phân loại"}
                       </Badge>
                     </TableCell>
                     <TableCell>{new Date(post.createdAt).toLocaleDateString("vi-VN")}</TableCell>
@@ -141,7 +188,7 @@ export default function PostsPage() {
                         variant="outline"
                         size="icon"
                         onClick={() => {
-                          setSelectedItem({ id: post.id, type: 'post' })
+                          setSelectedItem({ id: post._id, type: 'post' })
                           setIsDeleteOpen(true)
                         }}
                       >
@@ -168,7 +215,7 @@ export default function PostsPage() {
               </TableHeader>
               <TableBody>
                 {categories.map((category) => (
-                  <TableRow key={category.id}>
+                  <TableRow key={category._id}>
                     <TableCell>{category.name}</TableCell>
                     <TableCell>{category.description}</TableCell>
                     <TableCell>{new Date(category.createdAt).toLocaleDateString("vi-VN")}</TableCell>
@@ -187,7 +234,7 @@ export default function PostsPage() {
                         variant="outline"
                         size="icon"
                         onClick={() => {
-                          setSelectedItem({ id: category.id, type: 'category' })
+                          setSelectedItem({ id: category._id, type: 'category' })
                           setIsDeleteOpen(true)
                         }}
                       >
@@ -233,8 +280,12 @@ export default function PostsPage() {
       <DeleteDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
-        onConfirm={() => handleDelete(selectedItem?.id, selectedItem?.type)}
-        type={selectedItem?.type}
+        onConfirm={() => {
+          if (selectedItem && selectedItem.id) {
+            handleDelete(selectedItem.id, selectedItem.type);
+          }
+        }}
+        type={selectedItem?.type || 'post'}
       />
     </div>
   )

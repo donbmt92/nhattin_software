@@ -6,6 +6,15 @@ import { Product } from '@/app/profile/types';
 
 export default function StandCard({ products }: { products: Product[] }) {
     const { addToCart } = useCart();
+    
+    // Hàm lấy ID sản phẩm dù nó là chuỗi hay đối tượng
+    const getProductId = (product: Product) => {
+        if (typeof product._id === 'object' && product._id?.id) {
+            return product._id.id;
+        }
+        return product._id;
+    };
+    
     return (
         <div className="py-[100px]">
             {products.map((prd, index) => (
@@ -15,7 +24,7 @@ export default function StandCard({ products }: { products: Product[] }) {
                 >
                     {/* Khung ảnh */}
                     <div className="relative w-full h-[140px] flex items-end justify-center">
-                        <a href={`/product/${prd._id?.id}`} className="block w-[90%]">
+                        <a href={`/product/${getProductId(prd)}`} className="block w-[90%]">
                             <Image
                                 src={prd.image}
                                 alt="Product Image"
@@ -45,7 +54,13 @@ export default function StandCard({ products }: { products: Product[] }) {
                             <p className="text-[24px] font-semibold text-[var(--clr-txt-4)]">
                                 {Number(prd.base_price).toLocaleString('vi-VN')} đ
                             </p>
-                            <button onClick={() => addToCart(prd)} className="cursor-pointer">
+                            <button 
+                                onClick={() => {
+                                    console.log("Thêm vào giỏ hàng:", prd);
+                                    addToCart(prd);
+                                }} 
+                                className="cursor-pointer"
+                            >
                                 <Image src="/images/icon/icon10.png" alt="Add to Cart" width={25} height={25} />
                             </button>
                         </div>

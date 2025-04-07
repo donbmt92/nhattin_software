@@ -68,8 +68,8 @@ interface User {
 }
 
 const userFormSchema = z.object({
-    phone: z.string().min(3, "Phone must be at least 3 characters"),
-    fullName: z.string().min(2, "Full name is required"),
+    phone: z.string().min(3, "Số điện thoại phải có ít nhất 3 ký tự"),
+    fullName: z.string().min(2, "Họ tên không được để trống"),
     role: z.enum(["ADMIN", "USER", "STAFF"]),
     password: z.string().optional(),
 });
@@ -97,7 +97,7 @@ export default function UsersPage() {
         try {
             const token = localStorage.getItem('nhattin_token');
             if (!token) {
-                setError('Please login to view users');
+                setError('Vui lòng đăng nhập để xem danh sách người dùng');
                 setIsLoading(false);
                 return;
             }
@@ -111,15 +111,15 @@ export default function UsersPage() {
             if (Array.isArray(response.data)) {
                 setUsers(response.data);
             } else {
-                setError('Invalid data format received from server');
+                setError('Định dạng dữ liệu không hợp lệ từ máy chủ');
                 setUsers([]);
             }
         } catch (error) {
             console.error('Error fetching users:', error);
             if (axios.isAxiosError(error)) {
-                setError(error.response?.data?.message || 'Failed to fetch users');
+                setError(error.response?.data?.message || 'Không thể tải danh sách người dùng');
             } else {
-                setError('Failed to fetch users');
+                setError('Không thể tải danh sách người dùng');
             }
             setUsers([]);
         } finally {
@@ -143,11 +143,11 @@ export default function UsersPage() {
     };
 
     const handleDeleteUser = async (userId: string) => {
-        if (window.confirm('Are you sure you want to delete this user?')) {
+        if (window.confirm('Bạn có chắc chắn muốn xóa người dùng này không?')) {
             try {
                 const token = localStorage.getItem('nhattin_token');
                 if (!token) {
-                    alert('Please login to delete a user');
+                    alert('Vui lòng đăng nhập để xóa người dùng');
                     return;
                 }
 
@@ -161,13 +161,13 @@ export default function UsersPage() {
                 
                 // Refresh users list
                 await fetchUsers();
-                alert("User deleted successfully");
+                alert("Đã xóa người dùng thành công");
             } catch (error) {
                 console.error('Error deleting user:', error);
                 if (axios.isAxiosError(error)) {
-                    alert(error.response?.data?.message || 'Failed to delete user. Please try again.');
+                    alert(error.response?.data?.message || 'Không thể xóa người dùng. Vui lòng thử lại.');
                 } else {
-                    alert('Failed to delete user. Please try again.');
+                    alert('Không thể xóa người dùng. Vui lòng thử lại.');
                 }
             } finally {
                 setIsLoading(false);
@@ -179,7 +179,7 @@ export default function UsersPage() {
         try {
             const token = localStorage.getItem('nhattin_token');
             if (!token) {
-                alert('Please login to update user');
+                alert('Vui lòng đăng nhập để cập nhật người dùng');
                 return;
             }
 
@@ -222,13 +222,13 @@ export default function UsersPage() {
             setIsDialogOpen(false);
             setSelectedUser(null);
             form.reset();
-            alert(selectedUser ? "User updated successfully" : "User created successfully");
+            alert(selectedUser ? "Cập nhật người dùng thành công" : "Tạo người dùng mới thành công");
         } catch (error) {
             console.error('Error saving user:', error);
             if (axios.isAxiosError(error)) {
-                alert(error.response?.data?.message || 'Failed to save user. Please try again.');
+                alert(error.response?.data?.message || 'Không thể lưu thông tin người dùng. Vui lòng thử lại.');
             } else {
-                alert('Failed to save user. Please try again.');
+                alert('Không thể lưu thông tin người dùng. Vui lòng thử lại.');
             }
         } finally {
             setIsLoading(false);
@@ -275,31 +275,31 @@ export default function UsersPage() {
         <div className="p-6 space-y-6">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                    <CardTitle>Users Management</CardTitle>
+                    <CardTitle>Quản lý Người dùng</CardTitle>
                     <div className="flex space-x-2">
                         <div className="relative">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                             <Input
                                 type="search"
-                                placeholder="Search users..."
+                                placeholder="Tìm kiếm người dùng..."
                                 className="pl-8 w-64"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <Button onClick={handleAddUser}>Add New User</Button>
+                        <Button onClick={handleAddUser}>Thêm Người dùng mới</Button>
                     </div>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Phone</TableHead>
-                                <TableHead>Full Name</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Created At</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Số điện thoại</TableHead>
+                                <TableHead>Họ và tên</TableHead>
+                                <TableHead>Vai trò</TableHead>
+                                <TableHead>Trạng thái</TableHead>
+                                <TableHead>Ngày tạo</TableHead>
+                                <TableHead className="text-right">Thao tác</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -315,12 +315,13 @@ export default function UsersPage() {
                                                 ? 'bg-blue-100 text-blue-800'
                                                 : 'bg-gray-100 text-gray-800'
                                         }`}>
-                                            {user.role}
+                                            {user.role === 'ADMIN' ? 'Quản trị viên' : 
+                                             user.role === 'STAFF' ? 'Nhân viên' : 'Người dùng'}
                                         </span>
                                     </TableCell>
                                     <TableCell>
                                         <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                                            Active
+                                            Hoạt động
                                         </span>
                                     </TableCell>
                                     <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
@@ -330,27 +331,27 @@ export default function UsersPage() {
                                             size="sm"
                                             onClick={() => handleEditUser(user)}
                                         >
-                                            Edit
+                                            Sửa
                                         </Button>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <Button variant="secondary" size="sm" className="bg-red-100 text-red-800 hover:bg-red-200">
-                                                    Delete
+                                                    Xóa
                                                 </Button>
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <AlertDialogTitle>Delete User</AlertDialogTitle>
+                                                    <AlertDialogTitle>Xóa Người dùng</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        Are you sure you want to delete this user? This action cannot be undone.
+                                                        Bạn có chắc chắn muốn xóa người dùng này? Hành động này không thể hoàn tác.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogCancel>Hủy</AlertDialogCancel>
                                                     <AlertDialogAction
                                                         onClick={() => handleDeleteUser(user._id)}
                                                     >
-                                                        Delete
+                                                        Xóa
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
@@ -367,9 +368,9 @@ export default function UsersPage() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>{selectedUser ? "Edit User" : "Add New User"}</DialogTitle>
+                        <DialogTitle>{selectedUser ? "Chỉnh sửa Người dùng" : "Thêm Người dùng mới"}</DialogTitle>
                         <DialogDescription>
-                            {selectedUser ? "Make changes to the user here." : "Add a new user to the system."}
+                            {selectedUser ? "Thay đổi thông tin người dùng tại đây." : "Thêm một người dùng mới vào hệ thống."}
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
@@ -379,9 +380,9 @@ export default function UsersPage() {
                                 name="phone"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Phone</FormLabel>
+                                        <FormLabel>Số điện thoại</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Phone number" {...field} />
+                                            <Input placeholder="Nhập số điện thoại" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -392,9 +393,9 @@ export default function UsersPage() {
                                 name="fullName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Full Name</FormLabel>
+                                        <FormLabel>Họ và tên</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Full name" {...field} />
+                                            <Input placeholder="Nhập họ và tên" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -405,17 +406,17 @@ export default function UsersPage() {
                                 name="role"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Role</FormLabel>
+                                        <FormLabel>Vai trò</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select a role" />
+                                                    <SelectValue placeholder="Chọn vai trò" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="ADMIN">Admin</SelectItem>
-                                                <SelectItem value="STAFF">Staff</SelectItem>
-                                                <SelectItem value="USER">User</SelectItem>
+                                                <SelectItem value="ADMIN">Quản trị viên</SelectItem>
+                                                <SelectItem value="STAFF">Nhân viên</SelectItem>
+                                                <SelectItem value="USER">Người dùng</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -428,9 +429,9 @@ export default function UsersPage() {
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Password</FormLabel>
+                                            <FormLabel>Mật khẩu</FormLabel>
                                             <FormControl>
-                                                <Input type="password" placeholder="Password" {...field} />
+                                                <Input type="password" placeholder="Nhập mật khẩu" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -443,9 +444,9 @@ export default function UsersPage() {
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Password (leave blank to keep current)</FormLabel>
+                                            <FormLabel>Mật khẩu (để trống nếu giữ nguyên)</FormLabel>
                                             <FormControl>
-                                                <Input type="password" placeholder="New password" {...field} />
+                                                <Input type="password" placeholder="Nhập mật khẩu mới" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -454,11 +455,11 @@ export default function UsersPage() {
                             )}
                             <DialogFooter className="mt-6">
                                 <DialogClose asChild>
-                                    <Button type="button" variant="secondary">Cancel</Button>
+                                    <Button type="button" variant="secondary">Hủy</Button>
                                 </DialogClose>
                                 <Button type="submit" disabled={isLoading}>
                                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                    {selectedUser ? 'Update User' : 'Create User'}
+                                    {selectedUser ? 'Cập nhật' : 'Tạo mới'}
                                 </Button>
                             </DialogFooter>
                         </form>

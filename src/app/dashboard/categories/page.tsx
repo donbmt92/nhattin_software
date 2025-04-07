@@ -25,7 +25,7 @@ const getCategories = async (): Promise<Category[]> => {
     try {
         const token = localStorage.getItem('nhattin_token');
         if (!token) {
-            throw new Error('No authentication token found');
+            throw new Error('Không tìm thấy token xác thực');
         }
 
         const response = await fetch(`${API_URL}/categories`, {
@@ -40,12 +40,12 @@ const getCategories = async (): Promise<Category[]> => {
             if (response.status === 400) {
                 const errorData = await response.json();
                 console.log(errorData);     
-                throw new Error(errorData.message || 'Bad Request');
+                throw new Error(errorData.message || 'Yêu cầu không hợp lệ');
             }
             if (response.status === 403) {
-                throw new Error('Unauthorized access. Please login again.');
+                throw new Error('Truy cập không được phép. Vui lòng đăng nhập lại.');
             }
-            throw new Error('Failed to fetch categories');
+            throw new Error('Không thể tải danh sách danh mục');
         }
 
         const data = await response.json();
@@ -60,10 +60,10 @@ const deleteCategory = async (id: string): Promise<void> => {
     try {
         const token = localStorage.getItem('nhattin_token');
         if (!token) {
-            throw new Error('No authentication token found');
+            throw new Error('Không tìm thấy token xác thực');
         }
         if (!id) {
-            throw new Error('Category ID is required');
+            throw new Error('ID danh mục là bắt buộc');
         }
 
         const response = await fetch(`${API_URL}/categories?id=${id}`, {
@@ -78,12 +78,12 @@ const deleteCategory = async (id: string): Promise<void> => {
             if (response.status === 400) {
                 const errorData = await response.json();
                 console.log(errorData);
-                throw new Error(errorData.message || 'Bad Request');
+                throw new Error(errorData.message || 'Yêu cầu không hợp lệ');
             }
             if (response.status === 403) {
-                throw new Error('Unauthorized access. Please login again.');
+                throw new Error('Truy cập không được phép. Vui lòng đăng nhập lại.');
             }
-            throw new Error('Failed to delete category');
+            throw new Error('Không thể xóa danh mục');
         }
     } catch (error) {
         console.error('Error in deleteCategory:', error);
@@ -108,14 +108,14 @@ export default function CategoriesPage() {
         } catch (error) {
             console.error("Error fetching categories:", error);
             // Show error message to user
-            alert(error instanceof Error ? error.message : 'Failed to fetch categories');
+            alert(error instanceof Error ? error.message : 'Không thể tải danh sách danh mục');
         } finally {
             setLoading(false);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this category?")) return;
+        if (!confirm("Bạn có chắc chắn muốn xóa danh mục này không?")) return;
 
         try {
             await deleteCategory(id);
@@ -123,22 +123,22 @@ export default function CategoriesPage() {
         } catch (error) {
             console.error("Error deleting category:", error);
             // Show error message to user
-            alert(error instanceof Error ? error.message : 'Failed to delete category');
+            alert(error instanceof Error ? error.message : 'Không thể xóa danh mục');
         }
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div>Đang tải...</div>;
     }
 
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Categories</h1>
+                <h1 className="text-2xl font-bold">Danh mục</h1>
                 <Link href="/dashboard/categories/create">
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Category
+                        Thêm Danh mục
                     </Button>
                 </Link>
             </div>
@@ -147,10 +147,10 @@ export default function CategoriesPage() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Created At</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead>Tên</TableHead>
+                        <TableHead>Mô tả</TableHead>
+                        <TableHead>Ngày tạo</TableHead>
+                        <TableHead>Thao tác</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -165,7 +165,7 @@ export default function CategoriesPage() {
                             <TableCell className="flex gap-2">
                                 <Link href={`/dashboard/categories/edit/${category._id}`}>
                                     <Button variant="outline" size="sm">
-                                        Edit
+                                        Sửa
                                     </Button>
                                 </Link>
                                 <Button
@@ -173,7 +173,7 @@ export default function CategoriesPage() {
                                     size="sm"
                                     onClick={() => handleDelete(category._id)}
                                 >
-                                    Delete
+                                    Xóa
                                 </Button>
                             </TableCell>
                         </TableRow>

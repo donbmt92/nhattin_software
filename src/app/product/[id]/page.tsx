@@ -1,19 +1,19 @@
-
 "use client";
 import React, { useEffect, useState } from 'react'
-import ProductDetails from './ProductDetails/page'
-import Policys from './Policy/page';
-import ListProductSimilar from './ListProductSimilar/page';
-import Descriptions from './Descriptions/page';
 import { useParams } from 'next/navigation';
 import api from '@/app/components/utils/api';
+
+// Import the components directly from their component files
+import ProductDetailComponent from './ProductDetails/components/ProductDetailComponent';
+import PolicyComponent from './Policy/components/PolicyComponent';
+import DescriptionsComponent from './Descriptions/components/DescriptionsComponent';
+import ListProductSimilarComponent from './ListProductSimilar/components/ListProductSimilarComponent';
 
 export default function ProductDetailPage() {
     const { id } = useParams();
     const [product, setProduct] = useState<any[]>([]);
     const [subcriptionType, setSubcriptionType] = useState<any[]>([]);
     const [subcriptionDuration, setSubcriptionDuration] = useState<any[]>([]);
-    console.log(subcriptionType);
     
     const getProductDetail = async () => {
         try {
@@ -33,12 +33,22 @@ export default function ProductDetailPage() {
             getProductDetail();
         }
     }, [id]);
+
+    // If data isn't loaded yet, we can show a loading state
+    if (product.length === 0) {
+        return <div className="container mx-auto py-10 text-center">Loading...</div>;
+    }
+    
     return (
         <div className="">
-            <ProductDetails products={product} subcriptionTypes={subcriptionType} subcriptionDurations={subcriptionDuration} />
-            <Policys />
-            <Descriptions products={product} />
-            <ListProductSimilar />
+            <ProductDetailComponent 
+                products={product} 
+                subcriptionTypes={subcriptionType} 
+                subcriptionDurations={subcriptionDuration} 
+            />
+            <PolicyComponent />
+            <DescriptionsComponent products={product} />
+            <ListProductSimilarComponent />
         </div>
     )
 }

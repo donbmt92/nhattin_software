@@ -10,6 +10,13 @@ import { Textarea } from "@/components/ui/textarea"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+interface Category {
+  _id: string;
+  name: string;
+  description?: string;
+  isActive?: boolean;
+}
+
 interface CreateCategoryDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void

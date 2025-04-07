@@ -137,7 +137,7 @@ export default function ProductsPage() {
     const handleDelete = async (id: string) => {
         const token = localStorage.getItem('nhattin_token');
         if (!token) {
-            alert('Please login to delete a product');
+            alert('Vui lòng đăng nhập để xóa sản phẩm');
             return;
         }
 
@@ -154,9 +154,9 @@ export default function ProductsPage() {
         } catch (error) {
             console.error('Error deleting product:', error);
             if (axios.isAxiosError(error)) {
-                alert(error.response?.data?.message || 'Failed to delete product. Please try again.');
+                alert(error.response?.data?.message || 'Không thể xóa sản phẩm. Vui lòng thử lại.');
             } else {
-                alert('Failed to delete product. Please try again.');
+                alert('Không thể xóa sản phẩm. Vui lòng thử lại.');
             }
         } finally {
             setLoading(false);
@@ -187,21 +187,21 @@ export default function ProductsPage() {
         <div className="p-6 space-y-6">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                    <CardTitle>Products Management</CardTitle>
+                    <CardTitle>Quản lý Sản phẩm</CardTitle>
                     <Link href="/dashboard/products/create">
-                        <Button>Add New Product</Button>
+                        <Button>Thêm Sản phẩm mới</Button>
                     </Link>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Image</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Price</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Discount</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Hình ảnh</TableHead>
+                                <TableHead>Tên</TableHead>
+                                <TableHead>Giá</TableHead>
+                                <TableHead>Danh mục</TableHead>
+                                <TableHead>Khuyến mãi</TableHead>
+                                <TableHead className="text-right">Thao tác</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -244,38 +244,38 @@ export default function ProductsPage() {
                                                 </span>
                                             ) : (
                                                 <span className="text-sm text-orange-600">
-                                                    {product.id_discount.name} (expired)
+                                                    {product.id_discount.name} (hết hạn)
                                                 </span>
                                             )
                                         ) : (
-                                            <span className="text-sm text-gray-500">No discount</span>
+                                            <span className="text-sm text-gray-500">Không có khuyến mãi</span>
                                         )}
                                     </TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Link href={`/dashboard/products/edit/${product._id.id}`}>
                                             <Button variant="secondary" size="sm">
-                                                Edit
+                                                Sửa
                                             </Button>
                                         </Link>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <Button variant="secondary" size="sm" className="bg-red-100 text-red-800 hover:bg-red-200">
-                                                    Delete
+                                                    Xóa
                                                 </Button>
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <AlertDialogTitle>Delete Product</AlertDialogTitle>
+                                                    <AlertDialogTitle>Xóa Sản phẩm</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        Are you sure you want to delete this product? This action cannot be undone.
+                                                        Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogCancel>Hủy</AlertDialogCancel>
                                                     <AlertDialogAction
                                                         onClick={() => handleDelete(product._id.id)}
                                                     >
-                                                        Delete
+                                                        Xóa
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>

@@ -53,10 +53,10 @@ export default function Dashboard() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
-                            <h1 className="text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
+                            <h1 className="text-2xl font-semibold text-gray-900">Tổng quan Quản trị</h1>
                         </div>
                         <div className="flex items-center">
-                            <span className="text-gray-500">Welcome, Admin (ID: {user?.id})</span>
+                            <span className="text-gray-500">Xin chào, Quản trị viên </span>
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@ export default function Dashboard() {
                                         <div className="ml-5 w-0 flex-1">
                                             <dl>
                                                 <dt className="text-sm font-medium text-gray-500 truncate">
-                                                    Total Users
+                                                    Tổng Người dùng
                                                 </dt>
                                                 <dd className="text-lg font-medium text-gray-900">
                                                     1,234
@@ -101,7 +101,7 @@ export default function Dashboard() {
                                         <div className="ml-5 w-0 flex-1">
                                             <dl>
                                                 <dt className="text-sm font-medium text-gray-500 truncate">
-                                                    Total Orders
+                                                    Tổng Đơn hàng
                                                 </dt>
                                                 <dd className="text-lg font-medium text-gray-900">
                                                     567
@@ -123,7 +123,7 @@ export default function Dashboard() {
                                         <div className="ml-5 w-0 flex-1">
                                             <dl>
                                                 <dt className="text-sm font-medium text-gray-500 truncate">
-                                                    Revenue
+                                                    Doanh thu
                                                 </dt>
                                                 <dd className="text-lg font-medium text-gray-900">
                                                     $12,345
@@ -145,7 +145,7 @@ export default function Dashboard() {
                                         <div className="ml-5 w-0 flex-1">
                                             <dl>
                                                 <dt className="text-sm font-medium text-gray-500 truncate">
-                                                    Total Products
+                                                    Tổng Sản phẩm
                                                 </dt>
                                                 <dd className="text-lg font-medium text-gray-900">
                                                     89

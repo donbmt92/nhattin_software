@@ -12,17 +12,29 @@ import { Editor } from '@tinymce/tinymce-react'
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface Post {
-  id: string
+  _id: string
   title: string
   content: string
-  categoryId: string
+  thumbnail?: string
+  slug?: string
+  category?: {
+    _id: string
+    name: string
+  }
+}
+
+interface Category {
+  _id: string
+  name: string
+  description?: string
+  isActive?: boolean
 }
 
 interface EditPostDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   post: Post | null
-  categories: Array<{ id: string; name: string }>
+  categories: Category[]
   onSuccess: () => void
 }
 
@@ -42,7 +54,7 @@ export default function EditPostDialog({
     if (post) {
       setTitle(post.title)
       setContent(post.content)
-      setCategoryId(post.categoryId)
+      setCategoryId(post.category?._id || "")
     }
   }, [post])
 
@@ -52,7 +64,7 @@ export default function EditPostDialog({
 
     try {
       setLoading(true)
-      await axios.patch(`${API_URL}/posts/${post.id}`, {
+      await axios.patch(`${API_URL}/posts/${post._id}`, {
         title,
         content,
         categoryId,
@@ -93,7 +105,7 @@ export default function EditPostDialog({
               </SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
+                  <SelectItem key={category._id} value={category._id}>
                     {category.name}
                   </SelectItem>
                 ))}

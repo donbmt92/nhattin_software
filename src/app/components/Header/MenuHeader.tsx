@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default function MenuHeader() {
     const navbars = [
         { name: "Trang Chủ", link: "/", icon: "/images/icon/icon21.png" },
-        { name: "Sản Phẩm", link: "/products", icon: "/images/icon/icon22.png" },
+        { name: "Sản Phẩm", link: "/search", icon: "/images/icon/icon22.png" },
         { name: "Thủ Thuật & Tin Tức", link: "/news", icon: "/images/icon/icon23.png" },
         { name: "Về Chúng Tôi", link: "/about", icon: "/images/icon/icon24.png" },
     ]

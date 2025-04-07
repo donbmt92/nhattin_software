@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="dashboard-layout">
             <meta
                 name="description"
-                content="Admin dashboard for managing the application"
+                content="Bảng điều khiển quản trị để quản lý ứng dụng"
             />
             <div className="flex h-screen bg-gray-100">
                 <Sidebar />

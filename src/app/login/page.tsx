@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,7 +8,12 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -47,143 +52,129 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-            <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                    <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8">
-                        {/* <Image
-                            className="mx-auto h-12 w-auto"
-                            src="/images/logo.png"
-                            alt="Your Company"
-                            width={48}
-                            height={48}
-                        /> */}
-                        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                            Đăng nhập 
-                        </h2>
+        <div
+            style={{
+                position: 'relative',
+                height: '100vh',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <div
+                style={{
+                    backgroundImage: 'url("../images/Background.png")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: -1,
+                }}
+            />
+            <div
+                className="container mx-auto py-4"
+                style={{
+                    backgroundColor: 'var(--clr-bg)',
+                    padding: '20px',
+                    borderRadius: '20px',
+                    zIndex: 1,
+                }}
+            >
+                <div className="grid xl:grid-cols-12">
+                    <div className='xl:col-span-6 hidden xl:flex'>
+                        <Image src="/images/image13.png" alt="Mô tả hình ảnh" style={{ width: '100%', height: 'auto', borderRadius:'15px', }} width={1000} height={100} />
                     </div>
-                    <div className="space-y-6">
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email
-                            </label>
-                            <div className="mt-1">
+                    <div className='col-span-6 m-[80px] justify-center flex'>
+                        <div className="w-full xl:max-w-md">
+                            <h1 className="text-[40px] font-bold text-center mb-6">Đăng nhập</h1>
+                            <button className="flex items-center justify-center w-3/5 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 mb-4 mx-auto">
+                                <Image src="/images/icon/icon31.png" alt="Google Logo" className="w-5 h-5 mr-2" width={24} height={24}/>
+                                Đăng nhập với Google
+                            </button>
+
+                            <div className="flex items-center my-6">
+                                <hr className="flex-grow border-gray-300" />
+                                <span className="text-sm mx-2" style={{ color: 'var(--clr-txt-1)' }}>Hoặc với email</span>
+                                <hr className="flex-grow border-gray-300" />
+                            </div>
+
+                            <form onSubmit={handleSubmit}>
                                 <input
-                                    id="email"
-                                    name="email"
                                     type="email"
-                                    placeholder='Nhập địa chỉ Email'
-                                    autoComplete="email"
-                                    required
+                                    placeholder="Địa chỉ email"
+                                    className="border border-gray-300 rounded-lg py-2 px-3 w-full mb-6"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Mật khẩu
-                            </label>
-                            <div className="mt-1">
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder='Nhập mật khẩu'
-                                    autoComplete="current-password"
                                     required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 />
-                            </div>
-                        </div>
 
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <input
-                                    id="remember-me"
-                                    name="remember-me"
-                                    type="checkbox"
-                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                />
-                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                                    Ghi nhớ
-                                </label>
-                            </div>
-
-                            <div className="text-sm">
-                                <Link href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                    Quên mật khẩu?
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div>
-                            <button
-                                type="submit"
-                                onClick={handleSubmit}
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                Đăng nhập
-                            </button>
-                        </div>
-
-                        {error && (
-                            <div className="mt-2 text-center text-sm text-red-600">
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="mt-6">
-                            <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-300" />
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                                </div>
-                            </div>
-
-                            <div className="mt-6 grid grid-cols-3 gap-3">
-                                <div>
-                                    <Link href="#" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <div className="relative mb-6">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Mật khẩu"
+                                        className="border border-gray-300 rounded-lg py-2 px-3 w-full pr-10"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-3 flex items-center"
+                                        onClick={togglePasswordVisibility}
+                                    >
                                         <Image
-                                            className="h-5 w-5"
-                                            src="/images/social/facebook.svg"
-                                            alt="Facebook"
-                                            width={20}
-                                            height={20}
+                                            src={showPassword ? "/images/icon/icon32.png" : "/images/icon/icon33.png"}
+                                            alt="Toggle Visibility"
+                                            className="w-5 h-5"
+                                            width={24}
+                                            height={24}
                                         />
-                                    </Link>
+                                    </button>
                                 </div>
 
-                                <div>
-                                    <Link href="#" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                        <Image
-                                            className="h-5 w-5"
-                                            src="/images/social/google.svg"
-                                            alt="Google"
-                                            width={20}
-                                            height={20}
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center">
+                                        <input
+                                            id="remember-me"
+                                            name="remember-me"
+                                            type="checkbox"
+                                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                                         />
-                                    </Link>
+                                        <label htmlFor="remember-me" className="ml-2 block text-sm" style={{ color: 'var(--clr-txt-1)' }}>
+                                            Ghi nhớ
+                                        </label>
+                                    </div>
+
+                                    <div className="text-sm">
+                                        <Link href="/forgot-password" className="hover:underline font-bold" style={{ color: "var(--clr-txt-6)" }}>
+                                            Quên mật khẩu?
+                                        </Link>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <Link href="#" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                        <Image
-                                            className="h-5 w-5"
-                                            src="/images/social/github.svg"
-                                            alt="GitHub"
-                                            width={20}
-                                            height={20}
-                                        />
-                                    </Link>
-                                </div>
-                            </div>
+                                {error && (
+                                    <div className="mb-6 text-center text-sm text-red-600">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    className="w-full py-2 rounded-lg hover:bg-blue-600 transition duration-300 font-bold"
+                                    style={{ backgroundColor: "var(--clr-bg-8)", color: "var(--clr-txt-3)" }}
+                                >
+                                    Đăng Nhập
+                                </button>
+                            </form>
+
+                            <p className="text-sm text-center text-gray-500 mt-4">
+                                Bạn chưa có tài khoản?{" "}
+                                <Link href="/register" className="hover:underline font-bold" style={{ color: "var(--clr-txt-6)" }}>Đăng ký</Link>
+                            </p>
                         </div>
                     </div>
                 </div>

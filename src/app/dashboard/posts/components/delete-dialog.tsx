@@ -13,7 +13,7 @@ interface DeleteDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onConfirm: () => void
-  type: 'post' | 'category' | null
+  type: 'post' | 'category'
 }
 
 export default function DeleteDialog({
