@@ -101,7 +101,7 @@ export default function TopHeader() {
                         </div>
                     )}
                     {/* Desktop View: Full Search */}
-                    <form onSubmit={handleSearch} className="hidden lg:block relative bg-white rounded-md">
+                    <form onSubmit={handleSearch} className="hidden lg:block relative bg-white rounded-md w-full max-w-3xl">
                         <input
                             type="text"
                             placeholder="Nhập nội dung cần tìm..."

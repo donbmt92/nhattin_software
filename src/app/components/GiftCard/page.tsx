@@ -46,7 +46,7 @@ export default function GiftCards() {
     ];
 
     return (
-        <div className="container mx-auto py-[50px]">
+        <div className="container max-w-[1000px] mx-auto py-[50px]">
             <div className="text-center">
                 <h2 className="text-2xl font-bold text-center mb-2 uppercase">Sắp Mở Bán</h2>
                 <hr style={{ border: "1px solid var(--clr-bg-4)", marginBottom: "40px", width: "140px", marginLeft: "auto", marginRight: "auto"}}/>

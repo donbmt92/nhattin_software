@@ -10,11 +10,11 @@ export default function Figures() {
         { name: "Product", value: "1.2M", icons: faBookAtlas },
     ]
     return (
-        <div className="pb-[50px] pt-[100px]" style={{ backgroundColor: 'var(--clr-bg-1)' }}>
+        <div className="max-w-[1000px] pb-[50px] pt-[100px] mx-auto" style={{ backgroundColor: 'var(--clr-bg-1)' }}>
             <div className="container mx-auto" >
                 <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-6">
                     {figures.map((item, index) => (
-                        <div key={index} className="grid grid-cols-3 px-[50px] py-[20px] items-center justify-center" style={{ backgroundColor: "var(--clr-bg-4)", borderRadius: "10px"}}>
+                        <div key={index} className="grid grid-cols-3 px-[30px] py-[10px] items-center justify-center" style={{ backgroundColor: "var(--clr-bg-4)", borderRadius: "10px"}}>
                             <div className=" col-span-2 w-full">
                                 <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--clr-txt-3)"}}>{item.value}</h2>
                                 <p className="text-xl font-extrabold" style={{ color: "var(--clr-txt-3)"}}>{item.name}</p>

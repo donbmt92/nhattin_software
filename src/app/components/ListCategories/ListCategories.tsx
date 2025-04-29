@@ -3,19 +3,18 @@ import React from 'react'
 
 export default function ListCategories() {
     const categories = [
-        { icon: <Image src="/images/icon/icon1.png" alt="" width={100} height={100} />, label: 'Xem Phim' },
-        { icon: <Image src="/images/icon/icon2.png" alt="" width={100} height={100} />, label: 'Thể Thao' },
-        { icon: <Image src="/images/icon/icon3.png" alt="" width={100} height={100} />, label: 'Sức Khỏe' },
-        { icon: <Image src="/images/icon/icon4.png" alt="" width={100} height={100} />, label: 'Công Việc' },
-        { icon: <Image src="/images/icon/icon5.png" alt="" width={100} height={100} />, label: 'Thiết Kế' },
-        { icon: <Image src="/images/icon/icon6.png" alt="" width={100} height={100} />, label: 'AI' },
-        { icon: <Image src="/images/icon/icon7.png" alt="" width={100} height={100} />, label: 'Học Tập' },
-        { icon: <Image src="/images/icon/icon8.png" alt="" width={100} height={100} />, label: 'Âm Nhạc' },
+        { icon: <Image src="/images/icon/icon1.png" alt="" width={50} height={50} />, label: 'Xem Phim' },
+        { icon: <Image src="/images/icon/icon2.png" alt="" width={50} height={50} />, label: 'Thể Thao' },
+        { icon: <Image src="/images/icon/icon3.png" alt="" width={50} height={50} />, label: 'Sức Khỏe' },
+        { icon: <Image src="/images/icon/icon4.png" alt="" width={50} height={50} />, label: 'Công Việc' },
+        { icon: <Image src="/images/icon/icon5.png" alt="" width={50} height={50} />, label: 'Thiết Kế' },
+        { icon: <Image src="/images/icon/icon6.png" alt="" width={50} height={50} />, label: 'AI' },
+        { icon: <Image src="/images/icon/icon7.png" alt="" width={50} height={50} />, label: 'Học Tập' },
+        { icon: <Image src="/images/icon/icon8.png" alt="" width={50} height={50} />, label: 'Âm Nhạc' },
     ];
     return (
-        <div className="bg-gray-100 py-8">
             <div className="container mx-auto flex justify-center items-center">
-                <div className="grid grid-cols-2 lg:grid-cols-8 md:grid-cols-4 gap-24">
+                <div className="grid grid-cols-2 lg:grid-cols-8 md:grid-cols-4 gap-12">
                     {categories.map((item, index) => (
                         <div
                             key={index}
@@ -24,8 +23,8 @@ export default function ListCategories() {
                         >
                             <div
                                 style={{
-                                    width: "90px",
-                                    height: "90px",
+                                    width: "45px",
+                                    height: "45px",
                                     display: "flex",
                                     justifyContent: "center",
                                     alignItems: "center"
@@ -34,8 +33,8 @@ export default function ListCategories() {
                                 {item.icon}
                             </div>
                             <p
-                                className="text-base font-semibold mt-3"
-                                style={{ color: "var(--clr-txt-1)", fontSize: "16px" }}
+                                className="text-sm font-semibold mt-2"
+                                style={{ color: "var(--clr-txt-1)" }}
                             >
                                 {item.label}
                             </p>
@@ -43,6 +42,5 @@ export default function ListCategories() {
                     ))}
                 </div>
             </div>
-        </div>
     )
 }
