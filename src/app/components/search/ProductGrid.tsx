@@ -79,7 +79,7 @@ function FilterSection({
     onBrandChange: (brand: string) => void
     onPriceRangeChange: (range: string) => void
     onClearAllFilters: () => void
-    categories: {_id: string, name: string}[]
+    categories: { _id: string, name: string }[]
     loadingCategories: boolean
 }) {
     // Kiểm tra có bất kỳ bộ lọc nào đang được áp dụng không
@@ -140,9 +140,27 @@ function FilterSection({
                 )}
             </div>
 
-            <div className="flex flex-wrap gap-4">
-                {/* Khoảng giá */}
-                <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-4">
+                {/* --- Giá --- */}
+                {/* Dropdown cho mobile */}
+                <div className="block md:hidden w-full">
+                    <label className="text-sm text-gray-600">Giá:</label>
+                    <select
+                        value={priceRange}
+                        onChange={(e) => onPriceRangeChange(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                    >
+                        <option value="">Tất cả</option>
+                        {PRICE_RANGES.map((range) => (
+                            <option key={range} value={range}>
+                                {range}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Button list cho desktop */}
+                <div className="hidden md:flex items-center gap-2">
                     <span className="text-sm text-gray-600">Giá:</span>
                     <div className="flex flex-wrap gap-2">
                         {PRICE_RANGES.map((range) => (
@@ -161,7 +179,24 @@ function FilterSection({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* --- Danh mục --- */}
+                <div className="block md:hidden w-full">
+                    <label className="text-sm text-gray-600 whitespace-nowrap">Danh mục:</label>
+                    <select
+                        value={selectedCategory || ''}
+                        onChange={(e) => onCategoryChange(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                    >
+                        <option value="">Tất cả</option>
+                        {categories.map((category) => (
+                            <option key={category._id} value={category.name}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="hidden md:flex items-center gap-2">
                     <span className="text-sm text-gray-600">Danh mục:</span>
                     <div className="flex flex-wrap gap-2">
                         {loadingCategories ? (
@@ -188,7 +223,24 @@ function FilterSection({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* --- Thương hiệu --- */}
+                <div className="block md:hidden w-full">
+                    <label className="text-sm text-gray-600">Thương hiệu:</label>
+                    <select
+                        value={selectedBrand || ''}
+                        onChange={(e) => onBrandChange(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                    >
+                        <option value="">Tất cả</option>
+                        {simpleBrands.map((brand) => (
+                            <option key={brand} value={brand}>
+                                {brand}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="hidden md:flex items-center gap-2">
                     <span className="text-sm text-gray-600">Thương hiệu:</span>
                     <div className="flex flex-wrap gap-2">
                         {simpleBrands.map((brand) => (
@@ -207,7 +259,24 @@ function FilterSection({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* --- Sắp xếp --- */}
+                <div className="block md:hidden w-full">
+                    <label className="text-sm text-gray-600">Sắp xếp theo:</label>
+                    <select
+                        value={activeFilter || ''}
+                        onChange={(e) => onFilterChange(e.target.value)}
+                        className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                    >
+                        <option value="">Mặc định</option>
+                        {FILTERS.map((filter) => (
+                            <option key={filter.id} value={filter.id}>
+                                {filter.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="hidden md:flex items-center gap-2">
                     <span className="text-sm text-gray-600">Sắp xếp theo:</span>
                     <div className="flex flex-wrap gap-2">
                         {FILTERS.map((filter) => (
@@ -243,7 +312,7 @@ export default function ProductGrid() {
     const [products, setProducts] = useState<ProductType[]>([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [categories, setCategories] = useState<{_id: string, name: string}[]>([])
+    const [categories, setCategories] = useState<{ _id: string, name: string }[]>([])
     const [loadingCategories, setLoadingCategories] = useState(false)
     
     // Danh sách thương hiệu đơn giản - di chuyển vào component này để tránh lỗi
@@ -506,11 +575,11 @@ export default function ProductGrid() {
                 id: productId,
                 name: item.name || 'Không có tên',
                 image: item.image || '/images/placeholder.png',
-                base_price: String(item.base_price || item.price || 0), 
+                base_price: String(item.base_price || item.price || 0),
                 max_price: String(item.max_price || item.price || item.base_price || 0),
                 min_price: String(item.min_price || item.price || item.base_price || 0),
                 description: item.description || '',
-                id_category: { 
+                id_category: {
                     name: item.id_category?.name || item.category || "Không phân loại",
                     _id: item.id_category?._id || ''
                 },
@@ -576,7 +645,7 @@ export default function ProductGrid() {
                 <div className="text-center py-8 text-red-500">{error}</div>
             ) : filteredProducts.length > 0 ? (
                 // Wrapper cho StandCard để điều chỉnh padding và loại bỏ padding mặc định của component
-                <div className="stand-card-wrapper mt-0 -mb-12">
+                <div className="stand-card-wrapper mt-10 -mb-12">
                     <StandCard products={convertToProductFormat(filteredProducts)} />
                 </div>
             ) : (

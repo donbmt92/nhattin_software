@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function PromoBanner() {
     return (
-        <div className="grid gap-6 md:grid-cols-2 mx-auto max-w-7xl pt-3 pb-3">
+        <div className="grid gap-6 md:grid-cols-2 mx-auto max-w-7xl pt-3 pb-3 p-2">
             {/* E-commerce Banner */}
             <div
                 className="group relative overflow-hidden rounded-2xl bg-cover bg-center p-6 text-white shadow-lg"

@@ -46,7 +46,7 @@ export default function Login() {
             }
 
         } catch (err) {
-            setError('An error occurred during login');
+            setError('Email hoặc mật khẩu không đúng!!');
             console.error('Login error:', err);
         }
     };
@@ -80,6 +80,7 @@ export default function Login() {
                 style={{
                     backgroundColor: 'var(--clr-bg)',
                     padding: '20px',
+                    margin: '10px', 
                     borderRadius: '20px',
                     zIndex: 1,
                 }}
@@ -88,10 +89,10 @@ export default function Login() {
                     <div className='xl:col-span-6 hidden xl:flex'>
                         <Image src="/images/image13.png" alt="Mô tả hình ảnh" style={{ width: '100%', height: 'auto', borderRadius:'15px', }} width={1000} height={100} />
                     </div>
-                    <div className='col-span-6 m-[80px] justify-center flex'>
+                    <div className='col-span-6 md:m-[80px] justify-center flex'>
                         <div className="w-full xl:max-w-md">
-                            <h1 className="text-[40px] font-bold text-center mb-6">Đăng nhập</h1>
-                            <button className="flex items-center justify-center w-3/5 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 mb-4 mx-auto">
+                            <h1 className="md:text-[40px] text-[30px] font-bold text-center mb-6">Đăng nhập</h1>
+                            <button className="flex items-center justify-center w-3/5 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 mb-4 mx-auto md:text-[18px] text-[13px]">
                                 <Image src="/images/icon/icon31.png" alt="Google Logo" className="w-5 h-5 mr-2" width={24} height={24}/>
                                 Đăng nhập với Google
                             </button>

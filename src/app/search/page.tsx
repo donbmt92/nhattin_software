@@ -8,7 +8,7 @@ export default function SearchPage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <PromoBanner/>
-            <div className="flex flex-col md:flex-row w-full mx-auto max-w-7xl pt-3 pb-3">
+            <div className="flex flex-col lg:flex-row w-full mx-auto max-w-7xl pt-3 pb-3">
                 <div className="w-full md:w-[300px] pr-0 md:pr-5 mb-5 md:mb-0">
                     <CategoryFilter/>
                     <NewProductList/>

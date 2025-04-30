@@ -62,7 +62,7 @@ export default function BottomHeader() {
                         </svg>
                     </span>
                 </div>
-                <div className="flex col-span-4 lg:justify-end justify-center items-center space-x-10 mx-8">
+                <div className="col-span-4 lg:justify-end justify-center items-center space-x-10 mx-8 hidden lg:flex">
                     {headerLinks.map((item, index) => (
                         <div key={index} className="flex items-center my-5">
                             <Image src={item.icon} alt={item.name} width={24} height={24} />
