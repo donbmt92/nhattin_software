@@ -118,7 +118,7 @@ export default function TopHeader() {
                         </button>
                     </form>
                 </div>
-                <div className="flex justify-end items-center space-x-4 text-sm col-span-4 lg:col-span-4 mx-4">
+                <div className="flex md:justify-end justify-between items-center space-x-4 text-sm col-span-4 lg:col-span-4 mx-4">
                     <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
                         <div
                             className="relative"
