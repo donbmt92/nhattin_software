@@ -9,6 +9,22 @@ import { Product } from '@/app/profile/types';;
 
 export default function HorizontalCard({ products }: { products: Product[] }) {
   const { addToCart } = useCart();
+  
+  // Hàm lấy slug sản phẩm, fallback về ID nếu không có slug
+  const getProductSlug = (product: Product) => {
+    console.log(product);
+    
+    // Ưu tiên sử dụng slug nếu có
+    if ((product as any).slug) {
+      return (product as any).slug;
+    }
+    // Fallback về ID nếu không có slug
+    if (typeof product._id === 'object' && product._id?.id) {
+      return product._id.id;
+    }
+    return product._id;
+  };
+  
   return (
     <div className="flex">
       {products.map((prd, index) => (
@@ -17,7 +33,7 @@ export default function HorizontalCard({ products }: { products: Product[] }) {
             <p className='text-[10px] lg:text-[10px] md:text-[10px] sm:text-[14px]' style={{ position: 'absolute', top: '5px', left: '5px', color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-4)', padding: '3px 10px', borderRadius: '5px', zIndex: 2 }} >
               {prd.id_category.name}
             </p>
-            <Link href={`/product/${prd._id.id}`}>
+            <Link href={`/product/${getProductSlug(prd)}`}>
               <Image
                 src={prd.image}
                 alt="Product Image"
@@ -28,7 +44,7 @@ export default function HorizontalCard({ products }: { products: Product[] }) {
             </Link>
           </div>
           <div style={{ flex: '7' }}>
-            <div  className="md:min-h-[54px] sm:min-h-[100px] leading-[22px] 2xl:leading-[20px] sm:leading-[30px]" style={{ display: 'flex', alignItems: 'center', }}>
+            <div  className="md:min-h-[66px] sm:min-h-[100px] leading-[22px] 2xl:leading-[20px] sm:leading-[30px]" style={{ display: 'flex', alignItems: 'center', }}>
               <p className="mb-1 font-semibold 2xl:text-[15px] xl:text-[20px] md:text-[18px] sm:text-[23px] text-[14px] mt-1 mx-1" style={{ color: 'var(--clr-txt-1)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'left', }}>
                 {prd.name}
               </p>

@@ -4,6 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { buyNow, getAffiliateCodeFromUrl, extractProductId, clearAffiliateCode } from '../../../../services/orderService'
+import { useCart } from '@/context/CartContext'
+import ProductHeaderAffiliate from '../../components/ProductHeaderAffiliate'
+import api from '@/app/components/utils/api'
 
 // The component that handles all the UI rendering
 export default function ProductDetailComponent({
@@ -15,9 +20,20 @@ export default function ProductDetailComponent({
     subcriptionTypes: any[];
     subcriptionDurations: any[];
 }) {
+    const router = useRouter();
+    const { addToCart } = useCart();
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [selectedIdTH, setSelectedIdTH] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [affiliateCode, setAffiliateCode] = useState<string | undefined>(undefined);
+
+    // Check for affiliate code on component mount
+    React.useEffect(() => {
+        const code = getAffiliateCodeFromUrl();
+        setAffiliateCode(code);
+    }, []);
 
     // Hàm xử lý khi nhấn nút trừ
     const decreaseQuantity = () => {
@@ -29,6 +45,87 @@ export default function ProductDetailComponent({
     // Hàm xử lý khi nhấn nút cộng
     const increaseQuantity = () => {
         setQuantity(quantity + 1);
+    };
+
+    // Hàm xử lý thêm vào giỏ hàng
+    const handleAddToCart = async (product: any) => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            
+            console.log('Adding to cart:', product);
+            await addToCart(product);
+            
+        } catch (error: any) {
+            setError(error.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+            console.error('Add to cart error:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Hàm xử lý mua ngay
+    const handleBuyNow = async (product: any) => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            // Extract valid MongoDB ObjectId từ product data
+            const productId = extractProductId(product);
+            console.log('Extracted product ID:', productId);
+
+            // Lấy thông tin user từ localStorage
+            const storedUser = localStorage.getItem("nhattin_user");
+            if (!storedUser) {
+                throw new Error('Bạn cần đăng nhập để thực hiện mua hàng');
+            }
+
+            const user = JSON.parse(storedUser);
+            console.log('🔍 User data from localStorage:', user);
+            
+            // Kiểm tra email trong các thuộc tính có thể có
+            let userEmail = user.email || user.Email || user.userEmail;
+            
+            if (!userEmail) {
+                // Nếu không có email trong localStorage, thử lấy từ API
+                try {
+                    const token = localStorage.getItem('nhattin_token');
+                    if (token) {
+                        const response = await api.get('/auth/verify-token');
+                        if (response.data && response.data.email) {
+                            userEmail = response.data.email;
+                            console.log('✅ Got email from API:', userEmail);
+                        }
+                    }
+                } catch (apiError) {
+                    console.warn('Could not get email from API:', apiError);
+                }
+            }
+            
+            if (!userEmail) {
+                throw new Error('Không tìm thấy email của người dùng. Vui lòng đăng nhập lại.');
+            }
+
+            const buyNowData = {
+                id_product: productId,
+                quantity: quantity,
+                note: 'Mua ngay',
+                affiliateCode: getAffiliateCodeFromUrl(),
+                userEmail: userEmail
+            };
+
+            console.log('Buy now data:', buyNowData);
+            const order = await buyNow(buyNowData);
+            
+            // Redirect đến trang order sau khi tạo đơn hàng thành công
+            router.push('/order');
+            
+        } catch (error: any) {
+            setError(error.message || 'Có lỗi xảy ra khi mua ngay');
+            console.error('Buy now error:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
     return (
         <div className="container mx-auto my-6">
@@ -48,12 +145,48 @@ export default function ProductDetailComponent({
                                     {prd.name}
                                 </p>
 
+                                {/* Affiliate Button */}
+                                <div className="mx-2">
+                                    <ProductHeaderAffiliate 
+                                        productId={prd._id.id}
+                                        productName={prd.name}
+                                    />
+                                </div>
+
                                 {/* Danh mục chiếm 2 phần */}
                                 <p className="text-[16px] px-3 py-1 border rounded-md text-center"
                                     style={{ color: 'var(--clr-txt-2)', borderColor: 'var(--clr-txt-2)', flex: '1', minWidth: 'fit-content' }}>
                                     {prd.id_category.name}
                                 </p>
                             </div>
+                            
+                            {/* Affiliate Code Banner */}
+                            {affiliateCode && (
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center">
+                                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                            <span className="text-sm text-blue-800 font-medium">
+                                                Bạn đang sử dụng affiliate link
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <code className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-mono">
+                                                {affiliateCode}
+                                            </code>
+                                            <button
+                                                onClick={() => {
+                                                    clearAffiliateCode();
+                                                    setAffiliateCode(undefined);
+                                                }}
+                                                className="text-blue-600 hover:text-blue-800 text-sm"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                             <div className="flex justify-between items-center my-3">
                                 <div className="flex items-center mx-1">
                                     <div className="flex mr-3">
@@ -214,23 +347,46 @@ export default function ProductDetailComponent({
                                 </div>
 
                             </div>
+                            {/* Error message */}
+                            {error && (
+                                <div className="my-3 p-3 rounded-md" style={{ backgroundColor: '#fee2e2', border: '1px solid #fecaca' }}>
+                                    <p className="text-red-600 text-sm">{error}</p>
+                                </div>
+                            )}
+
                             <div className="flex justify-center items-center my-5">
-                                <button className=" rounded-md px-[30px] md:px-[60px] py-[3px]"
+                                <button 
+                                    className=" rounded-md px-[30px] md:px-[60px] py-[3px]"
                                     style={{
                                         color: 'var(--clr-txt-2)',
                                         border: '1px solid var(--clr-bg-3)',
                                         fontSize: '18px',
                                         marginRight: '15px',
-                                    }}>
+                                        opacity: isLoading ? 0.7 : 1,
+                                        cursor: isLoading ? 'not-allowed' : 'pointer'
+                                    }}
+                                    onClick={() => handleAddToCart(prd)}
+                                    disabled={isLoading}
+                                >
                                     <div className="flex justify-center items-center mx-auto">
                                         <Image src="/images/icon/icon18.png" alt="" style={{ width: '25px', height: '25px', textAlign: 'center' }} width={100} height={100} />
                                     </div>
-                                    <div> Thêm vào giỏ</div>
+                                    <div>{isLoading ? 'Đang xử lý...' : 'Thêm vào giỏ'}</div>
                                 </button>
                                 &nbsp;
-                                <button className=" rounded-md flex px-[30px] md:px-[60px] py-[15px]"
-                                    style={{ color: 'var(--clr-txt-3)', backgroundColor: 'var(--clr-bg-6)', fontSize: '18px' }}>
-                                    <Link href="/order">Mua ngay</Link>
+                                <button 
+                                    className=" rounded-md flex px-[30px] md:px-[60px] py-[15px]"
+                                    style={{ 
+                                        color: 'var(--clr-txt-3)', 
+                                        backgroundColor: 'var(--clr-bg-6)', 
+                                        fontSize: '18px',
+                                        opacity: isLoading ? 0.7 : 1,
+                                        cursor: isLoading ? 'not-allowed' : 'pointer'
+                                    }}
+                                    onClick={() => handleBuyNow(prd)}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? 'Đang xử lý...' : 'Mua ngay'}
                                 </button>
                             </div>
                         </div>

@@ -1,23 +1,42 @@
 "use client";
 import React, { memo, useState, useRef } from 'react';
-import { UserProfile } from '../types';
+import { UserProfile, AffiliateInfo } from '../types';
 import Image from 'next/image';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import AffiliateRegistration from './AffiliateRegistration';
+import AffiliateStats from './AffiliateStats';
 
 const ProfileInfo = memo(({ user }: { user: UserProfile | null }) => {
     const displayName = 'ProfileInfo';
     ProfileInfo.displayName = displayName;
 
     const [isEditing, setIsEditing] = useState(false);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [editedUser, setEditedUser] = useState<UserProfile | null>(user);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
+    
+    // Affiliate states
+    const [affiliateInfo, setAffiliateInfo] = useState<AffiliateInfo | null>(null);
+    
+    // Password change states
+    const [passwordData, setPasswordData] = useState({
+        oldPassword: '',
+        password: '',
+        confirmPassword: ''
+    });
+    
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+
+    // Function to handle affiliate registration success
+    const handleAffiliateRegistrationSuccess = (affiliate: AffiliateInfo) => {
+        setAffiliateInfo(affiliate);
+    };
 
     // Function to handle user logout
     const handleLogout = () => {
@@ -58,6 +77,14 @@ const ProfileInfo = memo(({ user }: { user: UserProfile | null }) => {
         }
     };
 
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setPasswordData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -84,6 +111,7 @@ const ProfileInfo = memo(({ user }: { user: UserProfile | null }) => {
         reader.readAsDataURL(file);
     };
 
+    // Function to update profile information
     const handleSubmit = async () => {
         if (!editedUser) return;
         
@@ -151,10 +179,135 @@ const ProfileInfo = memo(({ user }: { user: UserProfile | null }) => {
         }
     };
 
+    // Function to change password
+    const handlePasswordSubmit = async () => {
+        if (passwordData.password !== passwordData.confirmPassword) {
+            setError('Mật khẩu xác nhận không khớp');
+            return;
+        }
+
+        if (passwordData.password.length < 6) {
+            setError('Mật khẩu phải có ít nhất 6 ký tự');
+            return;
+        }
+
+        setIsLoading(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            const token = localStorage.getItem('nhattin_token');
+            
+            if (!token) {
+                setError('Không tìm thấy token xác thực. Vui lòng đăng nhập lại.');
+                setIsLoading(false);
+                return;
+            }
+
+            const response = await axios.put(
+                `${process.env.NEXT_PUBLIC_API_URL}/users/changePassword`,
+                {
+                    oldPassword: passwordData.oldPassword,
+                    password: passwordData.password
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            setSuccess('Mật khẩu đã được thay đổi thành công!');
+            setIsChangingPassword(false);
+            setPasswordData({
+                oldPassword: '',
+                password: '',
+                confirmPassword: ''
+            });
+            setIsLoading(false);
+        } catch (error) {
+            if (!handleApiError(error)) {
+                setError('Có lỗi xảy ra khi thay đổi mật khẩu. Vui lòng kiểm tra mật khẩu cũ và thử lại.');
+                setIsLoading(false);
+                console.error('Error changing password:', error);
+            }
+        }
+    };
+
+    // Function to upload image separately
+    const handleImageUpload = async () => {
+        if (!imageFile || !user) return;
+
+        setIsLoading(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            const token = localStorage.getItem('nhattin_token');
+            
+            if (!token) {
+                setError('Không tìm thấy token xác thực. Vui lòng đăng nhập lại.');
+                setIsLoading(false);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/users/upload-image/${user._id}`,
+                formData,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+
+            // Update local state with new image
+            if (response.data.user && response.data.user.image) {
+                const updatedImage = response.data.user.image;
+                setEditedUser(prev => prev ? { ...prev, image: updatedImage } : null);
+                
+                if (user) {
+                    user.image = updatedImage;
+                }
+            }
+
+            setSuccess('Ảnh đại diện đã được cập nhật thành công!');
+            setPreviewImage(null);
+            setImageFile(null);
+            setIsLoading(false);
+        } catch (error) {
+            if (!handleApiError(error)) {
+                setError('Có lỗi xảy ra khi upload ảnh. Vui lòng thử lại sau.');
+                setIsLoading(false);
+                console.error('Error uploading image:', error);
+            }
+        }
+    };
+
     const triggerFileInput = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
+    };
+
+    const resetForm = () => {
+        setIsEditing(false);
+        setIsChangingPassword(false);
+        setEditedUser(user);
+        setError('');
+        setSuccess('');
+        setPreviewImage(null);
+        setImageFile(null);
+        setPasswordData({
+            oldPassword: '',
+            password: '',
+            confirmPassword: ''
+        });
     };
 
     return (
@@ -246,20 +399,53 @@ const ProfileInfo = memo(({ user }: { user: UserProfile | null }) => {
                         </div>
                     </div>
 
+                    {/* Password Change Form */}
+                    {isChangingPassword && (
+                        <div className="w-full mt-4 space-y-3">
+                            <div className="flex flex-col">
+                                <label className="text-sm text-gray-500">Mật khẩu cũ</label>
+                                <input 
+                                    type="password" 
+                                    name="oldPassword" 
+                                    value={passwordData.oldPassword} 
+                                    onChange={handlePasswordChange}
+                                    className="text-gray-800 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" 
+                                    placeholder="Nhập mật khẩu cũ"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <label className="text-sm text-gray-500">Mật khẩu mới</label>
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    value={passwordData.password} 
+                                    onChange={handlePasswordChange}
+                                    className="text-gray-800 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" 
+                                    placeholder="Nhập mật khẩu mới"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <label className="text-sm text-gray-500">Xác nhận mật khẩu mới</label>
+                                <input 
+                                    type="password" 
+                                    name="confirmPassword" 
+                                    value={passwordData.confirmPassword} 
+                                    onChange={handlePasswordChange}
+                                    className="text-gray-800 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500" 
+                                    placeholder="Nhập lại mật khẩu mới"
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
                     {success && <p className="text-green-500 mt-2 text-sm">{success}</p>}
 
+                    {/* Action Buttons */}
                     {isEditing ? (
                         <div className="mt-4 flex space-x-2 w-full">
                             <button 
-                                onClick={() => {
-                                    setIsEditing(false);
-                                    setEditedUser(user);
-                                    setError('');
-                                    setSuccess('');
-                                    setPreviewImage(null);
-                                    setImageFile(null);
-                                }}
+                                onClick={resetForm}
                                 className="w-1/2 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400 transition-colors"
                                 disabled={isLoading}
                             >
@@ -276,17 +462,71 @@ const ProfileInfo = memo(({ user }: { user: UserProfile | null }) => {
                                 Lưu Thay Đổi
                             </button>
                         </div>
+                    ) : isChangingPassword ? (
+                        <div className="mt-4 flex space-x-2 w-full">
+                            <button 
+                                onClick={resetForm}
+                                className="w-1/2 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400 transition-colors"
+                                disabled={isLoading}
+                            >
+                                Hủy
+                            </button>
+                            <button 
+                                onClick={handlePasswordSubmit}
+                                className="w-1/2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors flex justify-center items-center"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                                ) : null}
+                                Đổi Mật Khẩu
+                            </button>
+                        </div>
                     ) : (
-                        <button 
-                            onClick={() => setIsEditing(true)}
-                            className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
-                        >
-                            Chỉnh Sửa
-                        </button>
+                        <div className="mt-4 space-y-2 w-full">
+                            <button 
+                                onClick={() => setIsEditing(true)}
+                                className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
+                            >
+                                Chỉnh Sửa Thông Tin
+                            </button>
+                            <button 
+                                onClick={() => setIsChangingPassword(true)}
+                                className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors"
+                            >
+                                Đổi Mật Khẩu
+                            </button>
+                            {imageFile && (
+                                <button 
+                                    onClick={handleImageUpload}
+                                    className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition-colors"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                                    ) : null}
+                                    Cập Nhật Ảnh Đại Diện
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
             ) : (
                 <p>Loading...</p>
+            )}
+
+            {/* Affiliate Section */}
+            {user && (
+                <>
+                    <AffiliateRegistration 
+                        user={user} 
+                        onRegistrationSuccess={handleAffiliateRegistrationSuccess}
+                    />
+                    
+                    {affiliateInfo && (
+                        <AffiliateStats affiliateInfo={affiliateInfo} />
+                    )}
+                </>
             )}
         </div>
     );

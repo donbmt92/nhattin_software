@@ -85,6 +85,10 @@ export default function OrderDetails() {
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [note, setNote] = useState('');
+    
+    // Exit confirmation states
+    const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+    const [isExiting, setIsExiting] = useState(false);
 
     // Load user data from API
     useEffect(() => {
@@ -319,8 +323,115 @@ export default function OrderDetails() {
         return "Chưa có thông tin";
     };
 
+    // Function to delete current pending order
+    const deleteCurrentOrder = async () => {
+        try {
+            if (!order) return;
+            
+            const token = localStorage.getItem('nhattin_token');
+            if (!token) return;
+
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/orders/${order}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            console.log('✅ Đã xóa đơn hàng cũ:', order);
+        } catch (error) {
+            console.error('❌ Lỗi khi xóa đơn hàng:', error);
+        }
+    };
+
+    // Function to handle exit confirmation
+    const handleExitConfirmation = () => {
+        setShowExitConfirmation(true);
+    };
+
+    // Function to confirm exit and delete order
+    const confirmExit = async () => {
+        setIsExiting(true);
+        try {
+            await deleteCurrentOrder();
+            setShowExitConfirmation(false);
+            router.push('/');
+        } catch (error) {
+            console.error('Lỗi khi thoát:', error);
+        } finally {
+            setIsExiting(false);
+        }
+    };
+
+    // Function to cancel exit
+    const cancelExit = () => {
+        setShowExitConfirmation(false);
+    };
+
+    // Handle browser back button and page unload
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (orderItems.length > 0) {
+                e.preventDefault();
+                e.returnValue = 'Bạn có chắc muốn thoát? Đơn hàng hiện tại sẽ bị hủy.';
+                return 'Bạn có chắc muốn thoát? Đơn hàng hiện tại sẽ bị hủy.';
+            }
+        };
+
+        const handlePopState = (e: PopStateEvent) => {
+            if (orderItems.length > 0) {
+                e.preventDefault();
+                handleExitConfirmation();
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [orderItems.length]);
+
     return (
         <div style={{ backgroundColor: 'var(--clr-bg-1)', padding: "40px 0px" }}>
+            {/* Exit Confirmation Popup */}
+            {showExitConfirmation && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl p-8 max-w-md w-full relative shadow-2xl">
+                        <div className="text-center mb-6">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--clr-txt-1)' }}>Xác nhận thoát</h2>
+                            <p className="text-gray-600 text-lg">
+                                Bạn có chắc muốn thoát khỏi trang thanh toán? Đơn hàng hiện tại sẽ bị hủy và bạn sẽ mất thông tin đã nhập.
+                            </p>
+                        </div>
+
+                        <div className="flex space-x-3 mt-6">
+                            <button
+                                onClick={cancelExit}
+                                className="flex-1 py-3 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-lg font-medium"
+                                disabled={isExiting}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={confirmExit}
+                                className="flex-1 py-3 px-4 rounded-md text-white font-medium text-lg"
+                                style={{ backgroundColor: '#ef4444' }}
+                                disabled={isExiting}
+                            >
+                                {isExiting ? 'Đang xử lý...' : 'Thoát'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Payment Popup */}
             {showPaymentPopup && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -426,10 +537,25 @@ export default function OrderDetails() {
 
             <div className="container mx-auto p-4" style={{ backgroundColor: 'var(--clr-bg)', borderRadius: '10px' }}>
                 <div className="ml-6">
-                    <h2 style={{ color: 'var(--clr-txt-1)', fontSize: '30px', marginBottom: '10px', fontWeight: 'bold' }}>Thanh Toán</h2>
-                    <h2 className="text-[25px] text-left mb-1">Giỏ hàng</h2>
-                    <hr style={{ border: "1px solid var(--clr-bg-5)", width: "60px" }} />
-                    <hr style={{ border: "1px solid var(--clr-bg-4)", marginBottom: "20px", width: "65%" }} />
+                    <div className="flex justify-between items-center mb-4">
+                        <div>
+                            <h2 style={{ color: 'var(--clr-txt-1)', fontSize: '30px', marginBottom: '10px', fontWeight: 'bold' }}>Thanh Toán</h2>
+                            <h2 className="text-[25px] text-left mb-1">Giỏ hàng</h2>
+                            <hr style={{ border: "1px solid var(--clr-bg-5)", width: "60px" }} />
+                            <hr style={{ border: "1px solid var(--clr-bg-4)", marginBottom: "20px", width: "65%" }} />
+                        </div>
+                        <button
+                            onClick={handleExitConfirmation}
+                            className="px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition-colors duration-200"
+                        >
+                            <div className="flex items-center space-x-2">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <span>Thoát</span>
+                            </div>
+                        </button>
+                    </div>
                 </div>
                 <div className="grid grid-cols-1 xl:grid-cols-3">
                     <div className='col-span-2' style={{ margin: '0px 10px', padding: '10px' }}>
@@ -458,8 +584,8 @@ export default function OrderDetails() {
                                                 </div>
                                                 <div className='flex justify-center items-center'>
                                                     <Image
-                                                        src={`${process.env.NEXT_PUBLIC_API_URL}/${item.product.image}`}
-                                                        alt={item.product.name}
+                                                        src={`${item.product_snapshot.image}`}
+                                                        alt={item.product_snapshot.name}
                                                         width={100}
                                                         height={100}
                                                         style={{ maxWidth: '100px', maxHeight: '100px' }}
@@ -472,7 +598,7 @@ export default function OrderDetails() {
                                                             overflow: 'hidden',
                                                             textOverflow: 'ellipsis',
                                                             maxWidth: maxWidth,
-                                                        }}>{item.product.name}</h2>
+                                                        }}>{item.product_snapshot.name}</h2>
                                                         <div className='flex my-2'>
                                                             <h2 className='text-[16px] font-bold mr-2'>Gói đăng ký: </h2>
                                                             <span>{item.product.status}</span>

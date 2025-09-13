@@ -29,10 +29,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [listCart, setListCart] = useState<any[]>([]);
-  const totalItems = listCart?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const totalItems = listCart?.length || 0;
   console.log("abc",listCart);
   
-  const total = listCart?.reduce((sum, item) => sum + item.id_product.base_price * item.quantity, 0) || 0;
+  const total = listCart?.reduce((sum, item) => sum + item.id_product.base_price * item.quantity, 0) || 0; 
   const [user, setUser] = useState<User | null>(null);
   
   // Function to check if user is logged in

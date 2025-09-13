@@ -75,12 +75,12 @@ const Footer = () => {
                             </div>
 
                             {/* Body: Company Info & Links */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10 text-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-5 text-sm">
                                 {/* Info */}
                                 <div className="space-y-2">
-                                    <p>Cửa hàng tài khoản giá rẻ.</p>
-                                    <p>CTY TNHH SLUTON TECHNOLOGY</p>
-                                    <p>MST: 12345678</p>
+                                    <p>Công Ty Cổ Phần Truyền Thông Quảng Cáo Đa Phương Tiện Nhất Tín</p>
+                                    <p>Nhất Tín Marketing – Đơn vị chuyên tư vấn và triển khai hoạch định chiến lược Digital Marketing trên đa nền tảng tại Việt Nam.</p>
+                                    <p>MST: 4201986407</p>
                                     <p>Địa chỉ: 123 Đông Khởi, Tân An, BMT, Đắk Lắk</p>
                                 </div>
 

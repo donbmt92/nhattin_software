@@ -7,8 +7,13 @@ import { Product } from '@/app/profile/types';
 export default function StandCard({ products }: { products: Product[] }) {
     const { addToCart } = useCart();
     
-    // Hàm lấy ID sản phẩm dù nó là chuỗi hay đối tượng
-    const getProductId = (product: Product) => {
+    // Hàm lấy slug sản phẩm, fallback về ID nếu không có slug
+    const getProductSlug = (product: Product) => {
+        // Ưu tiên sử dụng slug nếu có
+        if ((product as any).slug) {
+            return (product as any).slug;
+        }
+        // Fallback về ID nếu không có slug
         if (typeof product._id === 'object' && product._id?.id) {
             return product._id.id;
         }
@@ -16,7 +21,7 @@ export default function StandCard({ products }: { products: Product[] }) {
     };
     
     return (
-        <div className="py-[100px]">
+        <div className="pb-[50px]">
             {products.map((prd, index) => (
                 <div
                     key={index}
@@ -24,7 +29,7 @@ export default function StandCard({ products }: { products: Product[] }) {
                 >
                     {/* Khung ảnh */}
                     <div className="relative w-full h-[140px] flex items-end justify-center">
-                        <a href={`/product/${getProductId(prd)}`} className="block w-[90%]">
+                        <a href={`/product/${getProductSlug(prd)}`} className="block w-[90%]">
                             <Image
                                 src={prd.image}
                                 alt="Product Image"

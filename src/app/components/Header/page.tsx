@@ -8,7 +8,7 @@ export default function Headers() {
 
     return (
         <div className="headerNhattin">
-            <div style={{ backgroundColor: 'var(--clr-bg-4)', padding: "10px 0px 0px 0px" }}>
+            <div style={{ backgroundColor: 'var(--clr-bg-4)' }}>
                 <TopHeader />
                 <MenuHeader />
             </div>

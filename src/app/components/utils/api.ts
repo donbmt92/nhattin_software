@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL, // Thay đổi nếu cần
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3080/api', // Default to NestJS backend
 });
 
 // Thêm interceptor để đính kèm token nếu có

@@ -15,8 +15,8 @@ export default function ListProductTop() {
         getListProduct();
     }, []);
     return (
-        <div className="relative container mx-auto pt-[100px] pb-[50px]">
-            <div className="grid grid-cols-1 xl:grid-cols-6 md:grid-cols-3  mx-auto">
+        <div className="relative container mx-auto ">
+            <div className="grid grid-cols-1 xl:grid-cols-6 md:grid-cols-3  mx-auto mt-10">
                 <div className="col-span-2 justify-center items-center hidden xl:flex mt-[-57px]">
                     <Image src="/images/banner1.png" alt="Images" style={{ width: "84%", objectFit: "cover", }} width={1000} height={100} />
                 </div>

@@ -4,13 +4,13 @@ import DescriptionsComponent from './components/DescriptionsComponent';
 
 // Default export for Next.js page routing
 export default function Page({ params, searchParams }: { 
-    params: { id: string },
+    params: { slug: string },
     searchParams: any
 }) {
-    // Mock data based on params.id
+    // Mock data based on params.slug
     const mockProducts: any[] = [{
-        _id: params.id || "1",
-        id: params.id || "1",
+        _id: params.slug || "1",
+        id: params.slug || "1",
         name: "Sample Product",
         id_category: "Category",
         sales: "100",

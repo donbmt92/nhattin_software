@@ -7,6 +7,7 @@ import ListProductSales from "@/app/components/ListProductSales/ListProductSales
 import ListProductNews from "@/app/components/ListProductNews/ListProductNews";
 import Figures from "@/app/components/Figures/page";
 import GiftCards from './components/GiftCard/page'
+import NewsHighlights from './components/NewsHighlights/NewsHighlights'
 
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
             <ListProductSales/>
             <Poster/>
             <ListProductNews />
-            <GiftCards />
+            <NewsHighlights />
             <Figures/>
         </>
     );
