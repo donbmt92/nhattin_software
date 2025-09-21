@@ -227,25 +227,25 @@ const AffiliateRegistration: React.FC<AffiliateRegistrationProps> = ({
               <label className="block text-sm font-medium text-gray-600">
                 Ngân hàng
               </label>
-              <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+              {/* <div className="mt-1 p-3 bg-gray-50 rounded-md border">
                 {existingAffiliate.paymentInfo.bankName}
-              </div>
+              </div> */}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600">
                 Số tài khoản
               </label>
-              <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+              {/* <div className="mt-1 p-3 bg-gray-50 rounded-md border">
                 {existingAffiliate.paymentInfo.accountNumber}
-              </div>
+              </div> */}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600">
                 Chủ tài khoản
               </label>
-              <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+              {/* <div className="mt-1 p-3 bg-gray-50 rounded-md border">
                 {existingAffiliate.paymentInfo.accountHolder}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -261,8 +261,12 @@ export default function OrderDetails() {
                 throw new Error("No order items found");
             }
             const orderId = orderItems[0].id.split('_')[0]; // Extract the order ID from the first item
-            console.log("orderId",orderId);
+            console.log("orderId", orderId);
             const token = localStorage.getItem('nhattin_token');
+            
+            if (!token) {
+                throw new Error("Authentication token not found");
+            }
             
             // Create payment record
             const paymentData = {
@@ -279,8 +283,10 @@ export default function OrderDetails() {
                 transfer_note: `${email} - ${phone} - ${fullName}`
             };
 
+            console.log("Creating payment with data:", paymentData);
+
             // Create payment record
-            await axios.post(
+            const paymentResponse = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/payments`,
                 paymentData,
                 {
@@ -290,11 +296,15 @@ export default function OrderDetails() {
                 }
             );
 
-            // Update order status
+            const paymentId = paymentResponse.data.id;
+            console.log("Payment created successfully with ID:", paymentId);
+
+            // Update order status and link to payment
             const response = await axios.patch(
                 `${process.env.NEXT_PUBLIC_API_URL}/orders/${order}`, 
                 { 
-                    status: 'completed'
+                    status: 'completed',
+                    id_payment: paymentId
                 },
                 {
                     headers: {
@@ -302,7 +312,7 @@ export default function OrderDetails() {
                     }
                 }
             );
-            console.log("response",response);
+            console.log("Order updated successfully:", response.data);
             
             // Close the popup
             setShowPaymentPopup(false);
@@ -311,7 +321,14 @@ export default function OrderDetails() {
             router.push('/payment/success');
         } catch (error) {
             console.error('Error processing payment:', error);
-            // You might want to show an error message to the user here
+            
+            // Show user-friendly error message
+            if (axios.isAxiosError(error)) {
+                const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi xử lý thanh toán';
+                alert(`Lỗi: ${errorMessage}`);
+            } else {
+                alert('Có lỗi xảy ra khi xử lý thanh toán. Vui lòng thử lại.');
+            }
         }
     };
 

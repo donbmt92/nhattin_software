@@ -236,8 +236,8 @@ server {
 ### 5.2 Kích hoạt site
 ```bash
 ln -s /etc/nginx/sites-available/nhattinsoftware.com /etc/nginx/sites-enabled/
-nginx -t
-systemctl reload nginx
+    nginx -t
+    systemctl reload nginx
 ```
 
 ## Bước 6: Cài đặt SSL
