@@ -8,7 +8,8 @@ export enum PaymentStatus {
 }
 
 export interface Payment {
-    id: string;
+    id?: string;
+    _id?: string;
     id_order: string | null;
     provider: string;
     status: PaymentStatus;

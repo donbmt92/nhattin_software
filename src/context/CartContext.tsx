@@ -32,7 +32,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const totalItems = listCart?.length || 0;
   console.log("abc",listCart);
   
-  const total = listCart?.reduce((sum, item) => sum + item.id_product.base_price * item.quantity, 0) || 0; 
+  const total = listCart?.reduce((sum, item) => {
+    const price = item.subscription_price || item.id_product.base_price;
+    return sum + price * item.quantity;
+  }, 0) || 0; 
   const [user, setUser] = useState<User | null>(null);
   
   // Function to check if user is logged in
@@ -179,7 +182,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       console.log("Add to cart product:", product);
       
       // Xác định ID sản phẩm từ các nguồn khác nhau có thể có
-      let productId;
+      let productId: string;
       if (typeof product._id === 'object' && product._id?.id) {
         productId = product._id.id;
       } else if (product._id) {
@@ -201,6 +204,35 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         router.push('/login');
         return;
       }
+
+      // Lấy subscription types và durations cho sản phẩm
+      let subscriptionData = null;
+      try {
+        const subscriptionResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/subscription-types?product_id=${productId}&with_durations=true`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (subscriptionResponse.data && subscriptionResponse.data.length > 0) {
+          const firstSubscriptionType = subscriptionResponse.data[0];
+          if (firstSubscriptionType.durations && firstSubscriptionType.durations.length > 0) {
+            const firstDuration = firstSubscriptionType.durations[0];
+            subscriptionData = {
+              subscription_type_id: firstSubscriptionType._id,
+              subscription_duration_id: firstDuration._id,
+              subscription_type_name: firstSubscriptionType.type_name,
+              subscription_duration: firstDuration.duration,
+              subscription_days: firstDuration.days,
+              subscription_price: firstDuration.price
+            };
+            console.log("Subscription data for cart:", subscriptionData);
+          }
+        }
+      } catch (subscriptionError) {
+        console.warn("Không thể lấy subscription data:", subscriptionError);
+        // Tiếp tục mà không có subscription data
+      }
       
       // Check if updatedCart is available
       await getListCart();
@@ -209,7 +241,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         console.log("Giỏ hàng trống, thêm sản phẩm mới");
         const payload = { 
           id_product: productId, 
-          quantity: 1 
+          quantity: 1,
+          ...subscriptionData // Thêm subscription data nếu có
         };
         console.log("Request payload:", payload);
         
@@ -258,8 +291,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         showNotification(`Đã cập nhật số lượng ${product.name} trong giỏ hàng`, "success");
       } else {
         // Nếu chưa có trong giỏ hàng, thêm mới
+        const payload = { 
+          id_product: productId, 
+          quantity: 1,
+          ...subscriptionData // Thêm subscription data nếu có
+        };
+        
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/carts`, 
-          { id_product: productId, quantity: 1 },
+          payload,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -332,7 +371,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const orderData = {
         note: "", // Default empty note, you might want to add a note input field in your UI
         // total: total, // Using the total from the cart context
-        items: listCart,
+        items: listCart.map(item => ({
+          id_product: item.id_product,
+          quantity: item.quantity
+        })),
         status: "pending", // Default status for new orders
         voucher: "" // Optional voucher code, can be added later
       };

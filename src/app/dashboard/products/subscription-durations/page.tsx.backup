@@ -1,0 +1,938 @@
+"use client";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Button } from "@/app/components/ui/button";
+import Link from "next/link";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/app/components/ui/card";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/app/components/ui/table";
+import { Loader2, Plus, Edit, Trash2, Clock, DollarSign, Package, Search, Save, Calculator } from "lucide-react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import axios from 'axios';
+
+interface SubscriptionDuration {
+    id: string;
+    product_id: string;
+    subscription_type_id: string;
+    duration: string;
+    price: number;
+    days: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface SubscriptionType {
+    id: string;
+    product_id: string;
+    type_name: string;
+    status: 'ACTIVE' | 'INACTIVE';
+    name: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface Product {
+    _id: string;
+    name: string;
+}
+
+export default function SubscriptionDurationsPage() {
+    const searchParams = useSearchParams();
+    const productId = searchParams.get('product_id');
+    
+    const [subscriptionDurations, setSubscriptionDurations] = useState<SubscriptionDuration[]>([]);
+    const [subscriptionTypes, setSubscriptionTypes] = useState<SubscriptionType[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    
+    // Popup states
+    const [showCreatePopup, setShowCreatePopup] = useState(false);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [editingDuration, setEditingDuration] = useState<SubscriptionDuration | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedSubscriptionType, setSelectedSubscriptionType] = useState<SubscriptionType | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [subscriptionTypeSearchTerm, setSubscriptionTypeSearchTerm] = useState('');
+    const [formData, setFormData] = useState({
+        product_id: '',
+        subscription_type_id: '',
+        duration: '',
+        price: '',
+        days: ''
+    });
+    const [formLoading, setFormLoading] = useState(false);
+
+    const fetchSubscriptionDurations = async () => {
+        try {
+            const token = localStorage.getItem('nhattin_token');
+            if (!token) {
+                setError('Vui lòng đăng nhập');
+                return;
+            }
+
+            let url = `${process.env.NEXT_PUBLIC_API_URL}/subscription-durations`;
+            if (productId) {
+                url += `?product_id=${productId}`;
+            }
+
+            const response = await axios.get(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            setSubscriptionDurations(response.data);
+        } catch (error) {
+            console.error('Error fetching subscription durations:', error);
+            if (axios.isAxiosError(error)) {
+                setError(error.response?.data?.message || 'Không thể tải danh sách thời hạn gói đăng ký');
+            } else {
+                setError('Không thể tải danh sách thời hạn gói đăng ký');
+            }
+        }
+    };
+
+    const fetchSubscriptionTypes = async () => {
+        try {
+            const token = localStorage.getItem('nhattin_token');
+            if (!token) {
+                setError('Vui lòng đăng nhập');
+                return;
+            }
+
+            let url = `${process.env.NEXT_PUBLIC_API_URL}/subscription-types`;
+            if (productId) {
+                url += `?product_id=${productId}`;
+            }
+
+            const response = await axios.get(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            setSubscriptionTypes(response.data);
+        } catch (error) {
+            console.error('Error fetching subscription types:', error);
+            if (axios.isAxiosError(error)) {
+                setError(error.response?.data?.message || 'Không thể tải danh sách loại gói đăng ký');
+            } else {
+                setError('Không thể tải danh sách loại gói đăng ký');
+            }
+        }
+    };
+
+    const fetchProducts = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    };
+
+    useEffect(() => {
+        const loadData = async () => {
+            setLoading(true);
+            await Promise.all([fetchSubscriptionDurations(), fetchSubscriptionTypes(), fetchProducts()]);
+            setLoading(false);
+        };
+        loadData();
+    }, [productId]);
+
+    const handleDelete = async (id: string) => {
+        const token = localStorage.getItem('nhattin_token');
+        if (!token) {
+            alert('Vui lòng đăng nhập để xóa thời hạn gói đăng ký');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/subscription-durations/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            await fetchSubscriptionDurations();
+        } catch (error) {
+            console.error('Error deleting subscription duration:', error);
+            if (axios.isAxiosError(error)) {
+                alert(error.response?.data?.message || 'Không thể xóa thời hạn gói đăng ký. Vui lòng thử lại.');
+            } else {
+                alert('Không thể xóa thời hạn gói đăng ký. Vui lòng thử lại.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getProductName = (productId: string) => {
+        const product = products.find(p => p._id === productId);
+        return product ? product.name : 'Không xác định';
+    };
+
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(price);
+    };
+
+    // Popup handlers
+    const handleCreateClick = () => {
+        setFormData({
+            product_id: productId || '',
+            duration: '',
+            price: '',
+            days: ''
+        });
+        if (productId) {
+            const product = products.find(p => p._id === productId);
+            if (product) {
+                setSelectedProduct(product);
+            }
+        } else {
+            setSelectedProduct(null);
+        }
+        setShowCreatePopup(true);
+    };
+
+    const handleEditClick = (duration: SubscriptionDuration) => {
+        setEditingDuration(duration);
+        setFormData({
+            product_id: duration.product_id,
+            duration: duration.duration,
+            price: duration.price.toString(),
+            days: duration.days.toString()
+        });
+        const product = products.find(p => p._id === duration.product_id);
+        setSelectedProduct(product || null);
+        setShowEditPopup(true);
+    };
+
+    const handleProductSelect = (product: Product) => {
+        setSelectedProduct(product);
+        setFormData(prev => ({
+            ...prev,
+            product_id: product._id
+        }));
+    };
+
+    const handleSubscriptionTypeSelect = (subscriptionType: SubscriptionType) => {
+        setSelectedSubscriptionType(subscriptionType);
+        setFormData(prev => ({
+            ...prev,
+            subscription_type_id: subscriptionType.id
+        }));
+    };
+
+    const handleInputChange = (field: string, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        const token = localStorage.getItem('nhattin_token');
+        if (!token) {
+            alert('Vui lòng đăng nhập');
+            return;
+        }
+
+        if (!formData.product_id || !formData.duration || !formData.price || !formData.days) {
+            alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+            return;
+        }
+
+        const price = parseFloat(formData.price);
+        const days = parseInt(formData.days);
+
+        if (isNaN(price) || price < 0) {
+            alert('Giá phải là số dương');
+            return;
+        }
+
+        if (isNaN(days) || days < 1) {
+            alert('Số ngày phải là số nguyên dương');
+            return;
+        }
+
+        try {
+            setFormLoading(true);
+            if (editingDuration) {
+                // Update existing
+                await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/subscription-durations/${editingDuration.id}`, {
+                    product_id: formData.product_id,
+                    duration: formData.duration,
+                    price: price,
+                    days: days
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                alert('Cập nhật thời hạn gói đăng ký thành công!');
+                setShowEditPopup(false);
+            } else {
+                // Create new
+                await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/subscription-durations`, {
+                    product_id: formData.product_id,
+                    duration: formData.duration,
+                    price: price,
+                    days: days
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                alert('Tạo thời hạn gói đăng ký thành công!');
+                setShowCreatePopup(false);
+            }
+            
+            await fetchSubscriptionDurations();
+        } catch (error) {
+            console.error('Error saving subscription duration:', error);
+            if (axios.isAxiosError(error)) {
+                alert(error.response?.data?.message || 'Không thể lưu thời hạn gói đăng ký. Vui lòng thử lại.');
+            } else {
+                alert('Không thể lưu thời hạn gói đăng ký. Vui lòng thử lại.');
+            }
+        } finally {
+            setFormLoading(false);
+        }
+    };
+
+    const calculatePricePerDay = () => {
+        const price = parseFloat(formData.price);
+        const days = parseInt(formData.days);
+        if (price && days && days > 0) {
+            return formatPrice(price / days);
+        }
+        return '0 VND';
+    };
+
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (error) {
+        return (
+            <div className="p-6">
+                <Card>
+                    <CardContent className="text-center py-6 text-red-500">
+                        {error}
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-6 space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                    <Clock className="h-8 w-8 text-green-600" />
+                    <div>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        Quản lý Thời hạn Gói Đăng ký
+                        {productId && (
+                            <span className="text-lg font-normal text-green-600 ml-2">
+                                - {getProductName(productId)}
+                            </span>
+                        )}
+                    </h1>
+                    <p className="text-gray-600">
+                        {productId 
+                            ? `Quản lý thời hạn và giá cả cho sản phẩm "${getProductName(productId)}"`
+                            : 'Quản lý thời hạn và giá cả cho các gói dịch vụ'
+                        }
+                    </p>
+                </div>
+                </div>
+                <div className="flex space-x-2">
+                    <Button onClick={handleCreateClick} className="flex items-center space-x-2">
+                        <Plus className="h-4 w-4" />
+                        <span>Thêm Thời hạn</span>
+                    </Button>
+                    <Link href="/dashboard/products">
+                        <Button variant="secondary">Quay lại</Button>
+                    </Link>
+                </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="flex items-center">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                                <Clock className="h-6 w-6 text-green-600" />
+                            </div>
+                            <div className="ml-4">
+                                <p className="text-sm font-medium text-gray-600">Tổng Thời hạn</p>
+                                <p className="text-2xl font-bold text-gray-900">{subscriptionDurations.length}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="flex items-center">
+                            <div className="p-2 bg-blue-100 rounded-lg">
+                                <DollarSign className="h-6 w-6 text-blue-600" />
+                            </div>
+                            <div className="ml-4">
+                                <p className="text-sm font-medium text-gray-600">Giá Trung bình</p>
+                                <p className="text-2xl font-bold text-gray-900">
+                                    {subscriptionDurations.length > 0 
+                                        ? formatPrice(subscriptionDurations.reduce((sum, sd) => sum + sd.price, 0) / subscriptionDurations.length)
+                                        : '0 VND'
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="flex items-center">
+                            <div className="p-2 bg-purple-100 rounded-lg">
+                                <Clock className="h-6 w-6 text-purple-600" />
+                            </div>
+                            <div className="ml-4">
+                                <p className="text-sm font-medium text-gray-600">Thời hạn Ngắn nhất</p>
+                                <p className="text-2xl font-bold text-gray-900">
+                                    {subscriptionDurations.length > 0 
+                                        ? Math.min(...subscriptionDurations.map(sd => sd.days)) + ' ngày'
+                                        : '0 ngày'
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="flex items-center">
+                            <div className="p-2 bg-orange-100 rounded-lg">
+                                <Clock className="h-6 w-6 text-orange-600" />
+                            </div>
+                            <div className="ml-4">
+                                <p className="text-sm font-medium text-gray-600">Thời hạn Dài nhất</p>
+                                <p className="text-2xl font-bold text-gray-900">
+                                    {subscriptionDurations.length > 0 
+                                        ? Math.max(...subscriptionDurations.map(sd => sd.days)) + ' ngày'
+                                        : '0 ngày'
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Subscription Durations Table */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Danh sách Thời hạn Gói Đăng ký</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Sản phẩm</TableHead>
+                                <TableHead>Thời hạn</TableHead>
+                                <TableHead>Số ngày</TableHead>
+                                <TableHead>Giá</TableHead>
+                                <TableHead>Ngày tạo</TableHead>
+                                <TableHead className="text-right">Thao tác</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {subscriptionDurations.map((subscriptionDuration) => (
+                                <TableRow key={subscriptionDuration.id}>
+                                    <TableCell className="font-medium">
+                                        {getProductName(subscriptionDuration.product_id)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center space-x-2">
+                                            <Clock className="h-4 w-4 text-gray-400" />
+                                            <span className="font-medium">{subscriptionDuration.duration}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {subscriptionDuration.days} ngày
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center space-x-2">
+                                            <DollarSign className="h-4 w-4 text-green-600" />
+                                            <span className="font-semibold text-green-600">
+                                                {formatPrice(subscriptionDuration.price)}
+                                            </span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        {new Date(subscriptionDuration.createdAt).toLocaleDateString('vi-VN')}
+                                    </TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <Button 
+                                            onClick={() => handleEditClick(subscriptionDuration)}
+                                            variant="secondary" 
+                                            size="sm" 
+                                            className="flex items-center space-x-1"
+                                        >
+                                            <Edit className="h-3 w-3" />
+                                            <span>Sửa</span>
+                                        </Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="secondary" size="sm" className="bg-red-100 text-red-800 hover:bg-red-200 flex items-center space-x-1">
+                                                    <Trash2 className="h-3 w-3" />
+                                                    <span>Xóa</span>
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Xóa Thời hạn Gói Đăng ký</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Bạn có chắc chắn muốn xóa thời hạn "{subscriptionDuration.duration}" với giá {formatPrice(subscriptionDuration.price)}? 
+                                                        Hành động này không thể hoàn tác.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Hủy</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => handleDelete(subscriptionDuration.id)}
+                                                    >
+                                                        Xóa
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    
+                    {subscriptionDurations.length === 0 && (
+                        <div className="text-center py-8">
+                            <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-500">Chưa có thời hạn gói đăng ký nào</p>
+                            <Button onClick={handleCreateClick} className="mt-4">Tạo thời hạn đầu tiên</Button>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Create Popup */}
+            <Dialog open={showCreatePopup} onOpenChange={setShowCreatePopup}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Tạo Thời hạn Gói Đăng ký Mới</DialogTitle>
+                        <DialogDescription>
+                            Thêm thời hạn và giá cả mới cho gói dịch vụ
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Form */}
+                            <div className="space-y-6">
+                                {/* Product Selection */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="product_id">Sản phẩm *</Label>
+                                    {selectedProduct ? (
+                                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-3">
+                                                    <Package className="h-5 w-5 text-green-600" />
+                                                    <div>
+                                                        <p className="font-medium text-green-900">{selectedProduct.name}</p>
+                                                        <p className="text-sm text-green-700">ID: {selectedProduct._id}</p>
+                                                    </div>
+                                                </div>
+                                                <Button 
+                                                    type="button"
+                                                    variant="outline" 
+                                                    size="sm"
+                                                    onClick={() => setSelectedProduct(null)}
+                                                >
+                                                    Thay đổi
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            <div className="relative">
+                                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <Input
+                                                    placeholder="Tìm kiếm sản phẩm..."
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    className="pl-10"
+                                                />
+                                            </div>
+                                            <div className="max-h-40 overflow-y-auto space-y-2">
+                                                {filteredProducts.map((product) => (
+                                                    <div
+                                                        key={product._id}
+                                                        className="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 hover:bg-gray-50 transition-colors"
+                                                        onClick={() => handleProductSelect(product)}
+                                                    >
+                                                        <div className="flex items-center space-x-3">
+                                                            <Package className="h-5 w-5 text-gray-600" />
+                                                            <div className="flex-1">
+                                                                <p className="font-medium text-gray-900">{product.name}</p>
+                                                                <p className="text-sm text-gray-500">ID: {product._id}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Duration */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="duration">Thời hạn *</Label>
+                                    <Input
+                                        id="duration"
+                                        value={formData.duration}
+                                        onChange={(e) => handleInputChange('duration', e.target.value)}
+                                        placeholder="VD: 1 tháng, 3 tháng, 1 năm"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Days */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="days">Số ngày *</Label>
+                                    <Input
+                                        id="days"
+                                        type="number"
+                                        value={formData.days}
+                                        onChange={(e) => handleInputChange('days', e.target.value)}
+                                        placeholder="VD: 30, 90, 365"
+                                        min="1"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Price */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="price">Giá (VND) *</Label>
+                                    <Input
+                                        id="price"
+                                        type="number"
+                                        value={formData.price}
+                                        onChange={(e) => handleInputChange('price', e.target.value)}
+                                        placeholder="VD: 149000, 399000"
+                                        min="0"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Preview */}
+                            <div className="space-y-4">
+                                <div className="p-4 bg-gray-50 rounded-lg">
+                                    <h4 className="font-semibold text-gray-900 mb-2">Thông tin Gói</h4>
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Sản phẩm:</span>
+                                            <span className="font-medium">
+                                                {selectedProduct?.name || 'Chưa chọn'}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Thời hạn:</span>
+                                            <span className="font-medium">{formData.duration || 'Chưa nhập'}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Số ngày:</span>
+                                            <span className="font-medium">{formData.days || '0'} ngày</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Giá:</span>
+                                            <span className="font-medium text-green-600">
+                                                {formData.price ? formatPrice(parseFloat(formData.price)) : '0 VND'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {formData.price && formData.days && (
+                                    <div className="p-4 bg-blue-50 rounded-lg">
+                                        <h4 className="font-semibold text-blue-900 mb-2">Tính toán</h4>
+                                        <div className="space-y-2 text-sm">
+                                            <div className="flex justify-between">
+                                                <span className="text-blue-700">Giá/ngày:</span>
+                                                <span className="font-medium text-blue-900">{calculatePricePerDay()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="flex justify-end space-x-4 pt-6">
+                            <Button type="button" variant="secondary" onClick={() => setShowCreatePopup(false)}>
+                                Hủy
+                            </Button>
+                            <Button type="submit" disabled={formLoading} className="flex items-center space-x-2">
+                                {formLoading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Save className="h-4 w-4" />
+                                )}
+                                <span>{formLoading ? 'Đang tạo...' : 'Tạo Thời hạn'}</span>
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Edit Popup */}
+            <Dialog open={showEditPopup} onOpenChange={setShowEditPopup}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Chỉnh sửa Thời hạn Gói Đăng ký</DialogTitle>
+                        <DialogDescription>
+                            Cập nhật thời hạn và giá cả cho gói dịch vụ
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Form */}
+                            <div className="space-y-6">
+                                {/* Product Selection */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="product_id">Sản phẩm *</Label>
+                                    {selectedProduct ? (
+                                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-3">
+                                                    <Package className="h-5 w-5 text-green-600" />
+                                                    <div>
+                                                        <p className="font-medium text-green-900">{selectedProduct.name}</p>
+                                                        <p className="text-sm text-green-700">ID: {selectedProduct._id}</p>
+                                                    </div>
+                                                </div>
+                                                <Button 
+                                                    type="button"
+                                                    variant="outline" 
+                                                    size="sm"
+                                                    onClick={() => setSelectedProduct(null)}
+                                                >
+                                                    Thay đổi
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            <div className="relative">
+                                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                                <Input
+                                                    placeholder="Tìm kiếm sản phẩm..."
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    className="pl-10"
+                                                />
+                                            </div>
+                                            <div className="max-h-40 overflow-y-auto space-y-2">
+                                                {filteredProducts.map((product) => (
+                                                    <div
+                                                        key={product._id}
+                                                        className="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 hover:bg-gray-50 transition-colors"
+                                                        onClick={() => handleProductSelect(product)}
+                                                    >
+                                                        <div className="flex items-center space-x-3">
+                                                            <Package className="h-5 w-5 text-gray-600" />
+                                                            <div className="flex-1">
+                                                                <p className="font-medium text-gray-900">{product.name}</p>
+                                                                <p className="text-sm text-gray-500">ID: {product._id}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Duration */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="duration">Thời hạn *</Label>
+                                    <Input
+                                        id="duration"
+                                        value={formData.duration}
+                                        onChange={(e) => handleInputChange('duration', e.target.value)}
+                                        placeholder="VD: 1 tháng, 3 tháng, 1 năm"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Days */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="days">Số ngày *</Label>
+                                    <Input
+                                        id="days"
+                                        type="number"
+                                        value={formData.days}
+                                        onChange={(e) => handleInputChange('days', e.target.value)}
+                                        placeholder="VD: 30, 90, 365"
+                                        min="1"
+                                        required
+                                    />
+                                </div>
+
+                                {/* Price */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="price">Giá (VND) *</Label>
+                                    <Input
+                                        id="price"
+                                        type="number"
+                                        value={formData.price}
+                                        onChange={(e) => handleInputChange('price', e.target.value)}
+                                        placeholder="VD: 149000, 399000"
+                                        min="0"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Preview */}
+                            <div className="space-y-4">
+                                <div className="p-4 bg-gray-50 rounded-lg">
+                                    <h4 className="font-semibold text-gray-900 mb-2">Thông tin Gói</h4>
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Sản phẩm:</span>
+                                            <span className="font-medium">
+                                                {selectedProduct?.name || 'Chưa chọn'}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Thời hạn:</span>
+                                            <span className="font-medium">{formData.duration || 'Chưa nhập'}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Số ngày:</span>
+                                            <span className="font-medium">{formData.days || '0'} ngày</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Giá:</span>
+                                            <span className="font-medium text-green-600">
+                                                {formData.price ? formatPrice(parseFloat(formData.price)) : '0 VND'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {formData.price && formData.days && (
+                                    <div className="p-4 bg-blue-50 rounded-lg">
+                                        <h4 className="font-semibold text-blue-900 mb-2">Tính toán</h4>
+                                        <div className="space-y-2 text-sm">
+                                            <div className="flex justify-between">
+                                                <span className="text-blue-700">Giá/ngày:</span>
+                                                <span className="font-medium text-blue-900">{calculatePricePerDay()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Original Data */}
+                                {editingDuration && (
+                                    <div className="p-4 bg-yellow-50 rounded-lg">
+                                        <h4 className="font-semibold text-yellow-900 mb-2">Dữ liệu Gốc</h4>
+                                        <div className="space-y-2 text-sm text-yellow-800">
+                                            <p>• Thời hạn: {editingDuration.duration}</p>
+                                            <p>• Số ngày: {editingDuration.days} ngày</p>
+                                            <p>• Giá: {formatPrice(editingDuration.price)}</p>
+                                            <p>• Ngày tạo: {new Date(editingDuration.createdAt).toLocaleDateString('vi-VN')}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="flex justify-end space-x-4 pt-6">
+                            <Button type="button" variant="secondary" onClick={() => setShowEditPopup(false)}>
+                                Hủy
+                            </Button>
+                            <Button type="submit" disabled={formLoading} className="flex items-center space-x-2">
+                                {formLoading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Save className="h-4 w-4" />
+                                )}
+                                <span>{formLoading ? 'Đang cập nhật...' : 'Cập nhật'}</span>
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+}

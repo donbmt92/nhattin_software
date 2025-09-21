@@ -16,7 +16,7 @@ const NavigationLinks = [
 
 const BottomNavLinks = [
     {
-        href: '/partnership',
+        href: '/profile/affiliate-dashboard',
         label: 'Hợp Tác',
         icon: <Users className="h-5 w-5"/>
     },

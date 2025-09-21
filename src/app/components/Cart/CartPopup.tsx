@@ -32,7 +32,19 @@ export default function CartPopup() {
               </div>
               <div className="flex-1 ml-4">
                 <h3 className="text-sm font-medium">{item.id_product.name}</h3>
-                <p className="text-red-600 font-semibold">{Number(item.id_product.base_price).toLocaleString('vi-VN')} VNĐ</p>
+                {/* Hiển thị subscription info nếu có */}
+                {item.subscription_type_name && (
+                  <div className="text-xs text-blue-600 mb-1">
+                    <span className="font-medium">{item.subscription_type_name}</span>
+                    {item.subscription_duration && (
+                      <span> • {item.subscription_duration}</span>
+                    )}
+                  </div>
+                )}
+                {/* Hiển thị giá subscription nếu có,否则 hiển thị base_price */}
+                <p className="text-red-600 font-semibold">
+                  {Number(item.subscription_price || item.id_product.base_price).toLocaleString('vi-VN')} VNĐ
+                </p>
                 <div className="flex items-center mt-2">
                   <button
                     onClick={() => updateQuantity(item._id, item.quantity - 1)}

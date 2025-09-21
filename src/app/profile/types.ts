@@ -65,16 +65,20 @@ export interface SubcriptionDurations {
 
 export interface AffiliateInfo {
     _id?: string;
-    userId: string;
-    affiliateCode: string;
-    commissionRate: number;
-    status: 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
-    minPayoutAmount: number;
-    totalEarnings: number;
-    pendingEarnings: number;
-    paymentInfo: PaymentInfo;
+    userId?: string;
+    affiliateCode?: string;
+    commissionRate?: number;
+    status?: 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+    minPayoutAmount?: number;
+    totalEarnings?: number;
+    pendingEarnings?: number;
+    paymentInfo?: PaymentInfo;
     createdAt?: string;
     updatedAt?: string;
+    // Properties for unregistered users
+    isRegistered?: boolean;
+    message?: string;
+    registrationRequired?: boolean;
 }
 
 export interface PaymentInfo {

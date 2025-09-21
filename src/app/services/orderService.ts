@@ -9,6 +9,14 @@ interface BuyNowData {
   voucher?: string;
   affiliateCode?: string;
   userEmail: string;
+  // Subscription fields
+  subscription_type_id?: string;
+  subscription_duration_id?: string;
+  subscription_type_name?: string;
+  subscription_duration?: string;
+  subscription_days?: number;
+  subscription_price?: number;
+  total_price?: number;
 }
 
 interface BuyNowResponse {

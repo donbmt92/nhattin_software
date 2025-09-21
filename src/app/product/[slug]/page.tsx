@@ -12,6 +12,7 @@ import QuickAffiliateLinkButton from '@/app/profile/components/QuickAffiliateLin
 import ProductAffiliateSection from './components/ProductAffiliateSection';
 import AffiliateLinkBanner from './components/AffiliateLinkBanner';
 import BackendTest from './components/BackendTest';
+import SubscriptionDemo from './components/SubscriptionDemo';
 
 
 export default function ProductDetailPage() {
@@ -19,18 +20,40 @@ export default function ProductDetailPage() {
     const [product, setProduct] = useState<any[]>([]);
     const [subcriptionType, setSubcriptionType] = useState<any[]>([]);
     const [subcriptionDuration, setSubcriptionDuration] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     
     const getProductDetail = async () => {
         try {
+            setLoading(true);
+            setError(null);
+            
             const productResponse = await api.get(`/products/by-slug/${slug}`);
             console.log("productResponse", productResponse.data);
-            const subcriptionTypeResponse = await api.get(`/subscription-types?product_id=${productResponse.data._id.id}`);
-            const subcriptionDurationResponse = await api.get(`/subscription-durations?product_id=${productResponse.data._id.id}`);
+            
+            // Use productResponse.data.id instead of productResponse.data._id.id
+            const productId = productResponse.data._id;
+            console.log("Product ID:", productId);
+            
+            if (!productId) {
+                console.error("Product ID is undefined");
+                setError("Không tìm thấy ID sản phẩm");
+                return;
+            }
+            
+            // Lấy subscription types cùng với durations
+            const subcriptionTypeResponse = await api.get(`/subscription-types?product_id=${productId}&with_durations=true`);
+            console.log("subcriptionTypeResponse with durations", subcriptionTypeResponse.data);
+            
             setProduct([productResponse.data]); 
             setSubcriptionType(subcriptionTypeResponse.data);
-            setSubcriptionDuration(subcriptionDurationResponse.data);
+            // Không cần gọi API durations riêng nữa vì đã có trong subscription types
+            setSubcriptionDuration([]);
         } catch (error) {
             console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
+            setError("Không thể tải thông tin sản phẩm");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -40,9 +63,39 @@ export default function ProductDetailPage() {
         }
     }, [slug]);
 
-    // If data isn't loaded yet, we can show a loading state
-    if (product.length === 0) {
+    // Show loading state
+    if (loading) {
         return <div className="container mx-auto py-10 text-center">Loading...</div>;
+    }
+    
+    // Show error state
+    if (error) {
+        return (
+            <div className="container mx-auto py-10 text-center">
+                <div className="text-red-600 mb-4">{error}</div>
+                <button 
+                    onClick={() => getProductDetail()}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                    Thử lại
+                </button>
+            </div>
+        );
+    }
+    
+    // Show no product found state
+    if (product.length === 0) {
+        return (
+            <div className="container mx-auto py-10 text-center">
+                <div className="text-gray-600 mb-4">Không tìm thấy sản phẩm</div>
+                <button 
+                    onClick={() => getProductDetail()}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                    Thử lại
+                </button>
+            </div>
+        );
     }
     
     return (
@@ -50,9 +103,14 @@ export default function ProductDetailPage() {
             <ProductDetailComponent 
                 products={product} 
                 subcriptionTypes={subcriptionType} 
-                subcriptionDurations={subcriptionDuration} 
+                subcriptionDurations={[]} 
             />
             
+            {/* Subscription Demo */}
+            <div className="container mx-auto px-4 mb-6">
+                <SubscriptionDemo subscriptionTypes={subcriptionType} />
+            </div>
+
             {/* Backend Test */}
             <div className="container mx-auto px-4 mb-6">
                 <BackendTest />
@@ -62,7 +120,7 @@ export default function ProductDetailPage() {
             {product.length > 0 && (
                 <div className="container mx-auto px-4">
                     <ProductAffiliateSection 
-                        productId={product[0]._id.id}
+                        productId={product[0].id}
                         productName={product[0].name}
                         productPrice={parseInt(product[0].base_price)}
                     />
@@ -76,7 +134,7 @@ export default function ProductDetailPage() {
             {/* Floating Affiliate Banner */}
             {product.length > 0 && (
                 <AffiliateLinkBanner 
-                    productId={product[0]._id.id}
+                    productId={product[0].id}
                     productName={product[0].name}
                 />
             )}

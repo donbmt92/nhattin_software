@@ -21,7 +21,13 @@ const AffiliateDashboard: React.FC = () => {
             setError('');
             
             const profile = await AffiliateService.getAffiliateProfile();
-            setAffiliateProfile(profile);
+            console.log("profile",profile);
+            
+            // Convert Mongoose document to plain object
+            const affiliateData = (profile as any)._doc || profile;
+            console.log("affiliateData:", affiliateData);
+            
+            setAffiliateProfile(affiliateData);
         } catch (error: any) {
             console.error('Error fetching affiliate profile:', error);
             setError(error.message || 'Không thể tải thông tin affiliate');

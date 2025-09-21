@@ -22,12 +22,15 @@ export default function ProductDetailComponent({
 }) {
     const router = useRouter();
     const { addToCart } = useCart();
-    const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [selectedIdTH, setSelectedIdTH] = useState<string | null>(null);
+    const [selectedSubscriptionType, setSelectedSubscriptionType] = useState<any | null>(null);
+    const [selectedDuration, setSelectedDuration] = useState<any | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [affiliateCode, setAffiliateCode] = useState<string | undefined>(undefined);
+
+    // Lấy durations từ subscription type đã chọn
+    const availableDurations = selectedSubscriptionType?.durations || [];
 
     // Check for affiliate code on component mount
     React.useEffect(() => {
@@ -111,7 +114,15 @@ export default function ProductDetailComponent({
                 quantity: quantity,
                 note: 'Mua ngay',
                 affiliateCode: getAffiliateCodeFromUrl(),
-                userEmail: userEmail
+                userEmail: userEmail,
+                // Thêm thông tin subscription và duration (đã được validate ở trên)
+                subscription_type_id: selectedSubscriptionType._id,
+                subscription_duration_id: selectedDuration._id,
+                subscription_type_name: selectedSubscriptionType.type_name,
+                subscription_duration: selectedDuration.duration,
+                subscription_days: selectedDuration.days,
+                subscription_price: selectedDuration.price,
+                total_price: Number(selectedDuration.price) * quantity
             };
 
             console.log('Buy now data:', buyNowData);
@@ -234,9 +245,15 @@ export default function ProductDetailComponent({
                                 </div>
                             </div>
                             <div className="flex justify-start items-end my-2">
-                                <p className="text-[35px] mr-2 font-semibold" style={{ color: 'var(--clr-txt-4)' }}>
-                                    {Number(prd.base_price).toLocaleString('vi-VN')} đ -  {Number(prd.base_price).toLocaleString('vi-VN')} đ
-                                </p>
+                                {selectedDuration ? (
+                                    <p className="text-[35px] mr-2 font-semibold" style={{ color: 'var(--clr-txt-4)' }}>
+                                        {Number(selectedDuration.price).toLocaleString('vi-VN')} đ
+                                    </p>
+                                ) : (
+                                    <p className="text-[35px] mr-2 font-semibold" style={{ color: 'var(--clr-txt-4)' }}>
+                                        {Number(prd.base_price).toLocaleString('vi-VN')} đ - {Number(prd.base_price).toLocaleString('vi-VN')} đ
+                                    </p>
+                                )}
                             </div>
                             <div className=" justify-start items-end my-2">
                                 <p className="text-[22px] mr-2 font-semibold my-3" style={{ color: 'var(--clr-txt-1)' }}>
@@ -247,11 +264,14 @@ export default function ProductDetailComponent({
                                         <div key={subtype._id} className="flex my-2 justify-center items-center">
                                             <button
                                                 className="mx-3 rounded-full"
-                                                onClick={() => setSelectedId(subtype._id)}
+                                                onClick={() => {
+                                                    setSelectedSubscriptionType(subtype);
+                                                    setSelectedDuration(null); // Reset duration khi chọn subscription type mới
+                                                }}
                                                 style={{
                                                     padding: "10px 10px",
-                                                    color: selectedId === subtype._id ? "var(--clr-txt-3)" : "var(--clr-txt-2)",
-                                                    backgroundColor: selectedId === subtype._id ? "var(--clr-bg-4)" : "var(--clr-bg)",
+                                                    color: selectedSubscriptionType?._id === subtype._id ? "var(--clr-txt-3)" : "var(--clr-txt-2)",
+                                                    backgroundColor: selectedSubscriptionType?._id === subtype._id ? "var(--clr-bg-4)" : "var(--clr-bg)",
                                                     fontSize: "16px",
                                                     border: "1px solid var(--clr-bg-3)",
                                                     fontWeight: "bold",
@@ -264,32 +284,75 @@ export default function ProductDetailComponent({
                                     ))}
                                 </div>
                             </div>
-                            <div className=" justify-start items-end my-2">
-                                <p className="text-[22px] mr-2 font-semibold my-3" style={{ color: 'var(--clr-txt-1)' }}>
-                                    Thời hạn:
-                                </p>
-                                <div className="grid grid-cols-2 xl:grid-cols-4 md:grid-cols-3 gap-0">
-                                    {subcriptionDurations.map((subduration) => (
-                                        <div key={subduration._id} className="flex my-3 justify-center items-center">
-                                            <button
-                                                className="mx-3 rounded-full"
-                                                onClick={() => setSelectedIdTH(subduration._id)}
-                                                style={{
-                                                    padding: '10px 10px',
-                                                    color: selectedIdTH === (subduration._id) ? 'var(--clr-txt-3)' : 'var(--clr-txt-2)', // Chuyển id thành string khi so sánh
-                                                    backgroundColor: selectedIdTH === (subduration._id) ? 'var(--clr-bg-4)' : 'var(--clr-bg)',
-                                                    fontSize: '16px',
-                                                    border: '1px solid var(--clr-bg-3)',
-                                                    fontWeight: 'bold',
-                                                    minWidth: '150px',
-                                                }}
-                                            >
-                                                {subduration.duration}
-                                            </button>
+                            
+                            {/* Hiển thị durations chỉ khi đã chọn subscription type */}
+                            {selectedSubscriptionType && (
+                                <div className=" justify-start items-end my-2">
+                                    <p className="text-[22px] mr-2 font-semibold my-3" style={{ color: 'var(--clr-txt-1)' }}>
+                                        Thời hạn ({selectedSubscriptionType.type_name}):
+                                    </p>
+                                    <div className="grid grid-cols-2 xl:grid-cols-4 md:grid-cols-3 gap-0">
+                                        {availableDurations.map((duration: any) => (
+                                            <div key={duration._id} className="flex my-3 justify-center items-center">
+                                                <button
+                                                    className="mx-3 rounded-full"
+                                                    onClick={() => setSelectedDuration(duration)}
+                                                    style={{
+                                                        padding: '10px 10px',
+                                                        color: selectedDuration?._id === duration._id ? 'var(--clr-txt-3)' : 'var(--clr-txt-2)',
+                                                        backgroundColor: selectedDuration?._id === duration._id ? 'var(--clr-bg-4)' : 'var(--clr-bg)',
+                                                        fontSize: '16px',
+                                                        border: '1px solid var(--clr-bg-3)',
+                                                        fontWeight: 'bold',
+                                                        minWidth: '150px',
+                                                    }}
+                                                >
+                                                    {duration.duration}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* Hiển thị giá của duration đã chọn */}
+                                    {selectedDuration && (
+                                        <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--clr-bg-2)', border: '1px solid var(--clr-bg-3)' }}>
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <p className="text-lg font-semibold" style={{ color: 'var(--clr-txt-1)' }}>
+                                                        {selectedDuration.duration}
+                                                    </p>
+                                                    <p className="text-sm" style={{ color: 'var(--clr-txt-2)' }}>
+                                                        {selectedDuration.days} ngày
+                                                    </p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-2xl font-bold" style={{ color: 'var(--clr-txt-4)' }}>
+                                                        {Number(selectedDuration.price).toLocaleString('vi-VN')} đ
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
-                            </div>
+                            )}
+                            
+                            {/* Hiển thị tổng tiền khi đã chọn đầy đủ */}
+                            {selectedSubscriptionType && selectedDuration && (
+                                <div className="my-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--clr-bg-4)', border: '2px solid var(--clr-txt-4)' }}>
+                                    <div className="text-center">
+                                        <p className="text-lg font-semibold mb-2" style={{ color: 'var(--clr-txt-1)' }}>
+                                            Tổng tiền ({quantity} {quantity > 1 ? 'gói' : 'gói'}):
+                                        </p>
+                                        <p className="text-3xl font-bold" style={{ color: 'var(--clr-txt-4)' }}>
+                                            {(Number(selectedDuration.price) * quantity).toLocaleString('vi-VN')} đ
+                                        </p>
+                                        <p className="text-sm mt-1" style={{ color: 'var(--clr-txt-2)' }}>
+                                            {selectedSubscriptionType.type_name} • {selectedDuration.duration} • {selectedDuration.days} ngày
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                            
                             <div className="grid grid-cols-1 xl:grid-cols-2">
                                 <div className="flex my-3 justify-center xl:justify-start items-center">
                                     <p className="text-[22px] mr-6 font-semibold" style={{ color: 'var(--clr-txt-1)' }}>
@@ -354,6 +417,15 @@ export default function ProductDetailComponent({
                                 </div>
                             )}
 
+                            {/* Thông báo khi chưa chọn đầy đủ */}
+                            {(!selectedSubscriptionType || !selectedDuration) && (
+                                <div className="my-4 p-3 rounded-md" style={{ backgroundColor: '#fef3c7', border: '1px solid #fbbf24' }}>
+                                    <p className="text-yellow-800 text-sm">
+                                        {!selectedSubscriptionType ? 'Vui lòng chọn gói đăng ký' : 'Vui lòng chọn thời hạn'}
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="flex justify-center items-center my-5">
                                 <button 
                                     className=" rounded-md px-[30px] md:px-[60px] py-[3px]"
@@ -362,11 +434,11 @@ export default function ProductDetailComponent({
                                         border: '1px solid var(--clr-bg-3)',
                                         fontSize: '18px',
                                         marginRight: '15px',
-                                        opacity: isLoading ? 0.7 : 1,
-                                        cursor: isLoading ? 'not-allowed' : 'pointer'
+                                        opacity: (isLoading || !selectedSubscriptionType || !selectedDuration) ? 0.5 : 1,
+                                        cursor: (isLoading || !selectedSubscriptionType || !selectedDuration) ? 'not-allowed' : 'pointer'
                                     }}
                                     onClick={() => handleAddToCart(prd)}
-                                    disabled={isLoading}
+                                    disabled={isLoading || !selectedSubscriptionType || !selectedDuration}
                                 >
                                     <div className="flex justify-center items-center mx-auto">
                                         <Image src="/images/icon/icon18.png" alt="" style={{ width: '25px', height: '25px', textAlign: 'center' }} width={100} height={100} />
@@ -380,11 +452,11 @@ export default function ProductDetailComponent({
                                         color: 'var(--clr-txt-3)', 
                                         backgroundColor: 'var(--clr-bg-6)', 
                                         fontSize: '18px',
-                                        opacity: isLoading ? 0.7 : 1,
-                                        cursor: isLoading ? 'not-allowed' : 'pointer'
+                                        opacity: (isLoading || !selectedSubscriptionType || !selectedDuration) ? 0.5 : 1,
+                                        cursor: (isLoading || !selectedSubscriptionType || !selectedDuration) ? 'not-allowed' : 'pointer'
                                     }}
                                     onClick={() => handleBuyNow(prd)}
-                                    disabled={isLoading}
+                                    disabled={isLoading || !selectedSubscriptionType || !selectedDuration}
                                 >
                                     {isLoading ? 'Đang xử lý...' : 'Mua ngay'}
                                 </button>

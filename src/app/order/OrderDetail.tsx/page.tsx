@@ -39,6 +39,12 @@ interface OrderItem {
         base_price: number;
         category_id: string;
         category_name: string;
+        subscription_info?: {
+            subscription_type_name: string;
+            subscription_duration: string;
+            subscription_days: number;
+            subscription_price: number;
+        };
     };
     product: Product;
 }
@@ -191,7 +197,9 @@ export default function OrderDetails() {
 
                 allItems.forEach((item: OrderItem) => {
                     initialQuantities[item.product._id] = item.quantity;
-                    total += item.final_price * item.quantity;
+                    // Sử dụng subscription price nếu có, otherwise sử dụng final_price
+                    const price = item.product_snapshot.subscription_info?.subscription_price || item.final_price;
+                    total += price * item.quantity;
                 });
 
                 setQuantities(initialQuantities);
@@ -200,6 +208,19 @@ export default function OrderDetails() {
         };
         fetchOrderData();
     }, []);
+
+    // Cập nhật total khi quantities thay đổi
+    useEffect(() => {
+        if (orderItems.length > 0) {
+            let total = 0;
+            orderItems.forEach((item: OrderItem) => {
+                const quantity = quantities[item.product._id] || item.quantity;
+                const price = item.product_snapshot.subscription_info?.subscription_price || item.final_price;
+                total += price * quantity;
+            });
+            setTotalAmount(total);
+        }
+    }, [quantities, orderItems]);
 
     useEffect(() => {
         const updateMaxWidth = () => {
@@ -256,11 +277,11 @@ export default function OrderDetails() {
 
     const handlePaymentSuccess = async () => {
         try {
-            // Get the first order ID (assuming we're updating the most recent order)
-            if (orderItems.length === 0) {
-                throw new Error("No order items found");
+            // Use the order ID from state (this is the correct Order ID)
+            if (!order) {
+                throw new Error("No order ID found");
             }
-            const orderId = orderItems[0].id.split('_')[0]; // Extract the order ID from the first item
+            const orderId = order; // Use the order ID from state
             console.log("orderId", orderId);
             const token = localStorage.getItem('nhattin_token');
             
@@ -616,12 +637,27 @@ export default function OrderDetails() {
                                                             textOverflow: 'ellipsis',
                                                             maxWidth: maxWidth,
                                                         }}>{item.product_snapshot.name}</h2>
-                                                        <div className='flex my-2'>
-                                                            <h2 className='text-[16px] font-bold mr-2'>Gói đăng ký: </h2>
-                                                            <span>{item.product.status}</span>
-                                                        </div>
+                                                        {/* Hiển thị subscription info nếu có */}
+                                                        {item.product_snapshot.subscription_info ? (
+                                                            <div className='flex my-2'>
+                                                                <h2 className='text-[16px] font-bold mr-2'>Gói đăng ký: </h2>
+                                                                <span className='text-blue-600 font-medium'>
+                                                                    {item.product_snapshot.subscription_info.subscription_type_name}
+                                                                    {item.product_snapshot.subscription_info.subscription_duration && (
+                                                                        <span> • {item.product_snapshot.subscription_info.subscription_duration}</span>
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            <div className='flex my-2'>
+                                                                <h2 className='text-[16px] font-bold mr-2'>Sản phẩm: </h2>
+                                                                <span>{item.product.status}</span>
+                                                            </div>
+                                                        )}
 
-                                                        <h2 className='text-[23px] font-bold' style={{ color: 'var(--clr-txt-4)' }}>{item.final_price}đ</h2>
+                                                        <h2 className='text-[23px] font-bold' style={{ color: 'var(--clr-txt-4)' }}>
+                                                            {(item.product_snapshot.subscription_info?.subscription_price || item.final_price).toLocaleString('vi-VN')}đ
+                                                        </h2>
                                                     </div>
                                                 </div>
                                             </div>

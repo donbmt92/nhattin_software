@@ -14,7 +14,7 @@ const AffiliateStats: React.FC<AffiliateStatsProps> = ({ affiliateInfo }) => {
     const [error, setError] = useState('');
     const [isRequestingPayout, setIsRequestingPayout] = useState(false);
     const [payoutMessage, setPayoutMessage] = useState('');
-
+    console.log("affiliateInfo",affiliateInfo);
     useEffect(() => {
         fetchAffiliateStats();
     }, [affiliateInfo._id]);

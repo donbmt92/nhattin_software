@@ -56,14 +56,35 @@ const AffiliateRegistration: React.FC<AffiliateRegistrationProps> = ({
     checkExistingAffiliate();
   }, []);
 
+  // Debug effect để theo dõi existingAffiliate
+  useEffect(() => {
+    console.log("existingAffiliate changed:", existingAffiliate);
+    if (existingAffiliate) {
+      console.log("existingAffiliate.isRegistered:", (existingAffiliate as any).isRegistered);
+      console.log("existingAffiliate.affiliateCode:", existingAffiliate.affiliateCode);
+      console.log("existingAffiliate.paymentInfo:", existingAffiliate.paymentInfo);
+      console.log("existingAffiliate.totalEarnings:", existingAffiliate.totalEarnings);
+      console.log("existingAffiliate keys:", Object.keys(existingAffiliate));
+      console.log("Has affiliateCode:", !!existingAffiliate.affiliateCode);
+    }
+  }, [existingAffiliate]);
+
   const checkExistingAffiliate = async () => {
     try {
       const token = localStorage.getItem("nhattin_token");
       if (!token) return;
 
       const response = await AffiliateService.getAffiliateProfile();
-
-      setExistingAffiliate(response);
+      console.log("response",response);
+      console.log("response type:", typeof response);
+      console.log("response keys:", Object.keys(response));
+      
+      // Convert Mongoose document to plain object
+      const affiliateData = (response as any)._doc || response;
+      console.log("affiliateData:", affiliateData);
+      
+      setExistingAffiliate(affiliateData);
+      console.log("Setting existingAffiliate to:", affiliateData);
     } catch (error: any) {
       // Nếu không có affiliate, không cần xử lý lỗi
       console.log("User chưa đăng ký affiliate");
@@ -169,7 +190,7 @@ const AffiliateRegistration: React.FC<AffiliateRegistrationProps> = ({
   };
 
   // Nếu đã có affiliate, hiển thị thông tin
-  if (existingAffiliate) {
+  if (existingAffiliate && existingAffiliate.affiliateCode) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">
@@ -221,40 +242,64 @@ const AffiliateRegistration: React.FC<AffiliateRegistrationProps> = ({
                 </span>
               </div>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600">
+                Tổng thu nhập
+              </label>
+              <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                <span className="text-lg font-semibold text-green-600">
+                  {(existingAffiliate.totalEarnings || 0).toLocaleString('vi-VN')} VNĐ
+                </span>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600">
+                Số tiền rút tối thiểu
+              </label>
+              <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                <span className="text-lg font-semibold text-blue-600">
+                  {(existingAffiliate.minPayoutAmount || 100000).toLocaleString('vi-VN')} VNĐ
+                </span>
+              </div>
+            </div>
           </div>
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium text-gray-600">
                 Ngân hàng
               </label>
-              {/* <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                {existingAffiliate.paymentInfo.bankName}
-              </div> */}
+              <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                {existingAffiliate.paymentInfo?.bankName || 'Chưa cập nhật'}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600">
                 Số tài khoản
               </label>
-              {/* <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                {existingAffiliate.paymentInfo.accountNumber}
-              </div> */}
+              <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                {existingAffiliate.paymentInfo?.accountNumber || 'Chưa cập nhật'}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600">
                 Chủ tài khoản
               </label>
-              {/* <div className="mt-1 p-3 bg-gray-50 rounded-md border">
-                {existingAffiliate.paymentInfo.accountHolder}
-              </div> */}
+              <div className="mt-1 p-3 bg-gray-50 rounded-md border">
+                {existingAffiliate.paymentInfo?.accountHolder || 'Chưa cập nhật'}
+              </div>
             </div>
           </div>
         </div>
         <div className="mt-6 p-4 bg-blue-50 rounded-md">
-          <p className="text-sm text-blue-800">
-            💡 <strong>Hướng dẫn sử dụng:</strong> Sử dụng mã affiliate của bạn
-            để giới thiệu khách hàng. Bạn sẽ nhận được hoa hồng{" "}
-            {existingAffiliate.commissionRate}% từ mỗi đơn hàng thành công.
-          </p>
+          <h4 className="font-medium text-blue-800 mb-2">
+            💡 Hướng dẫn sử dụng mã affiliate:
+          </h4>
+          <ul className="text-sm text-blue-700 space-y-2">
+            <li>• <strong>Mã affiliate:</strong> <code className="bg-blue-100 px-2 py-1 rounded">{existingAffiliate.affiliateCode}</code></li>
+            <li>• <strong>Tỷ lệ hoa hồng:</strong> {existingAffiliate.commissionRate}% từ mỗi đơn hàng thành công</li>
+            <li>• <strong>Cách sử dụng:</strong> Thêm mã affiliate vào URL sản phẩm: <code className="bg-blue-100 px-2 py-1 rounded">?affiliate={existingAffiliate.affiliateCode}</code></li>
+            <li>• <strong>Thanh toán:</strong> Tự động chuyển khoản khi đạt số tiền rút tối thiểu {existingAffiliate.minPayoutAmount?.toLocaleString('vi-VN')} VNĐ</li>
+          </ul>
         </div>
       </div>
     );
@@ -262,13 +307,34 @@ const AffiliateRegistration: React.FC<AffiliateRegistrationProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h3 className="text-xl font-semibold text-gray-800 mb-4">
-        🎯 Đăng Ký Affiliate
-      </h3>
+      <div className="text-center mb-6">
+        <div className="text-6xl mb-4">🎯</div>
+        <h3 className="text-2xl font-bold text-gray-800 mb-2">
+          Đăng Ký Affiliate
+        </h3>
+        <p className="text-gray-600 mb-6">
+          {(existingAffiliate as any)?.message || "Tham gia chương trình affiliate và kiếm hoa hồng từ việc giới thiệu khách hàng"}
+        </p>
+        
+        {/* Call-to-action button */}
+        <div className="mb-6">
+          <button
+            onClick={() => {
+              const formElement = document.getElementById('affiliate-form');
+              if (formElement) {
+                formElement.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200"
+          >
+            🚀 Đăng Ký Ngay
+          </button>
+        </div>
+      </div>
 
       <div className="mb-6 p-4 bg-blue-50 rounded-md">
         <h4 className="font-medium text-blue-800 mb-2">
-          Thông tin về chương trình Affiliate:
+          💰 Thông tin về chương trình Affiliate:
         </h4>
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Tỷ lệ hoa hồng: 1% - 15% (mặc định 8%)</li>
@@ -276,6 +342,25 @@ const AffiliateRegistration: React.FC<AffiliateRegistrationProps> = ({
           <li>• Nhận hoa hồng từ mỗi đơn hàng được giới thiệu</li>
           <li>• Thanh toán qua tài khoản ngân hàng</li>
         </ul>
+      </div>
+
+      {/* Benefits section */}
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="text-3xl mb-2">💸</div>
+          <h5 className="font-semibold text-green-800 mb-1">Kiếm tiền thụ động</h5>
+          <p className="text-sm text-green-700">Nhận hoa hồng từ mỗi đơn hàng được giới thiệu</p>
+        </div>
+        <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <div className="text-3xl mb-2">🎁</div>
+          <h5 className="font-semibold text-purple-800 mb-1">Tỷ lệ cao</h5>
+          <p className="text-sm text-purple-700">Tỷ lệ hoa hồng lên đến 15%</p>
+        </div>
+        <div className="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <div className="text-3xl mb-2">⚡</div>
+          <h5 className="font-semibold text-orange-800 mb-1">Thanh toán nhanh</h5>
+          <p className="text-sm text-orange-700">Chuyển khoản tự động khi đạt ngưỡng</p>
+        </div>
       </div>
 
       {error && (
@@ -290,7 +375,7 @@ const AffiliateRegistration: React.FC<AffiliateRegistrationProps> = ({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form id="affiliate-form" onSubmit={handleSubmit} className="space-y-6">
         {/* Tỷ lệ hoa hồng */}
         <div>
           <label

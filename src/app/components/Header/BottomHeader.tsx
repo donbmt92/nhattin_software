@@ -38,7 +38,7 @@ export default function BottomHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const headerLinks = [
-        { name: "Hợp Tác", link: "/cooperation", icon: "/images/icon/icon25.png" },
+        { name: "Hợp Tác", link: "/profile/affiliate-dashboard", icon: "/images/icon/icon25.png" },
         { name: "Hướng dẫn mua hàng", link: "/guide", icon: "/images/icon/icon27.png" },
     ];
 
