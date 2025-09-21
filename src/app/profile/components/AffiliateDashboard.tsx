@@ -157,7 +157,7 @@ const AffiliateDashboard: React.FC = () => {
                             <div>
                                 <p className="text-sm text-purple-600 font-medium">Tổng thu nhập</p>
                                 <p className="text-lg font-bold text-purple-800">
-                                    {formatCurrency(affiliateProfile.totalEarnings)}
+                                    {formatCurrency(affiliateProfile.totalEarnings || 0)}
                                 </p>
                             </div>
                             <div className="text-2xl">💎</div>
@@ -217,10 +217,10 @@ const AffiliateDashboard: React.FC = () => {
                             </p>
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <p className="text-sm text-gray-600">
-                                    <strong>Thu nhập đang chờ:</strong> {formatCurrency(affiliateProfile.pendingEarnings)}
+                                    <strong>Thu nhập đang chờ:</strong> {formatCurrency(affiliateProfile.pendingEarnings || 0)}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                    <strong>Số tiền rút tối thiểu:</strong> {formatCurrency(affiliateProfile.minPayoutAmount)}
+                                    <strong>Số tiền rút tối thiểu:</strong> {formatCurrency(affiliateProfile.minPayoutAmount || 0)}
                                 </p>
                             </div>
                         </div>

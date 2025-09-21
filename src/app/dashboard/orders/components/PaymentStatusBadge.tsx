@@ -47,7 +47,7 @@ export default function PaymentStatusBadge({
     return (
         <Badge 
             className={`${config.color} ${sizeClass} border`}
-            variant="outline"
+            variant="secondary"
         >
             {showIcon && <Icon className="h-3 w-3 mr-1" />}
             {config.label}

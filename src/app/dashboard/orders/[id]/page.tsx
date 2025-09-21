@@ -26,13 +26,14 @@ import {
 import {
     Badge
 } from "@/components/ui/badge";
-import { 
+import {
     Loader2, 
     ArrowLeft, 
     Package, 
     User, 
     CreditCard, 
     Calendar,
+    Clock,
     MapPin,
     Phone,
     Mail,
@@ -85,6 +86,14 @@ interface Order {
     affiliateCode?: string;
     commissionAmount?: number;
     commissionStatus?: string;
+    shipping_address?: {
+        name: string;
+        address: string;
+        city: string;
+        district: string;
+        ward: string;
+    };
+    payment_method?: string;
 }
 
 const statusConfig = {
@@ -217,7 +226,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard/orders">
-                        <Button variant="outline" size="sm">
+                        <Button variant="secondary" size="sm">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Quay lại
                         </Button>

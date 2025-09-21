@@ -172,7 +172,7 @@ export default function CreateSubscriptionTypePage() {
                                          </div>
                                          <Dialog>
                                              <DialogTrigger asChild>
-                                                 <Button variant="outline" size="sm">
+                                                 <Button variant="secondary" size="sm">
                                                      Thay đổi
                                                  </Button>
                                              </DialogTrigger>
@@ -232,7 +232,7 @@ export default function CreateSubscriptionTypePage() {
                              ) : (
                                  <Dialog>
                                      <DialogTrigger asChild>
-                                         <Button variant="outline" className="w-full justify-start">
+                                         <Button variant="secondary" className="w-full justify-start">
                                              <Package className="h-4 w-4 mr-2" />
                                              Chọn sản phẩm
                                          </Button>

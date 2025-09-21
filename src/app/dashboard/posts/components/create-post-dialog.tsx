@@ -403,7 +403,7 @@ ID đang sử dụng: ${categoryId}`);
           <div className="flex justify-end space-x-2">
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >

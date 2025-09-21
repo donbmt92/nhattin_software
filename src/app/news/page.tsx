@@ -265,7 +265,7 @@ export default function NewsPage() {
                 : `Bài viết trong ${categories.find(c => c._id === selectedCategory)?.name || ""}`}
             </h2>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Button variant="secondary" size="sm" className="flex items-center gap-2">
                 <Filter className="h-4 w-4" />
                 <span>Lọc</span>
               </Button>
@@ -304,7 +304,7 @@ export default function NewsPage() {
                       </div>
                     </CardHeader>
                     <CardContent className="p-6">
-                      <Badge variant="outline" className="mb-2">
+                      <Badge variant="secondary" className="mb-2">
                         {post.category?.name || "Tin tức"}
                       </Badge>
                       <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
@@ -330,7 +330,7 @@ export default function NewsPage() {
             <div className="text-center py-12">
               <h3 className="text-lg text-gray-500">Không tìm thấy bài viết nào</h3>
               <Button 
-                variant="outline" 
+                variant="secondary" 
                 className="mt-4"
                 onClick={() => {
                   setSelectedCategory("all");

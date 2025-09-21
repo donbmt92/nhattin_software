@@ -369,7 +369,7 @@ export default function SubscriptionDurationsPage() {
                 </div>
                 <div className="flex items-center space-x-4">
                     <Link href="/dashboard/products">
-                        <Button variant="outline">
+                        <Button variant="secondary">
                             <Package className="h-4 w-4 mr-2" />
                             Quản lý Sản phẩm
                         </Button>
@@ -497,7 +497,7 @@ export default function SubscriptionDurationsPage() {
                                     <TableCell>
                                         <div className="flex items-center space-x-2">
                                             <Button
-                                                variant="outline"
+                                                variant="secondary"
                                                 size="sm"
                                                 onClick={() => handleEditClick(subscriptionDuration)}
                                             >
@@ -505,7 +505,7 @@ export default function SubscriptionDurationsPage() {
                                             </Button>
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
-                                                    <Button variant="outline" size="sm">
+                                                    <Button variant="secondary" size="sm">
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </AlertDialogTrigger>
@@ -573,7 +573,7 @@ export default function SubscriptionDurationsPage() {
                                                 </div>
                                                 <Button 
                                                     type="button"
-                                                    variant="outline" 
+                                                    variant="secondary" 
                                                     size="sm"
                                                     onClick={() => setSelectedProduct(null)}
                                                 >
@@ -628,7 +628,7 @@ export default function SubscriptionDurationsPage() {
                                                 </div>
                                                 <Button 
                                                     type="button"
-                                                    variant="outline" 
+                                                    variant="secondary" 
                                                     size="sm"
                                                     onClick={() => setSelectedSubscriptionType(null)}
                                                 >
@@ -732,7 +732,7 @@ export default function SubscriptionDurationsPage() {
                         <div className="flex justify-end space-x-4">
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="secondary"
                                 onClick={() => setShowCreatePopup(false)}
                             >
                                 Hủy
@@ -783,7 +783,7 @@ export default function SubscriptionDurationsPage() {
                                                 </div>
                                                 <Button 
                                                     type="button"
-                                                    variant="outline" 
+                                                    variant="secondary" 
                                                     size="sm"
                                                     onClick={() => setSelectedProduct(null)}
                                                 >
@@ -838,7 +838,7 @@ export default function SubscriptionDurationsPage() {
                                                 </div>
                                                 <Button 
                                                     type="button"
-                                                    variant="outline" 
+                                                    variant="secondary" 
                                                     size="sm"
                                                     onClick={() => setSelectedSubscriptionType(null)}
                                                 >
@@ -954,7 +954,7 @@ export default function SubscriptionDurationsPage() {
                         <div className="flex justify-end space-x-4">
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="secondary"
                                 onClick={() => setShowEditPopup(false)}
                             >
                                 Hủy

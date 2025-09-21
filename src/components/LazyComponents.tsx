@@ -1,17 +1,17 @@
 // components/LazyComponents.tsx
 "use client";
-import { lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
 
 // Lazy load admin components
-const AdminOrderManagement = lazy(() => import('./admin/AdminOrderManagement'));
-const AdminPaymentManagement = lazy(() => import('./admin/AdminPaymentManagement'));
-const BankTransferModal = lazy(() => import('./BankTransferModal'));
+const AdminOrderManagement = lazy(() => import('./admin/AdminOrderManagement').then(module => ({ default: module.AdminOrderManagement })));
+const AdminPaymentManagement = lazy(() => import('./admin/AdminPaymentManagement').then(module => ({ default: module.AdminPaymentManagement })));
+const BankTransferModal = lazy(() => import('./BankTransferModal').then(module => ({ default: module.BankTransferModal })));
 
 // Lazy load regular components
-const ErrorBoundary = lazy(() => import('./ErrorBoundary'));
-const StatusIndicator = lazy(() => import('./StatusIndicator'));
-const MessageToast = lazy(() => import('./MessageToast'));
+const ErrorBoundary = lazy(() => import('./ErrorBoundary').then(module => ({ default: module.ErrorBoundary })));
+const StatusIndicator = lazy(() => import('./StatusIndicator').then(module => ({ default: module.StatusIndicator })));
+const MessageToast = lazy(() => import('./MessageToast').then(module => ({ default: module.MessageToast })));
 
 // Lazy load pages (if needed)
 // const AdminDashboard = lazy(() => import('../app/admin/dashboard/page'));
@@ -31,27 +31,29 @@ export const LazyAdminPaymentManagement = () => (
   </Suspense>
 );
 
-export const LazyBankTransferModal = () => (
+export const LazyBankTransferModal = (props: any) => (
   <Suspense fallback={<LoadingSpinner text="Loading Bank Transfer..." />}>
-    <BankTransferModal />
+    <BankTransferModal {...props} />
   </Suspense>
 );
 
-export const LazyErrorBoundary = () => (
+export const LazyErrorBoundary = ({ children, ...props }: { children: React.ReactNode; [key: string]: any }) => (
   <Suspense fallback={<LoadingSpinner text="Loading Error Handler..." />}>
-    <ErrorBoundary />
+    <ErrorBoundary {...props}>
+      {children}
+    </ErrorBoundary>
   </Suspense>
 );
 
-export const LazyStatusIndicator = () => (
+export const LazyStatusIndicator = (props: { status: string; [key: string]: any }) => (
   <Suspense fallback={<div className="animate-pulse bg-gray-200 h-6 w-20 rounded"></div>}>
-    <StatusIndicator />
+    <StatusIndicator {...props} />
   </Suspense>
 );
 
-export const LazyMessageToast = () => (
+export const LazyMessageToast = (props: { message: string; type: 'success' | 'error' | 'warning' | 'info'; [key: string]: any }) => (
   <Suspense fallback={<div className="animate-pulse bg-gray-200 h-12 w-64 rounded"></div>}>
-    <MessageToast />
+    <MessageToast {...props} />
   </Suspense>
 );
 
@@ -74,23 +76,23 @@ export const LazyMessageToast = () => (
 //   </Suspense>
 // );
 
-// Higher-order component for lazy loading with error boundary
-export const withLazyLoading = <P extends object>(
-  Component: React.ComponentType<P>,
-  fallback?: React.ReactNode
-) => {
-  const LazyComponent = lazy(() => Promise.resolve({ default: Component }));
-  
-  const WrappedComponent = (props: P) => (
-    <Suspense fallback={fallback || <LoadingSpinner />}>
-      <LazyComponent {...props} />
-    </Suspense>
-  );
-  
-  WrappedComponent.displayName = `withLazyLoading(${Component.displayName || Component.name})`;
-  
-  return WrappedComponent;
-};
+// Higher-order component for lazy loading with error boundary (commented out due to TypeScript issues)
+// export const withLazyLoading = <P extends Record<string, any>>(
+//   Component: React.ComponentType<P>,
+//   fallback?: React.ReactNode
+// ) => {
+//   const LazyComponent = lazy(() => Promise.resolve({ default: Component }));
+//   
+//   const WrappedComponent = (props: P) => (
+//     <Suspense fallback={fallback || <LoadingSpinner />}>
+//       <LazyComponent {...props} />
+//     </Suspense>
+//   );
+//   
+//   WrappedComponent.displayName = `withLazyLoading(${Component.displayName || Component.name})`;
+//   
+//   return WrappedComponent;
+// };
 
 // Utility for dynamic imports
 export const loadComponent = async (componentPath: string) => {
@@ -124,19 +126,19 @@ export const preloadComponents = () => {
 //   'LoadingSpinner': () => import('./LoadingSpinner')
 // };
 
-// Dynamic component loader
-export const loadDynamicComponent = async (componentName: string) => {
-  const loader = componentRegistry[componentName as keyof typeof componentRegistry];
-  
-  if (!loader) {
-    throw new Error(`Component ${componentName} not found in registry`);
-  }
-  
-  try {
-    const module = await loader();
-    return module.default;
-  } catch (error) {
-    console.error(`Failed to load dynamic component: ${componentName}`, error);
-    throw error;
-  }
-};
+// Dynamic component loader (commented out due to componentRegistry being commented)
+// export const loadDynamicComponent = async (componentName: string) => {
+//   const loader = componentRegistry[componentName as keyof typeof componentRegistry];
+//   
+//   if (!loader) {
+//     throw new Error(`Component ${componentName} not found in registry`);
+//   }
+//   
+//   try {
+//     const module = await loader();
+//     return module.default;
+//   } catch (error) {
+//     console.error(`Failed to load dynamic component: ${componentName}`, error);
+//     throw error;
+//   }
+// };

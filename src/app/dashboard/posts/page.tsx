@@ -175,7 +175,7 @@ export default function PostsPage() {
                     <TableCell>{new Date(post.createdAt).toLocaleDateString("vi-VN")}</TableCell>
                     <TableCell className="space-x-2">
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         size="icon"
                         onClick={() => {
                           setSelectedItem(post)
@@ -185,7 +185,7 @@ export default function PostsPage() {
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         size="icon"
                         onClick={() => {
                           setSelectedItem({ id: post._id, type: 'post' })
@@ -221,7 +221,7 @@ export default function PostsPage() {
                     <TableCell>{new Date(category.createdAt).toLocaleDateString("vi-VN")}</TableCell>
                     <TableCell className="space-x-2">
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         size="icon"
                         onClick={() => {
                           setSelectedItem(category)
@@ -231,7 +231,7 @@ export default function PostsPage() {
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         size="icon"
                         onClick={() => {
                           setSelectedItem({ id: category._id, type: 'category' })

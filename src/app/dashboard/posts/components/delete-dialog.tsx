@@ -35,7 +35,7 @@ export default function DeleteDialog({
         <div className="flex justify-end space-x-2">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={() => onOpenChange(false)}
           >
             Hủy

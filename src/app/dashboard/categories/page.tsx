@@ -164,7 +164,7 @@ export default function CategoriesPage() {
                             </TableCell>
                             <TableCell className="flex gap-2">
                                 <Link href={`/dashboard/categories/edit/${category._id}`}>
-                                    <Button variant="outline" size="sm">
+                                    <Button variant="secondary" size="sm">
                                         Sửa
                                     </Button>
                                 </Link>

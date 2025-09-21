@@ -108,7 +108,7 @@ export default function FeaturedNews() {
                 </div>
                 <CardContent className="p-4">
                   {post.category && (
-                    <Badge variant="outline" className="mb-2">
+                    <Badge variant="secondary" className="mb-2">
                       {post.category.name}
                     </Badge>
                   )}

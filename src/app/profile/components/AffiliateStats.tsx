@@ -47,7 +47,7 @@ const AffiliateStats: React.FC<AffiliateStatsProps> = ({ affiliateInfo }) => {
     };
 
     const handleRequestPayout = async () => {
-        if (!stats || stats.pendingEarnings < affiliateInfo.minPayoutAmount) {
+        if (!stats || stats.pendingEarnings < (affiliateInfo.minPayoutAmount || 0)) {
             return;
         }
 
@@ -161,7 +161,7 @@ const AffiliateStats: React.FC<AffiliateStatsProps> = ({ affiliateInfo }) => {
                         <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
                             <span className="text-gray-600">Số tiền rút tối thiểu:</span>
                             <span className="font-semibold text-blue-600">
-                                {formatCurrency(affiliateInfo.minPayoutAmount)}
+                                {formatCurrency(affiliateInfo.minPayoutAmount || 0)}
                             </span>
                         </div>
                         <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
@@ -188,17 +188,17 @@ const AffiliateStats: React.FC<AffiliateStatsProps> = ({ affiliateInfo }) => {
                     <div className="space-y-3">
                         <div className="p-3 bg-gray-50 rounded-md">
                             <div className="text-sm text-gray-600 mb-1">Ngân hàng</div>
-                            <div className="font-medium">{affiliateInfo.paymentInfo.bankName}</div>
+                            <div className="font-medium">{affiliateInfo.paymentInfo?.bankName || 'Chưa cập nhật'}</div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded-md">
                             <div className="text-sm text-gray-600 mb-1">Số tài khoản</div>
-                            <div className="font-mono font-medium">{affiliateInfo.paymentInfo.accountNumber}</div>
+                            <div className="font-mono font-medium">{affiliateInfo.paymentInfo?.accountNumber || 'Chưa cập nhật'}</div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded-md">
                             <div className="text-sm text-gray-600 mb-1">Chủ tài khoản</div>
-                            <div className="font-medium">{affiliateInfo.paymentInfo.accountHolder}</div>
+                            <div className="font-medium">{affiliateInfo.paymentInfo?.accountHolder || 'Chưa cập nhật'}</div>
                         </div>
-                        {affiliateInfo.paymentInfo.bankCode && (
+                        {affiliateInfo.paymentInfo?.bankCode && (
                             <div className="p-3 bg-gray-50 rounded-md">
                                 <div className="text-sm text-gray-600 mb-1">Mã ngân hàng</div>
                                 <div className="font-medium">{affiliateInfo.paymentInfo.bankCode}</div>
@@ -221,7 +221,7 @@ const AffiliateStats: React.FC<AffiliateStatsProps> = ({ affiliateInfo }) => {
                         <strong>2. Nhận hoa hồng:</strong> Bạn sẽ nhận được {affiliateInfo.commissionRate}% hoa hồng từ mỗi đơn hàng thành công.
                     </p>
                     <p>
-                        <strong>3. Rút tiền:</strong> Khi đạt đủ {formatCurrency(affiliateInfo.minPayoutAmount)}, bạn có thể yêu cầu rút tiền về tài khoản ngân hàng.
+                        <strong>3. Rút tiền:</strong> Khi đạt đủ {formatCurrency(affiliateInfo.minPayoutAmount || 0)}, bạn có thể yêu cầu rút tiền về tài khoản ngân hàng.
                     </p>
                     <p>
                         <strong>4. Theo dõi:</strong> Cập nhật thống kê real-time để theo dõi hiệu quả của chương trình affiliate.
@@ -230,7 +230,7 @@ const AffiliateStats: React.FC<AffiliateStatsProps> = ({ affiliateInfo }) => {
             </div>
 
             {/* Nút rút tiền */}
-            {stats && stats.pendingEarnings >= affiliateInfo.minPayoutAmount && (
+            {stats && stats.pendingEarnings >= (affiliateInfo.minPayoutAmount || 0) && (    
                 <div className="mt-6 text-center">
                     <button 
                         onClick={handleRequestPayout}
@@ -256,10 +256,10 @@ const AffiliateStats: React.FC<AffiliateStatsProps> = ({ affiliateInfo }) => {
                 </div>
             )}
 
-            {stats && stats.pendingEarnings < affiliateInfo.minPayoutAmount && (
+            {stats && stats.pendingEarnings < (affiliateInfo.minPayoutAmount || 0) && (
                 <div className="mt-6 text-center">
                     <div className="text-sm text-gray-600">
-                        Cần thêm {formatCurrency(affiliateInfo.minPayoutAmount - (stats.pendingEarnings || 0))} để có thể rút tiền
+                        Cần thêm {formatCurrency((affiliateInfo.minPayoutAmount || 0) - (stats.pendingEarnings || 0))} để có thể rút tiền
                     </div>
                 </div>
             )}
