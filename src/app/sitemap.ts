@@ -38,7 +38,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ]
 
   // Dynamic pages - you can fetch these from your API
-  const dynamicPages = [
+  const dynamicPages: MetadataRoute.Sitemap = [
     // Add product pages
     // Add news pages
     // Add category pages
