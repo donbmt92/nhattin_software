@@ -450,6 +450,7 @@ export default function ProductsPage() {
 
     // Filter products based on category and search term
     const filteredProducts = products.filter(product => {
+        console.log("product", product);
         const matchesCategory = !selectedCategory || product.id_category._id === selectedCategory;
         const matchesSearch = !searchTerm || 
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -774,7 +775,7 @@ export default function ProductsPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right space-x-2">
-                                            <Link href={`/dashboard/products/edit/${product._id.id}`}>
+                                            <Link href={`/dashboard/products/edit/${product._id}`}>
                                                 <Button variant="secondary" size="sm">
                                                     Sửa
                                                 </Button>
