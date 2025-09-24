@@ -3,6 +3,7 @@ import axios from "axios";
 import { User, Notification, Product } from "@/app/profile/types";
 import { createContext, ReactNode, useContext, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { dispatchUserDataChanged } from "@/utils/userEvents";
 
 
 interface CartContextType {
@@ -20,6 +21,7 @@ interface CartContextType {
   createOrders: () => Promise<void>;
   handleLogout: () => void;
   checkUserLogin: () => boolean;
+  refreshUser: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -51,6 +53,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('nhattin_token');
     localStorage.removeItem('nhattin_user');
     
+    // Dispatch custom event để thông báo cho các component khác
+    dispatchUserDataChanged();
+    
     // Reset cart state
     setListCart([]);
     setUser(null);
@@ -80,8 +85,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return false; // Error was not handled
   }, [handleLogout]);
   
-  // Load user data from localStorage
-  useEffect(() => {
+  // Function to refresh user data from localStorage
+  const refreshUser = useCallback(() => {
     const storedUser = localStorage.getItem("nhattin_user");
     if (storedUser) {
       try {
@@ -90,8 +95,39 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         console.error("Lỗi parse user từ localStorage:", error);
         setUser(null);
       }
+    } else {
+      setUser(null);
     }
   }, []);
+
+  // Load user data from localStorage on mount
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
+
+  // Listen for localStorage changes to update user data
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'nhattin_user') {
+        refreshUser();
+      }
+    };
+
+    // Listen for storage events from other tabs/windows
+    window.addEventListener('storage', handleStorageChange);
+
+    // Listen for custom events from same tab
+    const handleCustomStorageChange = () => {
+      refreshUser();
+    };
+
+    window.addEventListener('userDataChanged', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userDataChanged', handleCustomStorageChange);
+    };
+  }, [refreshUser]);
 
   // Check token validity on mount
   useEffect(() => {
@@ -420,7 +456,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       addToCart, 
       createOrders,
       handleLogout,
-      checkUserLogin
+      checkUserLogin,
+      refreshUser
     }}>
       {children}
       {notification && (

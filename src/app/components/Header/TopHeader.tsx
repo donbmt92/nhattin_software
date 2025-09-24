@@ -8,6 +8,7 @@ import { useCart } from '@/context/CartContext';
 import CartPopup from '../Cart/CartPopup';
 import { useRouter } from 'next/navigation';
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { dispatchUserDataChanged } from '@/utils/userEvents';
 
 export default function TopHeader() {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -46,6 +47,10 @@ export default function TopHeader() {
     const logout = () => {
         localStorage.removeItem('nhattin_token');
         localStorage.removeItem('nhattin_user');
+        
+        // Dispatch custom event để thông báo cho các component khác
+        dispatchUserDataChanged();
+        
         window.location.reload()
     }
 

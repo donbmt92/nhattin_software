@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
@@ -75,7 +75,7 @@ interface Product {
     name: string;
 }
 
-function SubscriptionDurationsContent() {
+export default function SubscriptionDurationsPage() {
     const searchParams = useSearchParams();
     const productId = searchParams.get('product_id');
     
@@ -977,13 +977,5 @@ function SubscriptionDurationsContent() {
                 </DialogContent>
             </Dialog>
         </div>
-    );
-}
-
-export default function SubscriptionDurationsPage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <SubscriptionDurationsContent />
-        </Suspense>
     );
 }

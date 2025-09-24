@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
+import { dispatchUserDataChanged } from '@/utils/userEvents';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -10,6 +12,7 @@ export default function Login() {
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+    const { refreshUser } = useCart();
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -35,6 +38,13 @@ export default function Login() {
                 console.log(JSON.stringify(data.data));
 
                 localStorage.setItem('nhattin_user', JSON.stringify(data.data));
+                
+                // Dispatch custom event để thông báo cho các component khác
+                dispatchUserDataChanged();
+                
+                // Cập nhật thông tin user trong context
+                refreshUser();
+                
                 // Kiểm tra role và điều hướng
                 if (data.data.role === '"ADMIN"') {
                     console.log('admin', data.data.role);

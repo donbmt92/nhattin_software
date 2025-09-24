@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
+import { ArticleSchema, BreadcrumbSchema } from "@/components/StructuredData"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -116,6 +117,24 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
 
     return (
         <div className="bg-gray-50 min-h-screen pb-20">
+            {/* Structured Data */}
+            <ArticleSchema
+                headline={post.title}
+                description={post.content.replace(/<[^>]*>/g, '').substring(0, 160)}
+                image={post.thumbnail}
+                datePublished={post.createdAt}
+                dateModified={post.updatedAt}
+                author={{ name: "Nhất Tín Software Team" }}
+                publisher={{ name: "Nhất Tín Software", logo: "https://nhattinsoftware.com/images/icon/logo.svg" }}
+            />
+            <BreadcrumbSchema
+                items={[
+                    { name: "Trang chủ", url: "https://nhattinsoftware.com" },
+                    { name: "Tin tức", url: "https://nhattinsoftware.com/news" },
+                    { name: post.title, url: `https://nhattinsoftware.com/news/${post.slug}` }
+                ]}
+            />
+            
             <div className="container mx-auto px-4 py-8">
                 {/* Breadcrumb */}
                 <div className="mb-6">

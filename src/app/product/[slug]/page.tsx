@@ -13,6 +13,7 @@ import ProductAffiliateSection from './components/ProductAffiliateSection';
 import AffiliateLinkBanner from './components/AffiliateLinkBanner';
 import BackendTest from './components/BackendTest';
 import SubscriptionDemo from './components/SubscriptionDemo';
+import { ProductSchema, BreadcrumbSchema } from '@/components/StructuredData';
 
 
 export default function ProductDetailPage() {
@@ -100,6 +101,33 @@ export default function ProductDetailPage() {
     
     return (
         <div className="">
+            {/* Structured Data */}
+            {product.length > 0 && (
+                <>
+                    <ProductSchema
+                        name={product[0].name}
+                        description={product[0].desc}
+                        image={product[0].image}
+                        price={parseInt(product[0].base_price)}
+                        currency="VND"
+                        availability="InStock"
+                        brand="Nhất Tín Software"
+                        category={product[0].id_category?.name}
+                        rating={product[0].rating ? {
+                            ratingValue: product[0].rating,
+                            reviewCount: product[0].total_reviews || 0
+                        } : undefined}
+                    />
+                    <BreadcrumbSchema
+                        items={[
+                            { name: "Trang chủ", url: "https://nhattinsoftware.com" },
+                            { name: "Sản phẩm", url: "https://nhattinsoftware.com/products" },
+                            { name: product[0].name, url: `https://nhattinsoftware.com/product/${product[0].slug}` }
+                        ]}
+                    />
+                </>
+            )}
+            
             <ProductDetailComponent 
                 products={product} 
                 subcriptionTypes={subcriptionType} 
