@@ -622,7 +622,7 @@ export default function OrderDetails() {
                                                 </div>
                                                 <div className='flex justify-center items-center'>
                                                     <Image
-                                                        src={`${item.product_snapshot.image}`}
+                                                        src={item.product_snapshot.image}
                                                         alt={item.product_snapshot.name}
                                                         width={100}
                                                         height={100}

@@ -1,5 +1,5 @@
 "use client";
-import { faRightToBracket, faSearch, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faRightToBracket, faSearch, faUserCircle, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -125,13 +125,13 @@ export default function TopHeader() {
                                 <DropdownMenu.Trigger asChild>
                                     <div className="flex items-center cursor-pointer">
                                         <Image src="/images/icon/icon19.png" alt="Account" width={20} height={20} className="md:w-6 md:h-6" />
-                                        <div className="text-left mx-1 md:mx-3 hidden lg:block" style={{ color: "var(--clr-txt-3)" }}>
-                                            <p className="text-xs ">{user ? "Xin chào" : ""}</p>
+                                        <div className="text-left mx-1 md:mx-3" style={{ color: "var(--clr-txt-3)" }}>
+                                            <p className="text-xs">{user ? "Xin chào" : ""}</p>
                                             <p className="text-sm md:text-md font-semibold cursor-pointer" onClick={() => { if (!user) window.location.href = "/login"; }}>{user?.fullName || "Đăng nhập"}</p>
                                         </div>
                                     </div>
                                 </DropdownMenu.Trigger>
-                                {user && (
+                                {user ? (
                                     <DropdownMenu.Portal>
                                         <DropdownMenu.Content
                                             className="w-50 bg-white shadow-md rounded-md border p-1 mt-3 z-[9999]"
@@ -148,6 +148,27 @@ export default function TopHeader() {
                                             <DropdownMenu.Item className="p-2 hover:bg-gray-100 rounded-md">
                                                 <Link href="/" onClick={logout}>
                                                     <FontAwesomeIcon icon={faRightToBracket} className="mr-2" /> Đăng xuất
+                                                </Link>
+                                            </DropdownMenu.Item>
+                                        </DropdownMenu.Content>
+                                    </DropdownMenu.Portal>
+                                ) : (
+                                    <DropdownMenu.Portal>
+                                        <DropdownMenu.Content
+                                            className="w-50 bg-white shadow-md rounded-md border p-1 mt-3 z-[9999]"
+                                            side="bottom"
+                                            align="start"
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                        >
+                                            <DropdownMenu.Item className="p-2 hover:bg-gray-100 rounded-md">
+                                                <Link href="/login">
+                                                    <FontAwesomeIcon icon={faRightToBracket} className="mr-2" /> Đăng nhập
+                                                </Link>
+                                            </DropdownMenu.Item>
+                                            <DropdownMenu.Item className="p-2 hover:bg-gray-100 rounded-md">
+                                                <Link href="/register">
+                                                    <FontAwesomeIcon icon={faUserPlus} className="mr-2" /> Đăng ký
                                                 </Link>
                                             </DropdownMenu.Item>
                                         </DropdownMenu.Content>

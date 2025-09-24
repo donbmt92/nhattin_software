@@ -202,7 +202,9 @@ const Tiptap = ({
 export default function ProductForm({ initialData, onSubmit, isLoading }: ProductFormProps) {
     const [imagePreview, setImagePreview] = useState<string | null>(
         initialData?.image 
-            ? `${process.env.NEXT_PUBLIC_API_URL}/${initialData.image}`
+            ? initialData.image.startsWith('http') 
+                ? initialData.image 
+                : `${process.env.NEXT_PUBLIC_API_URL}/${initialData.image}`
             : null
     );
     const [selectedFile, setSelectedFile] = useState<File | null>(null);

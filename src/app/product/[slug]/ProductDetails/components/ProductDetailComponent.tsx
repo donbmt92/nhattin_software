@@ -143,7 +143,7 @@ export default function ProductDetailComponent({
             {products.map((prd, index) => (
                 <div className="grid lg:grid-cols-12 md:grid-cols-2 grid-col-1" key={index}>
                     <div className='flex justify-center items-center md:col-span-5'>
-                        <Image src={`${prd.image}`} alt="" style={{ borderRadius: "10px", width: "100%" }} width={1000} height={100} />
+                        <Image src={prd.image} alt="" style={{ borderRadius: "10px", width: "100%" }} width={1000} height={100} />
                     </div>
                     <div className="md:col-span-1 mx-6"></div>
                     <div className="md:col-span-6 mx-6">
